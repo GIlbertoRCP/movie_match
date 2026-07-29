@@ -8,6 +8,7 @@ import MatchModal from './components/MatchModal';
 import SessionStats from './components/SessionStats';
 import ServerColdStartBanner from './components/ServerColdStartBanner';
 import OnlineSessionStatusBar from './components/OnlineSessionStatusBar';
+import DesktopCinemaSpotlight from './components/DesktopCinemaSpotlight';
 import { Sparkles } from 'lucide-react';
 
 function MainApp() {
@@ -38,31 +39,8 @@ function MainApp() {
 
           {/* Desktop Companion Sidebar */}
           <div className="hidden lg:flex lg:flex-col lg:col-span-5 xl:col-span-5 space-y-5">
-            {/* Desktop Keyboard Shortcuts Card */}
-            <div className="glass-card p-5 rounded-3xl border border-slate-800 space-y-3 shadow-xl">
-              <h3 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center justify-between">
-                <span>Keyboard Controls</span>
-                <span className="text-[10px] font-bold text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-800/40">DESKTOP READY</span>
-              </h3>
-              <div className="grid grid-cols-2 gap-2 text-xs font-bold text-slate-300">
-                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                  <span>Pass Card</span>
-                  <kbd className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-[10px] font-mono">← Left</kbd>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                  <span>Like Card</span>
-                  <kbd className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-[10px] font-mono">→ Right</kbd>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                  <span>Movie Details</span>
-                  <kbd className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-[10px] font-mono">↑ Up / Space</kbd>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                  <span>Undo Swipe</span>
-                  <kbd className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-[10px] font-mono">Z</kbd>
-                </div>
-              </div>
-            </div>
+            {/* Desktop Active Movie Spotlight */}
+            <DesktopCinemaSpotlight />
 
             {/* Desktop Live Session Stats & Picks */}
             <SessionStats />

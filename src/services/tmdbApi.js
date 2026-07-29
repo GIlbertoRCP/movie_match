@@ -6,6 +6,7 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 export const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
 export const TMDB_BACKDROP_BASE = 'https://image.tmdb.org/t/p/w1280';
 export const TMDB_LOGO_BASE = 'https://image.tmdb.org/t/p/w92';
+export const DEFAULT_POSTER = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80';
 
 export const TMDB_GENRES = [
   { id: 28, name: 'Action' },

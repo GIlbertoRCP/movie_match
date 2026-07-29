@@ -65,25 +65,25 @@ export default function CardStack() {
   }
 
   return (
-    <div className="relative w-full max-w-sm mx-auto flex flex-col items-center py-2 px-4">
+    <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto flex flex-col items-center py-2 px-2 sm:px-4">
       {/* Turn Indicator Banner */}
       <div className="w-full flex items-center justify-between px-2 mb-3">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-purple-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
           </span>
-          <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
+          <span className="text-xs font-black uppercase tracking-wider text-cyan-300">
             {phase === 'p1_swiping' ? 'Player 1 Turn' : 'Player 2 Turn'}
           </span>
         </div>
-        <span className="text-xs font-semibold text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800 shadow-sm">
+        <span className="text-xs font-extrabold text-slate-300 bg-slate-900/90 px-3 py-1 rounded-full border border-slate-800 shadow-md">
           {currentIndex + 1} / {deck.length}
         </span>
       </div>
 
-      {/* Cards Stack Container */}
-      <div className="relative w-full aspect-[3/4] max-h-[520px]">
+      {/* Cards Stack Container (Significantly Larger Poster) */}
+      <div className="relative w-full aspect-[2/3] h-[560px] sm:h-[640px] lg:h-[700px]">
         <AnimatePresence>
           {visibleCards.map((movie, idx) => {
             const isTop = idx === 0;
@@ -261,24 +261,24 @@ function SwipeableCard({ movie, index, isTop, onSwipe, onOpenDetails }) {
       </div>
 
       {/* Bottom Information Container */}
-      <div className="absolute bottom-0 left-0 right-0 p-5 z-10 space-y-2 pointer-events-none">
-        <div className="flex items-baseline justify-between gap-2">
-          <h2 className="text-2xl font-black text-white leading-tight drop-shadow-md">
+      <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 z-10 space-y-2.5 pointer-events-none bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent pt-20">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-lg tracking-tight">
             {movie.title}
           </h2>
           {movie.release_date && (
-            <span className="text-xs font-semibold text-slate-400 flex-shrink-0">
+            <span className="text-sm font-extrabold text-cyan-300 flex-shrink-0 bg-slate-950/80 px-2.5 py-0.5 rounded-full border border-slate-800">
               {movie.release_date.split('-')[0]}
             </span>
           )}
         </div>
 
         {/* Genre Badges */}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {movie.genres?.slice(0, 3).map((g, i) => (
             <span
               key={i}
-              className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-900/80 text-purple-300 border border-slate-700/60"
+              className="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-slate-900/90 text-cyan-200 border border-slate-700/80 shadow-sm"
             >
               {g}
             </span>
@@ -286,7 +286,7 @@ function SwipeableCard({ movie, index, isTop, onSwipe, onOpenDetails }) {
         </div>
 
         {/* Short Synopsis */}
-        <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed opacity-90">
+        <p className="text-xs sm:text-sm text-slate-200 line-clamp-3 leading-relaxed opacity-95 font-medium drop-shadow-sm">
           {movie.overview}
         </p>
       </div>
