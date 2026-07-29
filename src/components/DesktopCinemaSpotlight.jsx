@@ -4,23 +4,28 @@ import { DEFAULT_POSTER, fetchMovieTrailer } from '../services/tmdbApi';
 import { Star, Play, Info, Calendar, Clock, Film, Sparkles, Tv } from 'lucide-react';
 
 export default function DesktopCinemaSpotlight() {
-  const { currentMovie, setInspectedMovie, filters } = useMovieContext();
-  const [trailerKey, setTrailerKey] = useState(null);
+  const { currentMovie, setInspectedMovie } = useMovieContext();
+  const [trailerData, setTrailerData] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     if (currentMovie?.id) {
       setShowTrailer(false);
-      setTrailerKey(null);
-      fetchMovieTrailer(currentMovie.id).then(key => {
-        if (isMounted) setTrailerKey(key);
+      setTrailerData(null);
+      fetchMovieTrailer(currentMovie.id).then(res => {
+        if (isMounted && res) {
+          setTrailerData(res);
+        }
       });
     }
     return () => { isMounted = false; };
   }, [currentMovie?.id]);
 
   if (!currentMovie) return null;
+
+  const ytKey = typeof trailerData === 'string' ? trailerData : trailerData?.key;
+  const youtubeUrl = trailerData?.youtubeUrl || (ytKey ? `https://www.youtube.com/watch?v=${ytKey}` : null);
 
   return (
     <div className="glass-card p-5 rounded-3xl border border-slate-800 space-y-4 shadow-2xl relative overflow-hidden group">
@@ -51,9 +56,9 @@ export default function DesktopCinemaSpotlight() {
 
       {/* Backdrop / Poster Media Showcase */}
       <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-950 shadow-inner">
-        {showTrailer && trailerKey ? (
+        {showTrailer && ytKey ? (
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&rel=0`}
+            src={`https://www.youtube.com/embed/${ytKey}?autoplay=1&rel=0&enablejsapi=1`}
             title={`${currentMovie.title} Trailer`}
             className="w-full h-full border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -70,15 +75,16 @@ export default function DesktopCinemaSpotlight() {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
 
             {/* Trailer Overlay Play Button if key exists */}
-            {trailerKey && (
-              <button
-                onClick={() => setShowTrailer(true)}
-                className="absolute inset-0 flex items-center justify-center bg-slate-950/40 hover:bg-slate-950/20 transition-colors group/play cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600/90 text-white flex items-center justify-center shadow-xl group-hover/play:scale-110 transition-transform border border-indigo-400/40">
-                  <Play className="w-6 h-6 fill-white ml-0.5" />
-                </div>
-              </button>
+            {ytKey && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-950/30 hover:bg-slate-950/10 transition-colors group/play">
+                <button
+                  onClick={() => setShowTrailer(true)}
+                  className="w-14 h-14 rounded-2xl bg-indigo-600/90 hover:bg-indigo-500 text-white flex items-center justify-center shadow-2xl group-hover/play:scale-110 transition-transform border border-indigo-400/50 cursor-pointer"
+                  title="Play Trailer in Spotlight"
+                >
+                  <Play className="w-7 h-7 fill-white ml-0.5" />
+                </button>
+              </div>
             )}
           </>
         )}

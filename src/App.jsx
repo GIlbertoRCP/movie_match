@@ -37,8 +37,8 @@ function MainApp() {
             )}
           </div>
 
-          {/* Desktop Companion Sidebar */}
-          <div className="hidden lg:flex lg:flex-col lg:col-span-5 xl:col-span-5 space-y-5">
+          {/* Desktop Companion Sidebar (Aligned with top edge of movie card) */}
+          <div className="hidden lg:flex lg:flex-col lg:col-span-5 xl:col-span-5 space-y-5 pt-8 sm:pt-9">
             {/* Desktop Active Movie Spotlight */}
             <DesktopCinemaSpotlight />
 
