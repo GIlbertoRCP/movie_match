@@ -102,14 +102,14 @@ export default function CardStack() {
       </div>
 
       {/* Controls Container with Keyboard Shortcuts Hints */}
-      <div className="w-full flex items-center justify-center gap-4 mt-6">
+      <div className="w-full flex items-center justify-center gap-5 mt-6">
         {/* Undo Button */}
         <button
           onClick={handleUndo}
           disabled={!canUndo}
-          className={`relative p-3.5 rounded-full border transition-all duration-200 shadow-lg ${
+          className={`relative p-4 rounded-full border transition-all duration-200 shadow-lg ${
             canUndo
-              ? 'bg-slate-900 text-slate-300 border-slate-700/60 hover:bg-slate-800 hover:text-white hover:scale-105 active:scale-95'
+              ? 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-white hover:scale-105 active:scale-95'
               : 'bg-slate-950/40 text-slate-700 border-slate-900 opacity-40 cursor-not-allowed'
           }`}
           title="Undo previous swipe (Keyboard: Z)"
@@ -120,16 +120,16 @@ export default function CardStack() {
         {/* Pass Button */}
         <button
           onClick={() => handleSwipe(currentMovie, 'left')}
-          className="relative p-4 rounded-full bg-slate-900/90 text-rose-500 border border-rose-500/30 hover:bg-rose-950/40 hover:border-rose-500 hover:scale-110 active:scale-95 transition-all duration-200 shadow-xl shadow-rose-950/30 group"
+          className="relative p-5 rounded-full bg-slate-900 text-rose-500 border border-rose-500/40 hover:bg-rose-950/50 hover:border-rose-500 hover:scale-110 active:scale-95 transition-all duration-200 shadow-xl shadow-rose-950/40 group"
           title="Pass (Keyboard: ← Left Arrow)"
         >
-          <X className="w-7 h-7 group-hover:rotate-90 transition-transform duration-200" />
+          <X className="w-8 h-8 group-hover:rotate-90 transition-transform duration-200" />
         </button>
 
         {/* Info Button */}
         <button
           onClick={() => setDetailMovie(currentMovie)}
-          className="relative p-3.5 rounded-full bg-slate-900 text-purple-400 border border-purple-500/30 hover:bg-purple-950/40 hover:border-purple-500 hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg"
+          className="relative p-4 rounded-full bg-slate-900 text-indigo-400 border border-indigo-500/40 hover:bg-indigo-950/50 hover:border-indigo-500 hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg shadow-indigo-950/30"
           title="Movie Info & Streaming Options (Keyboard: ↑ Up Arrow or Space)"
         >
           <Info className="w-6 h-6" />
@@ -138,10 +138,10 @@ export default function CardStack() {
         {/* Like Button */}
         <button
           onClick={() => handleSwipe(currentMovie, 'right')}
-          className="relative p-4 rounded-full bg-slate-900/90 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-950/40 hover:border-emerald-500 hover:scale-110 active:scale-95 transition-all duration-200 shadow-xl shadow-emerald-950/30 group"
+          className="relative p-5 rounded-full bg-slate-900 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-950/50 hover:border-emerald-500 hover:scale-110 active:scale-95 transition-all duration-200 shadow-xl shadow-emerald-950/40 group"
           title="Like (Keyboard: → Right Arrow)"
         >
-          <Heart className="w-7 h-7 fill-emerald-500/20 group-hover:fill-emerald-500 group-hover:scale-110 transition-transform duration-200" />
+          <Heart className="w-8 h-8 fill-emerald-500/20 group-hover:fill-emerald-500 group-hover:scale-110 transition-transform duration-200" />
         </button>
       </div>
 
@@ -244,9 +244,9 @@ function SwipeableCard({ movie, index, isTop, onSwipe, onOpenDetails }) {
 
       {/* Top Details & Badges */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-        <div className="flex items-center gap-1.5 bg-slate-950/70 backdrop-blur-md px-2.5 py-1 rounded-full border border-slate-700/60">
-          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-          <span className="text-xs font-bold text-slate-100">{movie.vote_average}</span>
+        <div className="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-slate-700/60">
+          <Star className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
+          <span className="text-xs font-black text-slate-100">{movie.vote_average}</span>
         </div>
 
         <button

@@ -203,14 +203,14 @@ export default function HostSessionModal({ isOpen, onClose }) {
               <button
                 onClick={handleCreateSession}
                 disabled={isCreating}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-600 text-white font-extrabold text-sm shadow-xl shadow-purple-900/40 hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-600 text-white font-extrabold text-sm shadow-xl shadow-indigo-950/50 hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-2 border border-indigo-400/30 cursor-pointer"
               >
                 {isCreating ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <Loader2 className="w-5 h-5 animate-spin text-white" />
                 ) : (
                   <>
                     <span>Generate Session Invite</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-5 h-5" />
                   </>
                 )}
               </button>
@@ -218,25 +218,25 @@ export default function HostSessionModal({ isOpen, onClose }) {
           ) : (
             /* Session Created Invite Card */
             <div className="space-y-4 text-center">
-              <div className="p-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2">
-                <Check className="w-4 h-4" />
-                <span>Session #{createdSession.id} Live!</span>
+              <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold flex items-center justify-center gap-2">
+                <Check className="w-4 h-4 text-emerald-400" />
+                <span>Session #{createdSession.id} Active & Ready!</span>
               </div>
 
               <div className="glass-card p-4 rounded-2xl border border-slate-800 space-y-3">
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-slate-300 font-semibold">
                   Share this link with Player 2 ({partnerMode === 'guest' ? 'Guest Mode' : 'Account Mode'}):
                 </p>
-                <div className="bg-slate-950 p-2.5 rounded-xl font-mono text-xs text-purple-300 truncate border border-slate-800">
+                <div className="bg-slate-950 p-3 rounded-xl font-mono text-xs text-cyan-300 truncate border border-slate-800">
                   {`${window.location.origin}${window.location.pathname}?session=${createdSession.id}&mode=${partnerMode}`}
                 </div>
 
                 <button
                   onClick={handleCopyLink}
-                  className={`w-full py-3 rounded-xl font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg ${
+                  className={`w-full py-3.5 rounded-xl font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
                     copied
                       ? 'bg-emerald-600 text-white shadow-emerald-900/40'
-                      : 'bg-gradient-to-r from-purple-600 to-rose-600 text-white hover:opacity-90 active:scale-95 shadow-purple-900/30'
+                      : 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:opacity-90 active:scale-95 shadow-indigo-950/40 border border-indigo-400/30'
                   }`}
                 >
                   {copied ? (

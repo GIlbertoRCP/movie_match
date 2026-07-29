@@ -58,20 +58,20 @@ export default function FilterModal({ isOpen, onClose }) {
           {/* Streaming Platform Filter */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Tv className="w-3.5 h-3.5 text-amber-400" />
+              <Tv className="w-3.5 h-3.5 text-cyan-400" />
               <span>Streaming Subscriptions</span>
             </label>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {STREAMING_PROVIDERS.map(provider => {
                 const isSelected = (localFilters.provider || 'all') === provider.id;
                 return (
                   <button
                     key={provider.id}
                     onClick={() => setLocalFilters({ ...localFilters, provider: provider.id })}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all border ${
                       isSelected
-                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-md shadow-amber-950/40'
-                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-950/40'
+                        : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white'
                     }`}
                   >
                     {provider.name}
@@ -86,13 +86,13 @@ export default function FilterModal({ isOpen, onClose }) {
             <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
               Genre
             </label>
-            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
+            <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1">
               <button
                 onClick={() => setLocalFilters({ ...localFilters, genreId: 'all' })}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${
                   localFilters.genreId === 'all'
-                    ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-900/40'
-                    : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-950/50'
+                    : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white'
                 }`}
               >
                 ✨ All Genres
@@ -103,10 +103,10 @@ export default function FilterModal({ isOpen, onClose }) {
                   <button
                     key={g.id}
                     onClick={() => setLocalFilters({ ...localFilters, genreId: g.id })}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all border ${
                       isSelected
-                        ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-900/40'
-                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                        ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-950/50'
+                        : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white'
                     }`}
                   >
                     {g.name}
@@ -119,11 +119,11 @@ export default function FilterModal({ isOpen, onClose }) {
           {/* Minimum TMDB Rating Score Slider */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
-              <span className="flex items-center gap-1">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span className="flex items-center gap-1.5">
+                <Star className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
                 <span>Minimum TMDB Score</span>
               </span>
-              <span className="text-amber-400 text-sm font-black">
+              <span className="text-cyan-400 text-sm font-black">
                 ≥ {localFilters.minScore} / 10
               </span>
             </div>
@@ -134,7 +134,7 @@ export default function FilterModal({ isOpen, onClose }) {
               step="0.5"
               value={localFilters.minScore}
               onChange={(e) => setLocalFilters({ ...localFilters, minScore: parseFloat(e.target.value) })}
-              className="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-purple-500"
+              className="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-cyan-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-semibold px-0.5">
               <span>5.0 (Any)</span>

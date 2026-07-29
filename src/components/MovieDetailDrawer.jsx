@@ -115,8 +115,8 @@ export default function MovieDetailDrawer({ movie, isOpen, onClose, region = 'US
                       {movie.title}
                     </h3>
                     <div className="flex items-center gap-2 mt-1 flex-wrap text-xs text-slate-300">
-                      <span className="flex items-center gap-1 font-bold text-amber-400">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <span className="flex items-center gap-1 font-extrabold text-cyan-400">
+                        <Star className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
                         {movie.vote_average}
                       </span>
                       <span>•</span>
