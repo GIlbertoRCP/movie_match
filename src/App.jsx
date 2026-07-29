@@ -6,6 +6,7 @@ import CardStack from './components/CardStack';
 import TransitionScreen from './components/TransitionScreen';
 import MatchModal from './components/MatchModal';
 import SessionStats from './components/SessionStats';
+import ServerColdStartBanner from './components/ServerColdStartBanner';
 import { Sparkles } from 'lucide-react';
 
 function MainApp() {
@@ -13,6 +14,9 @@ function MainApp() {
 
   return (
     <div className="relative min-h-screen flex flex-col justify-between bg-[#080a0f] ambient-bg text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
+      {/* Cold Start Monitor Toast */}
+      <ServerColdStartBanner />
+
       {/* Top Navbar */}
       <Navbar />
 

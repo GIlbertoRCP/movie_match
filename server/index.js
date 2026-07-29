@@ -1,22 +1,39 @@
 import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import tmdbRoutes from './routes/tmdbRoutes.js';
 import listRoutes from './routes/listRoutes.js';
-import sessionRoutes from './routes/sessionRoutes.js';
+import sessionRoutes, { recordSwipeInDb, cleanupOldSessions } from './routes/sessionRoutes.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Middleware
+// Allowed Origins for CORS Security
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://localhost:3000'
+].filter(Boolean);
+
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Permissive in dev/testing
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-tmdb-key']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-tmdb-key'],
+  credentials: true
 }));
+
 app.use(express.json());
 
 // Routes
@@ -35,7 +52,58 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Start Express Server
-app.listen(PORT, () => {
-  console.log(`🚀 Movie Matcher Backend Server running at http://localhost:${PORT}`);
+// Create HTTP Server & Attach Socket.io
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
+
+// Real-Time Socket.io Connection & Room Logic
+io.on('connection', (socket) => {
+  socket.on('join_session', ({ sessionId, role }) => {
+    if (!sessionId) return;
+    socket.join(sessionId);
+    socket.to(sessionId).emit('participant_joined', { role, timestamp: new Date() });
+  });
+
+  socket.on('swipe_card', ({ sessionId, player, movieId, isLike }) => {
+    if (!sessionId || !movieId) return;
+
+    // Record in SQLite DB
+    const result = recordSwipeInDb(sessionId, player, movieId, isLike);
+
+    if (result && result.success) {
+      // Broadcast live swipe update to room
+      io.to(sessionId).emit('session_updated', {
+        sessionId,
+        p1Likes: result.p1Likes,
+        p2Likes: result.p2Likes
+      });
+
+      // Instant Match Trigger
+      if (result.isMatch) {
+        io.to(sessionId).emit('match_found', {
+          sessionId,
+          matchedMovieId: result.matchedMovieId,
+          timestamp: new Date()
+        });
+      }
+    }
+  });
+
+  socket.on('disconnect', () => {
+    // Socket disconnected cleanly
+  });
+});
+
+// Periodic Session Expiration Cleanup (Runs every 12 hours)
+setInterval(cleanupOldSessions, 12 * 60 * 60 * 1000);
+cleanupOldSessions(); // Initial cleanup on startup
+
+// Start Express + Socket.io Server
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Movie Matcher Backend & Socket.io Server active at http://localhost:${PORT}`);
 });

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { fetchDiscoverMovies, fetchMoviesByIds, PRESET_PACKS } from '../services/tmdbApi';
 import { parseURLState, generateShareableURL } from '../utils/urlState';
 import { BACKEND_API } from '../config';
+import socketService from '../services/socketService';
 
 const MovieContext = createContext();
 
@@ -160,10 +161,34 @@ export const MovieProvider = ({ children }) => {
     }
   }, [loadDeck]);
 
-  // Real-Time Online Room Synchronization Polling Loop (1.5s)
+  // Real-Time Socket.io WebSockets Room Synchronization & Instant Match Handler
   useEffect(() => {
     if (!onlineSessionId) return;
 
+    // Join room via WebSockets
+    socketService.joinSession(onlineSessionId, onlineRole);
+
+    // Listen for instant match found emission
+    socketService.onMatchFound(async ({ matchedMovieId }) => {
+      let found = deck.find(m => m.id === matchedMovieId);
+      if (!found) {
+        const fetched = await fetchMoviesByIds([matchedMovieId], apiKey);
+        found = fetched[0];
+      }
+      if (found) {
+        setMatchedMovie(found);
+        setIsMatchModalOpen(true);
+        setPhase('matched');
+      }
+    });
+
+    // Listen for live room swipe updates
+    socketService.onSessionUpdated(({ p1Likes: updatedP1, p2Likes: updatedP2 }) => {
+      if (updatedP1) setP1Likes(updatedP1);
+      if (updatedP2) setP2Likes(updatedP2);
+    });
+
+    // Fallback polling loop (3s backup)
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`${BACKEND_API}/sessions/${onlineSessionId}`);
@@ -171,14 +196,9 @@ export const MovieProvider = ({ children }) => {
         const data = await res.json();
         const s = data.session;
 
-        if (s.p1_likes && JSON.stringify(s.p1_likes) !== JSON.stringify(p1Likes)) {
-          setP1Likes(s.p1_likes);
-        }
-        if (s.p2_likes && JSON.stringify(s.p2_likes) !== JSON.stringify(p2Likes)) {
-          setP2Likes(s.p2_likes);
-        }
+        if (s.p1_likes) setP1Likes(s.p1_likes);
+        if (s.p2_likes) setP2Likes(s.p2_likes);
 
-        // Trigger real-time match modal if server registers a match
         if (s.matched_movie_id && !matchedMovie) {
           let found = deck.find(m => m.id === s.matched_movie_id);
           if (!found) {
@@ -192,12 +212,14 @@ export const MovieProvider = ({ children }) => {
           }
         }
       } catch (err) {
-        // Silent sync catch
+        // Backup catch
       }
-    }, 1500);
+    }, 3000);
 
-    return () => clearInterval(interval);
-  }, [onlineSessionId, p1Likes, p2Likes, matchedMovie, deck, apiKey]);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [onlineSessionId, onlineRole, deck, matchedMovie, apiKey]);
 
   // Load a Preset Theme Pack
   const loadPresetPack = (packId) => {
@@ -241,9 +263,14 @@ export const MovieProvider = ({ children }) => {
 
     setHistory(prev => [...prev, { movie, direction, phase, index: currentIndex }]);
 
-    // Sync swipe with live online room backend
+    // Sync swipe instantly via WebSockets & HTTP
     if (onlineSessionId) {
       const playerNum = onlineRole === 'p2' ? 2 : 1;
+      
+      // Instant WebSocket Broadcast
+      socketService.sendSwipe(onlineSessionId, playerNum, movie.id, isLike);
+
+      // HTTP fallback POST for record keeping
       fetch(`${BACKEND_API}/sessions/${onlineSessionId}/swipe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

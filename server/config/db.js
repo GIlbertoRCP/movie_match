@@ -49,7 +49,7 @@ db.exec(`
 
 // Migration safeguard: Ensure columns exist for upgraded schemas
 try {
-  db.exec(`ALTER TABLE users ADD COLUMN authentik_sub TEXT UNIQUE;`);
+  db.exec(`ALTER TABLE users ADD COLUMN authentik_sub TEXT;`);
 } catch (e) {
   // Column already exists
 }

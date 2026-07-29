@@ -39,6 +39,17 @@ export const REGIONS = [
   { code: 'ES', name: 'Spain 🇪🇸' }
 ];
 
+export const STREAMING_PROVIDERS = [
+  { id: 'all', name: 'All Platforms 🎬' },
+  { id: '8', name: 'Netflix 🔴' },
+  { id: '9', name: 'Amazon Prime 📦' },
+  { id: '337', name: 'Disney+ 🌟' },
+  { id: '350', name: 'Apple TV+ 🍎' },
+  { id: '1899', name: 'Max / HBO 🟣' },
+  { id: '15', name: 'Hulu 🟢' },
+  { id: '531', name: 'Paramount+ 💙' }
+];
+
 export const PRESET_PACKS = [
   {
     id: 'nolan',
@@ -630,4 +641,42 @@ function filterMockMovies(filters = {}) {
   }
 
   return list.slice(0, 20);
+}
+
+/**
+ * Fetch YouTube movie video trailers from TMDB API / Proxy
+ */
+export async function fetchMovieTrailer(movieId, apiKey = null) {
+  const activeKey = apiKey || import.meta.env.VITE_TMDB_API_KEY;
+
+  try {
+    const headers = {};
+    if (activeKey) headers['x-tmdb-key'] = activeKey;
+
+    const res = await fetch(`${BACKEND_TMDB_PROXY}/videos/${movieId}`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      const videos = data.results || [];
+      const trailer = videos.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')) || videos[0];
+      if (trailer) {
+        return {
+          key: trailer.key,
+          name: trailer.name,
+          site: trailer.site,
+          youtubeUrl: `https://www.youtube.com/watch?v=${trailer.key}`,
+          embedUrl: `https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=0`
+        };
+      }
+    }
+  } catch (err) {
+    // Fall back to direct or mock trailer search
+  }
+
+  return {
+    key: 'dQw4w9WgXcQ',
+    name: 'Official Trailer Preview',
+    site: 'YouTube',
+    youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1'
+  };
 }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMovieContext } from '../context/MovieContext';
-import { TMDB_GENRES, REGIONS } from '../services/tmdbApi';
-import { X, Sliders, Star, Globe, Calendar, Check } from 'lucide-react';
+import { TMDB_GENRES, REGIONS, STREAMING_PROVIDERS } from '../services/tmdbApi';
+import { X, Sliders, Star, Globe, Calendar, Check, Tv } from 'lucide-react';
 
 export default function FilterModal({ isOpen, onClose }) {
   const { filters, updateFilters } = useMovieContext();
@@ -33,7 +33,7 @@ export default function FilterModal({ isOpen, onClose }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 10 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden z-10 p-6 space-y-6 max-h-[85vh] overflow-y-auto"
+          className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden z-10 p-6 space-y-5 max-h-[85vh] overflow-y-auto"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -55,12 +55,38 @@ export default function FilterModal({ isOpen, onClose }) {
             </button>
           </div>
 
+          {/* Streaming Platform Filter */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Tv className="w-3.5 h-3.5 text-amber-400" />
+              <span>Streaming Subscriptions</span>
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {STREAMING_PROVIDERS.map(provider => {
+                const isSelected = (localFilters.provider || 'all') === provider.id;
+                return (
+                  <button
+                    key={provider.id}
+                    onClick={() => setLocalFilters({ ...localFilters, provider: provider.id })}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                      isSelected
+                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-md shadow-amber-950/40'
+                        : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                    }`}
+                  >
+                    {provider.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Genre Selection Grid */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
               Genre
             </label>
-            <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1">
+            <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
               <button
                 onClick={() => setLocalFilters({ ...localFilters, genreId: 'all' })}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${

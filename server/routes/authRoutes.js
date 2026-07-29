@@ -1,11 +1,24 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
 import db from '../config/db.js';
 import authenticateToken from '../middleware/auth.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_movie_match_jwt_key_2026';
+
+// Rate Limiter for Authentication (prevents brute force)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // 20 requests per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many authentication attempts from this IP. Please try again in 15 minutes.' }
+});
+
+router.use('/login', authLimiter);
+router.use('/register', authLimiter);
 
 // Register User
 router.post('/register', async (req, res) => {
