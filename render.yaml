@@ -1,0 +1,32 @@
+services:
+  # Express Node.js Backend Service
+  - type: web
+    name: movie-match-backend
+    env: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && node index.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: movie-match-frontend
+          property: url
+
+  # Vite React Frontend Static Site
+  - type: web
+    name: movie-match-frontend
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_BACKEND_URL
+        fromService:
+          type: web
+          name: movie-match-backend
+          property: url
