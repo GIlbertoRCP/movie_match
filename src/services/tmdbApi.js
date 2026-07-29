@@ -29,25 +29,25 @@ export const TMDB_GENRES = [
 ];
 
 export const REGIONS = [
-  { code: 'US', name: 'United States 🇺🇸' },
-  { code: 'GB', name: 'United Kingdom 🇬🇧' },
-  { code: 'CA', name: 'Canada 🇨🇦' },
-  { code: 'AU', name: 'Australia 🇦🇺' },
-  { code: 'DE', name: 'Germany 🇩🇪' },
-  { code: 'FR', name: 'France 🇫🇷' },
-  { code: 'MX', name: 'Mexico 🇲🇽' },
-  { code: 'ES', name: 'Spain 🇪🇸' }
+  { code: 'US', name: 'United States' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'FR', name: 'France' },
+  { code: 'MX', name: 'Mexico' },
+  { code: 'ES', name: 'Spain' }
 ];
 
 export const STREAMING_PROVIDERS = [
-  { id: 'all', name: 'All Platforms 🎬' },
-  { id: '8', name: 'Netflix 🔴' },
-  { id: '9', name: 'Amazon Prime 📦' },
-  { id: '337', name: 'Disney+ 🌟' },
-  { id: '350', name: 'Apple TV+ 🍎' },
-  { id: '1899', name: 'Max / HBO 🟣' },
-  { id: '15', name: 'Hulu 🟢' },
-  { id: '531', name: 'Paramount+ 💙' }
+  { id: 'all', name: 'All Platforms' },
+  { id: '8', name: 'Netflix' },
+  { id: '9', name: 'Amazon Prime' },
+  { id: '337', name: 'Disney+' },
+  { id: '350', name: 'Apple TV+' },
+  { id: '1899', name: 'Max / HBO' },
+  { id: '15', name: 'Hulu' },
+  { id: '531', name: 'Paramount+' }
 ];
 
 export const PRESET_PACKS = [
@@ -55,7 +55,7 @@ export const PRESET_PACKS = [
     id: 'nolan',
     title: 'Christopher Nolan Masterpieces',
     description: 'Mind-bending epics from Inception to Oppenheimer and Interstellar.',
-    icon: '🧠',
+    icon: 'Film',
     color: 'from-purple-600 to-indigo-600',
     movieIds: [157336, 27205, 155, 872585, 550, 49026]
   },

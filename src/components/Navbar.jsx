@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMovieContext } from '../context/MovieContext';
 import { useAuth } from '../context/AuthContext';
-import { Film, Sliders, Key, RefreshCw, Users, Share2, Sparkles, Layers, User, UserCheck, Play } from 'lucide-react';
+import { Film, Sliders, Key, RefreshCw, Users, Share2, Sparkles, Layers, User, UserCheck, Play, Sun, Moon } from 'lucide-react';
 import FilterModal from './FilterModal';
 import ApiKeyModal from './ApiKeyModal';
 import CustomListModal from './CustomListModal';
@@ -9,7 +9,7 @@ import AuthModal from './AuthModal';
 import HostSessionModal from './HostSessionModal';
 
 export default function Navbar() {
-  const { mode, setMode, apiKey, resetSession, activePack, customMovieIds, onlineSessionId, onlineRole, onlineSessionName } = useMovieContext();
+  const { mode, setMode, apiKey, resetSession, activePack, customMovieIds, onlineSessionId, onlineRole, onlineSessionName, theme, toggleTheme } = useMovieContext();
   const { user, isAuthenticated } = useAuth();
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -137,6 +137,15 @@ export default function Navbar() {
               title={apiKey ? 'TMDB API Key Active' : 'Demo Mode (Click to set TMDB Key)'}
             >
               <Key className="w-4.5 h-4.5" />
+            </button>
+
+            {/* Theme Toggle (Light / Dark Mode) */}
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 sm:p-3 rounded-2xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-all border border-slate-800 active:scale-95 cursor-pointer"
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            >
+              {theme === 'dark' ? <Sun className="w-4.5 h-4.5 text-amber-300" /> : <Moon className="w-4.5 h-4.5 text-indigo-400" />}
             </button>
 
             {/* Reset Session */}

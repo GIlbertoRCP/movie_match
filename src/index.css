@@ -66,13 +66,27 @@
   animation: pulse-subtle 4s ease-in-out infinite;
 }
 
-/* Refined Text Glow Helpers */
-.text-glow-gold {
-  text-shadow: 0 0 16px rgba(251, 191, 36, 0.4);
+/* Light Theme Override Styles */
+.light-mode {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
 }
 
-.text-glow-amber {
-  text-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+.light-mode .ambient-bg {
+  background: radial-gradient(circle at 50% 0%, rgba(226, 232, 240, 0.85) 0%, rgba(248, 250, 252, 1) 70%) !important;
+}
+
+.light-mode .glass-panel {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(203, 213, 225, 0.8) !important;
+  color: #0f172a !important;
+}
+
+.light-mode .glass-card {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(203, 213, 225, 0.9) !important;
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
 }
 
 

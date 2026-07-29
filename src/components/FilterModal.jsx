@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMovieContext } from '../context/MovieContext';
 import { TMDB_GENRES, REGIONS, STREAMING_PROVIDERS } from '../services/tmdbApi';
-import { X, Sliders, Star, Globe, Calendar, Check, Tv } from 'lucide-react';
+import { X, Sliders, Star, Globe, Calendar, Check, Tv, Sun, Moon } from 'lucide-react';
 
 export default function FilterModal({ isOpen, onClose }) {
-  const { filters, updateFilters } = useMovieContext();
+  const { filters, updateFilters, theme, toggleTheme } = useMovieContext();
   const [localFilters, setLocalFilters] = useState(filters);
 
   if (!isOpen) return null;
@@ -95,7 +95,7 @@ export default function FilterModal({ isOpen, onClose }) {
                     : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white'
                 }`}
               >
-                ✨ All Genres
+                All Genres
               </button>
               {TMDB_GENRES.map(g => {
                 const isSelected = String(localFilters.genreId) === String(g.id);
@@ -179,13 +179,13 @@ export default function FilterModal({ isOpen, onClose }) {
           {/* Preferred Streaming Region */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
-              <Globe className="w-3.5 h-3.5 text-purple-400" />
+              <Globe className="w-3.5 h-3.5 text-indigo-400" />
               <span>Streaming Region</span>
             </label>
             <select
               value={localFilters.region}
               onChange={(e) => setLocalFilters({ ...localFilters, region: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-xl p-3 outline-none focus:border-purple-500 transition-all font-semibold"
+              className="w-full bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-xl p-3 outline-none focus:border-indigo-500 transition-all font-semibold"
             >
               {REGIONS.map(r => (
                 <option key={r.code} value={r.code}>
@@ -193,6 +193,40 @@ export default function FilterModal({ isOpen, onClose }) {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Theme Mode Selection (Light / Dark) */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+              App Appearance Theme
+            </label>
+            <div className="flex bg-slate-950 p-1 rounded-2xl border border-slate-800">
+              <button
+                type="button"
+                onClick={() => { if (theme !== 'dark') toggleTheme(); }}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 ${
+                  theme === 'dark'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Moon className="w-4 h-4 text-slate-200" />
+                <span>Dark Obsidian</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { if (theme !== 'light') toggleTheme(); }}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 ${
+                  theme === 'light'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Sun className="w-4 h-4 text-amber-300" />
+                <span>Light Studio</span>
+              </button>
+            </div>
           </div>
 
           {/* Apply Button */}

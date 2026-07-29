@@ -388,6 +388,19 @@ export const MovieProvider = ({ children }) => {
     return generateShareableURL(p1Likes, filters, customMovieIds, activePack?.id);
   };
 
+  // Theme State ('dark' | 'light')
+  const [theme, setThemeState] = useState(() => {
+    return localStorage.getItem('movie_match_theme') || 'dark';
+  });
+
+  const toggleTheme = () => {
+    setThemeState(prev => {
+      const nextTheme = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('movie_match_theme', nextTheme);
+      return nextTheme;
+    });
+  };
+
   const value = {
     mode,
     setMode,
@@ -424,7 +437,9 @@ export const MovieProvider = ({ children }) => {
     startPlayer2Turn,
     resetSession,
     getShareLink,
-    canUndo: history.length > 0
+    canUndo: history.length > 0,
+    theme,
+    toggleTheme
   };
 
   return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;

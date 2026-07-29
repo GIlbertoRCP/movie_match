@@ -11,10 +11,10 @@ import OnlineSessionStatusBar from './components/OnlineSessionStatusBar';
 import { Sparkles } from 'lucide-react';
 
 function MainApp() {
-  const { phase } = useMovieContext();
+  const { phase, theme } = useMovieContext();
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-between bg-[#080a0f] ambient-bg text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 overflow-hidden">
+    <div className={`relative min-h-screen flex flex-col justify-between bg-[#080a0f] ambient-bg text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 overflow-hidden ${theme === 'light' ? 'light-mode' : ''}`}>
       {/* Cold Start Monitor Toast */}
       <ServerColdStartBanner />
 
@@ -22,18 +22,57 @@ function MainApp() {
       <Navbar />
 
       {/* Main View Area */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-2 sm:p-6 w-full max-w-4xl mx-auto">
-        {/* Active Online Session Room Status Banner */}
+      <main className="relative z-10 flex-1 w-full max-w-6xl mx-auto p-3 sm:p-6 my-auto">
         <OnlineSessionStatusBar />
 
-        {phase === 'p1_finished' ? (
-          <TransitionScreen />
-        ) : (
-          <CardStack />
-        )}
+        {/* Responsive Desktop Grid Layout */}
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+          {/* Main Swiping Column */}
+          <div className="lg:col-span-7 xl:col-span-7 flex flex-col items-center justify-center">
+            {phase === 'p1_finished' ? (
+              <TransitionScreen />
+            ) : (
+              <CardStack />
+            )}
+          </div>
 
-        {/* Collapsible Session Stats & Picks */}
-        <SessionStats />
+          {/* Desktop Companion Sidebar */}
+          <div className="hidden lg:flex lg:flex-col lg:col-span-5 xl:col-span-5 space-y-5">
+            {/* Desktop Keyboard Shortcuts Card */}
+            <div className="glass-card p-5 rounded-3xl border border-slate-800 space-y-3 shadow-xl">
+              <h3 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center justify-between">
+                <span>Keyboard Controls</span>
+                <span className="text-[10px] font-bold text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-800/40">DESKTOP READY</span>
+              </h3>
+              <div className="grid grid-cols-2 gap-2 text-xs font-bold text-slate-300">
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <span>Pass Card</span>
+                  <kbd className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-[10px] font-mono">← Left</kbd>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <span>Like Card</span>
+                  <kbd className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-[10px] font-mono">→ Right</kbd>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <span>Movie Details</span>
+                  <kbd className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-[10px] font-mono">↑ Up / Space</kbd>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                  <span>Undo Swipe</span>
+                  <kbd className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-[10px] font-mono">Z</kbd>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Live Session Stats & Picks */}
+            <SessionStats />
+          </div>
+        </div>
+
+        {/* Mobile View Session Stats */}
+        <div className="block lg:hidden mt-6">
+          <SessionStats />
+        </div>
       </main>
 
       {/* Celebratory Match Modal */}
