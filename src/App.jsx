@@ -7,13 +7,14 @@ import TransitionScreen from './components/TransitionScreen';
 import MatchModal from './components/MatchModal';
 import SessionStats from './components/SessionStats';
 import ServerColdStartBanner from './components/ServerColdStartBanner';
+import OnlineSessionStatusBar from './components/OnlineSessionStatusBar';
 import { Sparkles } from 'lucide-react';
 
 function MainApp() {
   const { phase } = useMovieContext();
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-between bg-[#080a0f] ambient-bg text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
+    <div className="relative min-h-screen flex flex-col justify-between bg-[#080a0f] ambient-bg text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 overflow-hidden">
       {/* Cold Start Monitor Toast */}
       <ServerColdStartBanner />
 
@@ -22,6 +23,9 @@ function MainApp() {
 
       {/* Main View Area */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-2 sm:p-6 w-full max-w-4xl mx-auto">
+        {/* Active Online Session Room Status Banner */}
+        <OnlineSessionStatusBar />
+
         {phase === 'p1_finished' ? (
           <TransitionScreen />
         ) : (
