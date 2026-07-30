@@ -153,8 +153,8 @@ export default function CardStack() {
 
   return (
     <div className="w-full max-w-md sm:max-w-lg lg:max-w-2xl xl:max-w-3xl mx-auto flex flex-col items-center h-[calc(100vh-5.5rem)] sm:h-[calc(100vh-4.5rem)] relative justify-center">
-      {/* Right Middle Animated Chevron Controls */}
-      <div className="fixed right-3 sm:right-6 lg:right-10 top-1/2 -translate-y-1/2 flex flex-col gap-3.5 z-40">
+      {/* Right Middle Animated Chevron Controls (Desktop / Laptop Only) */}
+      <div className="hidden md:flex fixed right-3 sm:right-6 lg:right-10 top-1/2 -translate-y-1/2 flex-col gap-3.5 z-40">
         {/* Up Chevron Button (Undo / Previous) */}
         <motion.button
           whileHover={{ scale: 1.12, y: -2 }}
@@ -193,7 +193,33 @@ export default function CardStack() {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="editorial-card relative w-full h-[520px] xs:h-[550px] sm:h-[620px] lg:h-[720px] xl:h-[780px] rounded-3xl p-3.5 sm:p-5 lg:p-6 flex flex-col justify-between shadow-xl overflow-hidden"
+            drag
+            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            dragElastic={0.65}
+            onDragEnd={(e, info) => {
+              if (isAnyOverlayOpen()) return;
+              const threshold = 60;
+              const { offset, velocity } = info;
+
+              if (offset.x > threshold || velocity.x > 250) {
+                // Swipe Right -> Like
+                triggerLikeNext();
+              } else if (offset.x < -threshold || velocity.x < -250) {
+                // Swipe Left -> Pass
+                triggerPassNext();
+              } else if (offset.y > threshold || velocity.y > 250) {
+                // Swipe Down -> Pass & Next
+                triggerPassNext();
+              } else if (offset.y < -threshold || velocity.y < -250) {
+                // Swipe Up -> Undo / Previous
+                if (canUndo) {
+                  triggerUndoPrev();
+                } else if (currentMovie) {
+                  setDetailMovie(currentMovie);
+                }
+              }
+            }}
+            className="editorial-card relative w-full h-[520px] xs:h-[550px] sm:h-[620px] lg:h-[720px] xl:h-[780px] rounded-3xl p-3.5 sm:p-5 lg:p-6 flex flex-col justify-between shadow-xl overflow-hidden touch-none cursor-grab active:cursor-grabbing select-none"
           >
             {/* Framed Matting Media Image Container */}
             <div className="relative w-full flex-1 rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800">
