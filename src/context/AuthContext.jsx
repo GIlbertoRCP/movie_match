@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const res = await fetch(`${BACKEND_URL}/auth/me`, {
+        const res = await fetch(`${BACKEND_API}/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
 
   // Login action
   const login = async (usernameOrEmail, password) => {
-    const res = await fetch(`${BACKEND_URL}/auth/login`, {
+    const res = await fetch(`${BACKEND_API}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ usernameOrEmail, password })
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
 
   // Register action
   const register = async (username, email, password) => {
-    const res = await fetch(`${BACKEND_URL}/auth/register`, {
+    const res = await fetch(`${BACKEND_API}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password })

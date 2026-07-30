@@ -20,6 +20,8 @@ const authLimiter = rateLimit({
 router.use('/login', authLimiter);
 router.use('/register', authLimiter);
 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 // Register User
 router.post('/register', async (req, res) => {
   try {
@@ -29,10 +31,25 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Username, email, and password are required.' });
     }
 
+    const cleanUsername = username.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (cleanUsername.length < 3) {
+      return res.status(400).json({ error: 'Username must be at least 3 characters long.' });
+    }
+
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Please enter a valid email address (e.g. user@domain.com).' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+    }
+
     // Check existing
-    const existing = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, email);
+    const existing = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(cleanUsername, cleanEmail);
     if (existing) {
-      return res.status(409).json({ error: 'Username or email already exists.' });
+      return res.status(409).json({ error: 'An account with this username or email already exists.' });
     }
 
     // Hash password
