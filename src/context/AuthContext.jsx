@@ -51,59 +51,84 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
-  // Helper for safe fetch handling with automatic retry for server spin-up
-  const safeAuthFetch = async (url, bodyData, retries = 3) => {
+  // Helper for safe fetch handling with multi-endpoint resolution & automatic retries
+  const safeAuthFetch = async (path, bodyData, retriesPerUrl = 2) => {
+    const candidateUrls = [];
+
+    // 1. Primary BACKEND_API endpoint
+    if (BACKEND_API) {
+      candidateUrls.push(`${BACKEND_API.replace(/\/$/, '')}${path}`);
+    }
+
+    // 2. Relative endpoint fallback (/api/auth/...)
+    const relativeUrl = `/api${path}`;
+    if (!candidateUrls.includes(relativeUrl)) {
+      candidateUrls.push(relativeUrl);
+    }
+
+    // 3. Localhost fallback when running in browser
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        const localUrl = `http://localhost:5001/api${path}`;
+        if (!candidateUrls.includes(localUrl)) {
+          candidateUrls.push(localUrl);
+        }
+      }
+    }
+
     let lastError;
 
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bodyData)
-        });
-
-        let data = {};
+    for (const targetUrl of candidateUrls) {
+      for (let attempt = 1; attempt <= retriesPerUrl; attempt++) {
         try {
-          data = await res.json();
-        } catch (parseErr) {
-          // Non-JSON response
-        }
+          const res = await fetch(targetUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyData)
+          });
 
-        if (!res.ok) {
-          throw new Error(data.error || data.message || `Authentication failed (Status ${res.status})`);
-        }
+          let data = {};
+          try {
+            data = await res.json();
+          } catch (parseErr) {
+            // Non-JSON response
+          }
 
-        return data;
-      } catch (err) {
-        lastError = err;
-        console.warn(`Auth attempt ${attempt}/${retries} failed for ${url}:`, err.message);
+          if (!res.ok) {
+            throw new Error(data.error || data.message || `Authentication failed (Status ${res.status})`);
+          }
 
-        // If it's a validation error or user exists error, throw immediately without retrying
-        if (
-          err.message.includes('already exists') ||
-          err.message.includes('required') ||
-          err.message.includes('must be at least') ||
-          err.message.includes('Invalid')
-        ) {
-          throw err;
-        }
+          return data;
+        } catch (err) {
+          lastError = err;
+          console.warn(`Auth attempt ${attempt}/${retriesPerUrl} failed for ${targetUrl}:`, err.message);
 
-        if (attempt < retries) {
-          // Wait 2.5 seconds before retrying (gives sleeping free-tier backend time to complete cold-start)
-          await new Promise(resolve => setTimeout(resolve, 2500));
+          // Validation or user exists errors should fail immediately and notify user
+          if (
+            err.message.includes('already exists') ||
+            err.message.includes('required') ||
+            err.message.includes('must be at least') ||
+            err.message.includes('Invalid')
+          ) {
+            throw err;
+          }
+
+          if (attempt < retriesPerUrl) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          }
         }
       }
     }
 
     throw new Error(
-      lastError?.message || 'Unable to reach server. The backend may be waking up from sleep mode (~30s on free hosting)—please wait a few seconds and try again.'
+      lastError?.message || 'Unable to reach backend server. Please verify network connection or try again in a few seconds.'
     );
   };
 
   // Login action
   const login = async (usernameOrEmail, password) => {
-    const data = await safeAuthFetch(`${BACKEND_API}/auth/login`, { usernameOrEmail, password });
+    const data = await safeAuthFetch('/auth/login', { usernameOrEmail, password });
     localStorage.setItem('movie_match_jwt_token', data.token);
     setToken(data.token);
     setUser(data.user);
@@ -112,7 +137,7 @@ export const AuthProvider = ({ children }) => {
 
   // Register action
   const register = async (username, email, password) => {
-    const data = await safeAuthFetch(`${BACKEND_API}/auth/register`, { username, email, password });
+    const data = await safeAuthFetch('/auth/register', { username, email, password });
     localStorage.setItem('movie_match_jwt_token', data.token);
     setToken(data.token);
     setUser(data.user);
