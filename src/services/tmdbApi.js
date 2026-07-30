@@ -56,41 +56,76 @@ export const PRESET_PACKS = [
     id: 'nolan',
     title: 'Christopher Nolan Masterpieces',
     description: 'Mind-bending epics from Inception to Oppenheimer and Interstellar.',
-    icon: 'Film',
-    color: 'from-purple-600 to-indigo-600',
-    movieIds: [157336, 27205, 155, 872585, 550, 49026]
+    icon: '🎬',
+    color: 'from-stone-700/30 to-stone-900/30',
+    borderColor: 'border-stone-500/40',
+    tag: 'Director Spotlight',
+    movieIds: [157336, 27205, 155, 872585, 550, 49026],
+    posters: [
+      'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+      'https://image.tmdb.org/t/p/w500/lOr9NK1vhnsxXP35phWsjkaK1p3.jpg',
+      'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg'
+    ]
   },
   {
     id: 'scifi',
     title: 'Sci-Fi & Cyberpunk Epics',
     description: 'Dune, The Matrix, Interstellar, Spider-Verse, and futuristic classics.',
     icon: '🚀',
-    color: 'from-blue-600 to-cyan-600',
-    movieIds: [438631, 693134, 157336, 27205, 603, 569094, 324857]
+    color: 'from-cyan-600/30 to-blue-900/30',
+    borderColor: 'border-cyan-500/40',
+    tag: 'Sci-Fi Universe',
+    movieIds: [438631, 693134, 157336, 27205, 603, 569094, 324857],
+    posters: [
+      'https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94OiOqTeEd.jpg',
+      'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
+      'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg'
+    ]
   },
   {
     id: 'marvel',
     title: 'Superhero & Multiverse Saga',
     description: 'Avengers, Spider-Verse, The Dark Knight, and The Batman.',
     icon: '⚡',
-    color: 'from-rose-600 to-amber-600',
-    movieIds: [299536, 569094, 324857, 155, 414906]
+    color: 'from-rose-600/30 to-red-900/30',
+    borderColor: 'border-rose-500/40',
+    tag: 'High Octane Action',
+    movieIds: [299536, 569094, 324857, 155, 414906],
+    posters: [
+      'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukKFAvF9zW5EsZf.jpg',
+      'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
+      'https://image.tmdb.org/t/p/w500/7WsyChLLEzcqIzoncVMYX2jYvYF.jpg'
+    ]
   },
   {
     id: 'animation',
     title: 'Animation & Studio Ghibli / Pixar',
     description: 'Spirited Away, Your Name, Soul, Puss in Boots, and Spider-Verse.',
     icon: '🎨',
-    color: 'from-emerald-600 to-teal-600',
-    movieIds: [129, 372058, 508442, 315162, 569094, 508947]
+    color: 'from-emerald-600/30 to-teal-900/30',
+    borderColor: 'border-emerald-500/40',
+    tag: 'Visual Masterpieces',
+    movieIds: [129, 372058, 508442, 315162, 569094, 508947],
+    posters: [
+      'https://image.tmdb.org/t/p/w500/39wmItEikcA51IukUKx9L9y0bkW.jpg',
+      'https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnFi1mX.jpg',
+      'https://image.tmdb.org/t/p/w500/kuf6MHw2Pj2wJw3c5Kx8hvwVtyB.jpg'
+    ]
   },
   {
     id: 'mystery',
     title: 'Mind Games & Crime Mysteries',
     description: 'Knives Out, Parasite, Fight Club, The Batman, and Inception.',
     icon: '🕵️',
-    color: 'from-violet-600 to-purple-800',
-    movieIds: [546554, 496243, 550, 414906, 27205]
+    color: 'from-violet-600/30 to-indigo-900/30',
+    borderColor: 'border-violet-500/40',
+    tag: 'Psychological Thrillers',
+    movieIds: [546554, 496243, 550, 414906, 27205],
+    posters: [
+      'https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg',
+      'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYOiCOiSFioL.jpg',
+      'https://image.tmdb.org/t/p/w500/pne1VJjKG13pVg7oRz8Xm1E87P7.jpg'
+    ]
   }
 ];
 

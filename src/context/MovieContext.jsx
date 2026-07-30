@@ -47,7 +47,101 @@ export const MovieProvider = ({ children }) => {
   // Filters State
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
 
-  // TMDB API Key from LocalStorage or env
+  // User Account Saved Watchlists & Persistent Likes State
+  const [userWatchlists, setUserWatchlists] = useState([]);
+
+  // Helper to get stored auth token
+  const getAuthToken = () => {
+    return typeof window !== 'undefined' ? localStorage.getItem('movie_match_jwt_token') || '' : '';
+  };
+
+  // Fetch logged-in user's saved watchlists from database
+  const fetchUserWatchlists = useCallback(async () => {
+    const token = getAuthToken();
+    if (!token) {
+      setUserWatchlists([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_API}/lists`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUserWatchlists(data.watchlists || []);
+      }
+    } catch (err) {
+      console.error('Error fetching user watchlists:', err);
+    }
+  }, []);
+
+  // Fetch logged-in user's saved likes from database
+  const fetchUserLikes = useCallback(async () => {
+    const token = getAuthToken();
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${BACKEND_API}/lists/likes/all`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.movieIds && data.movieIds.length > 0) {
+          setP1Likes(prev => Array.from(new Set([...prev, ...data.movieIds])));
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching user likes:', err);
+    }
+  }, []);
+
+  // Save a custom watchlist deck to logged-in user account
+  const saveWatchlistToAccount = async (title, movieIds) => {
+    const token = getAuthToken();
+    if (!token) throw new Error('Must be logged in to save watchlists');
+
+    const res = await fetch(`${BACKEND_API}/lists`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ title, movieIds })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to save watchlist');
+    }
+
+    await fetchUserWatchlists();
+    return data.watchlist;
+  };
+
+  // Delete a saved watchlist deck from user account
+  const deleteUserWatchlist = async (id) => {
+    const token = getAuthToken();
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${BACKEND_API}/lists/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setUserWatchlists(prev => prev.filter(w => w.id !== id));
+      }
+    } catch (err) {
+      console.error('Error deleting watchlist:', err);
+    }
+  };
+
+  // Load account data on mount and token availability
+  useEffect(() => {
+    fetchUserWatchlists();
+    fetchUserLikes();
+  }, [fetchUserWatchlists, fetchUserLikes]);
   const [apiKey, setApiKeyState] = useState(() => {
     return localStorage.getItem('movie_match_api_key') || '';
   });
@@ -314,6 +408,21 @@ export const MovieProvider = ({ children }) => {
       .catch(err => console.error('Error posting online swipe:', err));
     }
 
+    // Persist liked movie to backend user account if authenticated
+    if (isLike) {
+      const token = getAuthToken();
+      if (token) {
+        fetch(`${BACKEND_API}/lists/likes`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ movieId: movie.id })
+        }).catch(err => console.error('Error syncing like to user account:', err));
+      }
+    }
+
     if (isPlayer1) {
       if (isLike) {
         setP1Likes(prev => [...prev, movie.id]);
@@ -458,7 +567,11 @@ export const MovieProvider = ({ children }) => {
     getShareLink,
     canUndo: history.length > 0,
     fetchNextPage,
-    isFetchingMore
+    isFetchingMore,
+    userWatchlists,
+    saveWatchlistToAccount,
+    deleteUserWatchlist,
+    fetchUserWatchlists
   };
 
   return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;

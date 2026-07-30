@@ -8,12 +8,13 @@ import authenticateToken from '../middleware/auth.js';
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_movie_match_jwt_key_2026';
 
-// Rate Limiter for Authentication (prevents brute force)
+// Rate Limiter for Authentication (prevents brute force, skips CORS OPTIONS preflights)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // 20 requests per IP
+  max: 50, // 50 requests per IP
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS',
   message: { error: 'Too many authentication attempts from this IP. Please try again in 15 minutes.' }
 });
 

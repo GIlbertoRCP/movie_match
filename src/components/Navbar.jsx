@@ -46,7 +46,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsCustomListOpen(true)}
               className={`transition-opacity duration-300 cursor-pointer ${
-                isCustomActive ? 'text-amber-300 opacity-90' : 'text-stone-50 opacity-60 hover:opacity-100'
+                isCustomActive ? 'text-cyan-400 opacity-100' : 'text-stone-50 opacity-60 hover:opacity-100'
               }`}
               title="Curated Series & Custom Lists"
             >

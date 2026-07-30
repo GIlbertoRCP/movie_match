@@ -45,6 +45,15 @@ db.exec(`
     FOREIGN KEY(host_user_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY(partner_user_id) REFERENCES users(id) ON DELETE SET NULL
   );
+
+  CREATE TABLE IF NOT EXISTS user_likes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    movie_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, movie_id),
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
 `);
 
 // Migration safeguard: Ensure columns exist for upgraded schemas

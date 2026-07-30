@@ -36,12 +36,12 @@ function MainApp() {
       {/* Top Fixed HUD Header */}
       <Navbar />
 
-      {/* Main Full-Screen Vertical Snap Scroll Feed Container (Centered Stage) */}
-      <main className="relative z-10 flex-1 w-full max-w-xl sm:max-w-2xl mx-auto px-3 sm:px-6 pt-16 pb-12 h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth scrollbar-none flex flex-col items-center">
+      {/* Main Container - Centered Feed Stage */}
+      <main className="relative z-10 flex-1 w-full max-w-md sm:max-w-xl lg:max-w-3xl xl:max-w-4xl mx-auto px-3 sm:px-6 pt-14 sm:pt-16 pb-6 min-h-screen overflow-y-auto scrollbar-none flex flex-col items-center">
         <OnlineSessionStatusBar />
 
-        {/* Centered Main Feed Column */}
-        <div className="w-full flex-1 flex flex-col items-center justify-center">
+        {/* Centered Main Feed Stage */}
+        <div className="w-full flex-1 flex flex-col items-center justify-center pt-2">
           {phase === 'p1_finished' ? (
             <TransitionScreen />
           ) : (

@@ -51,19 +51,39 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
-  // Login action
-  const login = async (usernameOrEmail, password) => {
-    const res = await fetch(`${BACKEND_API}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usernameOrEmail, password })
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || 'Login failed');
+  // Helper for safe fetch handling
+  const safeAuthFetch = async (url, bodyData) => {
+    let res;
+    try {
+      res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData)
+      });
+    } catch (networkErr) {
+      console.error('Network connection error during auth fetch:', networkErr);
+      throw new Error(
+        'Unable to reach server. The backend may be waking up from sleep mode (~30s on free hosting)—please wait a few seconds and try again.'
+      );
     }
 
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (parseErr) {
+      // Non-JSON response
+    }
+
+    if (!res.ok) {
+      throw new Error(data.error || `Authentication failed (Status ${res.status})`);
+    }
+
+    return data;
+  };
+
+  // Login action
+  const login = async (usernameOrEmail, password) => {
+    const data = await safeAuthFetch(`${BACKEND_API}/auth/login`, { usernameOrEmail, password });
     localStorage.setItem('movie_match_jwt_token', data.token);
     setToken(data.token);
     setUser(data.user);
@@ -72,17 +92,7 @@ export const AuthProvider = ({ children }) => {
 
   // Register action
   const register = async (username, email, password) => {
-    const res = await fetch(`${BACKEND_API}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password })
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || 'Registration failed');
-    }
-
+    const data = await safeAuthFetch(`${BACKEND_API}/auth/register`, { username, email, password });
     localStorage.setItem('movie_match_jwt_token', data.token);
     setToken(data.token);
     setUser(data.user);

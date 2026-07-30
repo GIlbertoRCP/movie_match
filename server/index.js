@@ -13,6 +13,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// Trust reverse proxy headers (required on Render, Heroku, Nginx)
+app.set('trust proxy', 1);
+
 // Allowed Origins for CORS Security (Normalizes Render host strings with https://)
 const rawOrigins = [
   process.env.CLIENT_URL,
