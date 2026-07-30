@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     if (!res.ok) {
-      throw new Error(data.error || `Authentication failed (Status ${res.status})`);
+      throw new Error(data.error || data.message || `Authentication failed (Status ${res.status})`);
     }
 
     return data;
