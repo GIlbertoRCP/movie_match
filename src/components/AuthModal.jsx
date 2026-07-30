@@ -94,7 +94,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm">
         {/* Overlay */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -109,20 +109,20 @@ export default function AuthModal({ isOpen, onClose }) {
           initial={{ scale: 0.95, opacity: 0, y: 10 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 10 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden z-10 p-6 sm:p-7 space-y-5"
+          transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+          className="relative w-full max-w-md bg-[#FBF9F5] border border-stone-300/80 rounded-3xl shadow-2xl overflow-hidden z-10 p-6 sm:p-7 space-y-5"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div className="flex items-center justify-between border-b border-stone-200 pb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 shadow-md">
-                <User className="w-5 h-5 text-indigo-400" />
+              <div className="p-2.5 rounded-2xl bg-stone-200/60 text-stone-800 border border-stone-300/60 shadow-sm">
+                <User className="w-5 h-5 text-stone-800" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-white tracking-tight">
+                <h3 className="text-lg font-serif font-normal text-stone-900">
                   {isAuthenticated ? 'Account Profile' : mode === 'login' ? 'Sign In to Movie Match' : 'Create Account'}
                 </h3>
-                <p className="text-xs text-slate-400 font-medium">
+                <p className="text-xs font-sans font-light text-stone-500">
                   {isAuthenticated ? 'Manage active session and tokens' : 'Sync watchlists & share matches across devices'}
                 </p>
               </div>
@@ -130,7 +130,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
             <button
               onClick={onClose}
-              className="p-2 rounded-full bg-slate-950/80 text-slate-400 hover:text-white border border-slate-800 transition-colors cursor-pointer"
+              className="p-2 rounded-full bg-stone-200/50 text-stone-600 hover:text-stone-900 border border-stone-300/60 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -139,15 +139,15 @@ export default function AuthModal({ isOpen, onClose }) {
           {/* Authenticated State Profile View */}
           {isAuthenticated ? (
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center gap-3.5 shadow-inner">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-lg border border-indigo-400/40">
+              <div className="p-4 rounded-2xl bg-[#FFFDF9] border border-stone-300/80 flex items-center gap-3.5 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-stone-900 flex items-center justify-center font-serif text-stone-100 text-lg shadow-sm">
                   {user.username.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h4 className="text-sm font-black text-white">{user.username}</h4>
-                  <p className="text-xs text-slate-400 font-semibold">{user.email}</p>
-                  <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold text-emerald-400 mt-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> JWT Token Verified & Active
+                  <h4 className="text-sm font-serif font-normal text-stone-900">{user.username}</h4>
+                  <p className="text-xs font-sans font-light text-stone-500">{user.email}</p>
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-sans font-medium text-emerald-800 mt-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" /> Session Active
                   </span>
                 </div>
               </div>
@@ -157,7 +157,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   logout();
                   onClose();
                 }}
-                className="w-full py-3.5 rounded-2xl bg-rose-950/40 text-rose-300 hover:bg-rose-900/60 border border-rose-800/60 transition-all font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                className="w-full py-3.5 rounded-2xl bg-stone-200 text-stone-800 hover:bg-stone-300 border border-stone-300/80 transition-all font-sans font-medium text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Sign Out of Account</span>
@@ -168,35 +168,35 @@ export default function AuthModal({ isOpen, onClose }) {
               {/* Authentik SSO Button */}
               <button
                 onClick={handleAuthentikLogin}
-                className="w-full py-3.5 px-4 rounded-2xl bg-slate-950 hover:bg-slate-800 text-slate-200 font-extrabold text-xs shadow-lg hover:border-slate-700 transition-all flex items-center justify-between border border-slate-800 cursor-pointer group"
+                className="w-full py-3.5 px-4 rounded-2xl bg-[#FFFDF9] hover:bg-stone-100 text-stone-800 font-sans font-medium text-xs shadow-sm hover:border-stone-300 transition-all flex items-center justify-between border border-stone-300/80 cursor-pointer group"
               >
                 <div className="flex items-center gap-2.5">
-                  <ShieldCheck className="w-4.5 h-4.5 text-cyan-400" />
+                  <ShieldCheck className="w-4.5 h-4.5 text-stone-700" />
                   <span>Authenticate with Authentik SSO</span>
                 </div>
-                <ExternalLink className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                <ExternalLink className="w-4 h-4 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
               </button>
 
               <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-slate-800"></div>
-                <span className="flex-shrink mx-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                <div className="flex-grow border-t border-stone-200"></div>
+                <span className="flex-shrink mx-3 text-[10px] font-sans font-light text-stone-500 uppercase tracking-widest">
                   or email login
                 </span>
-                <div className="flex-grow border-t border-slate-800"></div>
+                <div className="flex-grow border-t border-stone-200"></div>
               </div>
 
               {/* Login / Signup Tabs */}
-              <div className="flex bg-slate-950 p-1 rounded-2xl border border-slate-800">
+              <div className="flex bg-stone-200/50 p-1 rounded-2xl border border-stone-300/40">
                 <button
                   type="button"
                   onClick={() => {
                     setMode('login');
                     setError('');
                   }}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`flex-1 py-2 rounded-xl text-xs font-sans font-medium transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer ${
                     mode === 'login'
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
+                      : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
                   <LogIn className="w-3.5 h-3.5" />
@@ -209,10 +209,10 @@ export default function AuthModal({ isOpen, onClose }) {
                     setMode('signup');
                     setError('');
                   }}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`flex-1 py-2 rounded-xl text-xs font-sans font-medium transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer ${
                     mode === 'signup'
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
+                      : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
                   <UserPlus className="w-3.5 h-3.5" />
@@ -222,14 +222,14 @@ export default function AuthModal({ isOpen, onClose }) {
 
               {/* Alerts */}
               {error && (
-                <div className="p-3.5 rounded-2xl bg-rose-950/60 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2 font-semibold shadow-md">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 font-sans font-normal shadow-sm">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-600" />
                   <span>{error}</span>
                 </div>
               )}
               {success && (
-                <div className="p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 text-xs flex items-center gap-2 font-semibold shadow-md">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 font-sans font-normal shadow-sm">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" />
                   <span>{success}</span>
                 </div>
               )}
@@ -237,18 +237,18 @@ export default function AuthModal({ isOpen, onClose }) {
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-3.5">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider block">
+                  <label className="text-[11px] font-sans font-medium text-stone-600 uppercase tracking-wider block">
                     {mode === 'login' ? 'Username or Email' : 'Username'}
                   </label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                    <User className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
                     <input
                       type="text"
                       required
                       placeholder="e.g. cinemafan"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-xl pl-10 pr-4 py-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-semibold"
+                      className="w-full bg-[#FFFDF9] border border-stone-300/80 text-stone-900 text-xs rounded-xl pl-10 pr-4 py-3 outline-none focus:border-stone-500 transition-all font-sans font-medium"
                     />
                   </div>
                 </div>
@@ -256,27 +256,27 @@ export default function AuthModal({ isOpen, onClose }) {
                 {mode === 'signup' && (
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider block">
+                      <label className="text-[11px] font-sans font-medium text-stone-600 uppercase tracking-wider block">
                         Email Address
                       </label>
                       {email && (
-                        <span className={`text-[10px] font-extrabold flex items-center gap-1 ${isEmailValid ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        <span className={`text-[10px] font-sans font-medium flex items-center gap-1 ${isEmailValid ? 'text-emerald-700' : 'text-rose-700'}`}>
                           {isEmailValid ? <CheckCircle2 className="w-3 h-3" /> : 'Invalid email'}
                         </span>
                       )}
                     </div>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                      <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
                       <input
                         type="email"
                         required
                         placeholder="you@domain.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`w-full bg-slate-950 border text-slate-100 text-xs rounded-xl pl-10 pr-4 py-3 outline-none transition-all font-semibold ${
+                        className={`w-full bg-[#FFFDF9] border text-stone-900 text-xs rounded-xl pl-10 pr-4 py-3 outline-none transition-all font-sans font-medium ${
                           email && !isEmailValid
-                            ? 'border-rose-500/80 focus:border-rose-500'
-                            : 'border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                            ? 'border-rose-400 focus:border-rose-500'
+                            : 'border-stone-300/80 focus:border-stone-500'
                         }`}
                       />
                     </div>
@@ -284,18 +284,18 @@ export default function AuthModal({ isOpen, onClose }) {
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-extrabold text-slate-300 uppercase tracking-wider block">
+                  <label className="text-[11px] font-sans font-medium text-stone-600 uppercase tracking-wider block">
                     Password
                   </label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                    <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
                     <input
                       type="password"
                       required
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-xl pl-10 pr-4 py-3 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-semibold"
+                      className="w-full bg-[#FFFDF9] border border-stone-300/80 text-stone-900 text-xs rounded-xl pl-10 pr-4 py-3 outline-none focus:border-stone-500 transition-all font-sans font-medium"
                     />
                   </div>
                 </div>
@@ -303,10 +303,10 @@ export default function AuthModal({ isOpen, onClose }) {
                 <button
                   type="submit"
                   disabled={isSubmitting || (mode === 'signup' && !isEmailValid)}
-                  className="w-full py-4 mt-2 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-600 text-white font-extrabold text-xs shadow-xl shadow-indigo-950/40 hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-2 border border-indigo-400/30 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3.5 mt-2 rounded-2xl bg-stone-900 text-stone-100 font-sans font-medium text-xs shadow-sm hover:bg-stone-800 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    <Loader2 className="w-4 h-4 animate-spin text-stone-100" />
                   ) : mode === 'login' ? (
                     <>
                       <LogIn className="w-4 h-4" />
@@ -315,7 +315,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   ) : (
                     <>
                       <UserPlus className="w-4 h-4" />
-                      <span>Create Verified Account</span>
+                      <span>Create Account</span>
                     </>
                   )}
                 </button>

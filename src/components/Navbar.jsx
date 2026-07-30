@@ -22,21 +22,21 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 w-full bg-[#080a0f]/90 backdrop-blur-2xl border-b border-slate-800/80 px-4 py-3.5">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+      <header className="sticky top-0 z-30 w-full bg-[#FBF9F5]/90 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-8 py-3.5">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           {/* Logo & Title */}
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => resetSession()}>
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-900/60 to-slate-900 border border-indigo-500/40 p-0.5 shadow-lg shadow-indigo-950/40 flex items-center justify-center transition-transform group-hover:scale-105">
-              <Film className="w-5 h-5 text-indigo-400" />
+            <div className="w-9 h-9 rounded-xl bg-[#FFFDF9] border border-stone-300/80 p-0.5 shadow-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+              <Film className="w-4 h-4 text-stone-800" />
             </div>
             <div>
-              <h1 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+              <h1 className="text-lg font-serif text-stone-900 tracking-tight flex items-center gap-2">
                 Movie Match
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-                  PRO
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-sans font-medium uppercase tracking-widest bg-stone-200/70 text-stone-700">
+                  EDITION
                 </span>
               </h1>
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest hidden sm:block">
+              <p className="text-[10px] font-sans font-light text-stone-500 uppercase tracking-widest hidden sm:block">
                 {onlineSessionId
                   ? `Room #${onlineSessionId} • ${onlineRole === 'p1' ? 'Host' : 'Partner'}`
                   : activePack
@@ -45,116 +45,107 @@ export default function Navbar() {
                   ? `Custom Deck (${customMovieIds.length})`
                   : mode === 'couch'
                   ? 'Pass & Play Mode'
-                  : 'Async Link Mode'}
+                  : 'Link Share Mode'}
               </p>
             </div>
           </div>
 
           {/* Mode Switcher Segmented Control */}
-          <div className="flex items-center bg-slate-950 p-1 rounded-2xl border border-slate-800 shadow-inner">
+          <div className="flex items-center bg-stone-200/50 p-1 rounded-xl border border-stone-300/40">
             <button
               onClick={() => setMode('couch')}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all duration-200 ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all duration-300 ${
                 mode === 'couch'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-950/50'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
               title="Pass & Play on the same phone"
             >
-              <Users className="w-4 h-4 text-slate-200" />
+              <Users className="w-3.5 h-3.5 text-stone-600" />
               <span className="hidden xs:inline">Couch</span>
             </button>
 
             <button
               onClick={() => setMode('async')}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all duration-200 ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all duration-300 ${
                 mode === 'async'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-950/50'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
               title="Share link with remote partner"
             >
-              <Share2 className="w-4 h-4 text-slate-200" />
+              <Share2 className="w-3.5 h-3.5 text-stone-600" />
               <span className="hidden xs:inline">Link Share</span>
             </button>
           </div>
 
           {/* Right Action Bar */}
           <div className="flex items-center gap-2">
-            {/* Host Session Button (Prominent Easy-Click Pill) */}
+            {/* Host Session Button */}
             <button
               onClick={() => setIsHostSessionOpen(true)}
-              className="px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-600 text-white font-extrabold text-xs shadow-lg shadow-indigo-950/50 hover:opacity-95 active:scale-95 transition-all flex items-center gap-2 border border-indigo-400/30"
-              title="Host Match Session (Guest vs Logged Account)"
+              className="px-3.5 py-2 rounded-xl bg-stone-900 text-stone-100 font-sans font-medium text-xs shadow-sm hover:bg-stone-800 active:scale-95 transition-all duration-300 flex items-center gap-1.5"
+              title="Host Match Session"
             >
-              <Play className="w-4 h-4 fill-white" />
+              <Play className="w-3.5 h-3.5 fill-stone-100" />
               <span className="hidden md:inline">Host Session</span>
             </button>
 
             {/* User Auth Button */}
             <button
               onClick={() => setIsAuthOpen(true)}
-              className={`p-2.5 sm:p-3 rounded-2xl transition-all border active:scale-95 ${
+              className={`p-2.5 rounded-xl transition-all duration-300 border ${
                 isAuthenticated
-                  ? 'text-emerald-400 border-emerald-500/40 bg-emerald-950/40 shadow-lg shadow-emerald-950/40'
-                  : 'text-slate-300 hover:text-white bg-slate-900 border-slate-800'
+                  ? 'text-stone-900 border-stone-400 bg-stone-200/60 shadow-sm'
+                  : 'text-stone-600 hover:text-stone-900 bg-[#FFFDF9] border-stone-300/80 hover:bg-stone-100'
               }`}
               title={isAuthenticated ? `Logged in as ${user.username}` : 'Log In / Authentik SSO'}
             >
-              {isAuthenticated ? <UserCheck className="w-4.5 h-4.5 text-emerald-400" /> : <User className="w-4.5 h-4.5 text-slate-300" />}
+              {isAuthenticated ? <UserCheck className="w-4 h-4 text-stone-900" /> : <User className="w-4 h-4 text-stone-600" />}
             </button>
 
             {/* Custom Lists & Theme Packs Trigger */}
             <button
               onClick={() => setIsCustomListOpen(true)}
-              className={`p-2.5 sm:p-3 rounded-2xl transition-all border active:scale-95 ${
+              className={`p-2.5 rounded-xl transition-all duration-300 border ${
                 isCustomActive
-                  ? 'text-cyan-300 border-cyan-500/50 bg-cyan-950/40 shadow-lg'
-                  : 'text-slate-300 hover:text-white bg-slate-900 border-slate-800'
+                  ? 'text-stone-900 border-stone-400 bg-stone-200/60 shadow-sm'
+                  : 'text-stone-600 hover:text-stone-900 bg-[#FFFDF9] border-stone-300/80 hover:bg-stone-100'
               }`}
               title="Curated Series & Custom Watchlists"
             >
-              <Layers className="w-4.5 h-4.5 text-slate-300" />
+              <Layers className="w-4 h-4 text-stone-600" />
             </button>
 
             {/* Filter Trigger */}
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="p-2.5 sm:p-3 rounded-2xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-all border border-slate-800 active:scale-95"
+              className="p-2.5 rounded-xl bg-[#FFFDF9] text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-all duration-300 border border-stone-300/80"
               title="Genre & Rating Filters"
             >
-              <Sliders className="w-4.5 h-4.5 text-slate-300" />
+              <Sliders className="w-4 h-4 text-stone-600" />
             </button>
 
             {/* API Key Modal */}
             <button
               onClick={() => setIsApiKeyOpen(true)}
-              className={`p-2.5 sm:p-3 rounded-2xl transition-all border active:scale-95 ${
+              className={`p-2.5 rounded-xl transition-all duration-300 border ${
                 apiKey
-                  ? 'text-emerald-400 border-emerald-500/30 bg-emerald-950/20'
-                  : 'text-slate-400 bg-slate-900 border-slate-800 hover:text-white'
+                  ? 'text-stone-900 border-stone-400 bg-stone-200/60'
+                  : 'text-stone-500 bg-[#FFFDF9] border-stone-300/80 hover:text-stone-900 hover:bg-stone-100'
               }`}
               title={apiKey ? 'TMDB API Key Active' : 'Demo Mode (Click to set TMDB Key)'}
             >
-              <Key className="w-4.5 h-4.5" />
-            </button>
-
-            {/* Theme Toggle (Light / Dark Mode) */}
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 sm:p-3 rounded-2xl bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-all border border-slate-800 active:scale-95 cursor-pointer"
-              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-            >
-              {theme === 'dark' ? <Sun className="w-4.5 h-4.5 text-amber-300" /> : <Moon className="w-4.5 h-4.5 text-indigo-400" />}
+              <Key className="w-4 h-4" />
             </button>
 
             {/* Reset Session */}
             <button
               onClick={() => resetSession()}
-              className="p-2.5 sm:p-3 rounded-2xl bg-slate-900 text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 hover:border-rose-800/40 transition-all border border-slate-800 active:scale-95"
+              className="p-2.5 rounded-xl bg-[#FFFDF9] text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-all duration-300 border border-stone-300/80"
               title="Reset Deck & Session"
             >
-              <RefreshCw className="w-4.5 h-4.5" />
+              <RefreshCw className="w-4 h-4" />
             </button>
           </div>
         </div>

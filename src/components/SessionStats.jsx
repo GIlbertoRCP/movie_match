@@ -17,46 +17,46 @@ export default function SessionStats() {
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto mt-4 px-4 pb-6">
-      <div className="glass-panel rounded-2xl border border-slate-800/80 overflow-hidden shadow-xl">
+    <div className="w-full max-w-sm mx-auto mt-4 px-2">
+      <div className="editorial-card rounded-2xl border border-stone-200/90 overflow-hidden shadow-sm">
         {/* Header Toggle */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full px-4 py-3 flex items-center justify-between bg-slate-900/60 hover:bg-slate-900 transition-colors"
+          className="w-full px-4 py-3 flex items-center justify-between bg-[#F5F2EB]/80 hover:bg-[#F0ECDF] transition-colors duration-300 cursor-pointer"
         >
           <div className="flex items-center gap-2">
-            <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-            <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+            <Heart className="w-4 h-4 text-stone-700 fill-stone-700" />
+            <span className="text-xs font-serif font-medium text-stone-900">
               Session Stats & Picks
             </span>
             {commonLikes.length > 0 && (
-              <span className="bg-purple-950 text-purple-300 border border-purple-800/60 px-2 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5" />
+              <span className="bg-stone-200 text-stone-800 border border-stone-300/80 px-2.5 py-0.5 rounded-full text-[10px] font-sans font-medium flex items-center gap-1">
+                <Sparkles className="w-2.5 h-2.5 text-stone-700" />
                 {commonLikes.length} {commonLikes.length === 1 ? 'Match' : 'Matches'}
               </span>
             )}
           </div>
-          {isOpen ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronUp className="w-4 h-4 text-slate-400" />}
+          {isOpen ? <ChevronDown className="w-4 h-4 text-stone-500" /> : <ChevronUp className="w-4 h-4 text-stone-500" />}
         </button>
 
         {/* Collapsible Content */}
         {isOpen && (
-          <div className="p-4 space-y-4 border-t border-slate-800 text-xs">
+          <div className="p-4 space-y-4 border-t border-stone-200/80 text-xs">
             {/* Matches List */}
             {commonLikes.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-extrabold text-purple-400 uppercase tracking-wider text-[11px] flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
+                <h4 className="font-serif text-sm text-stone-900 font-medium flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-stone-700" />
                   <span>Matched Movies ({commonLikes.length})</span>
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {commonLikes.map(m => (
                     <div
                       key={m.id}
-                      className="flex items-center gap-2 bg-purple-950/60 border border-purple-800/60 rounded-xl p-1.5 pr-3 text-purple-200"
+                      className="flex items-center gap-2 bg-stone-100 border border-stone-200 rounded-xl p-1.5 pr-3 text-stone-800"
                     >
-                      <img src={m.poster_path} alt={m.title} className="w-6 h-9 object-cover rounded-md" />
-                      <span className="font-bold truncate max-w-[120px]">{m.title}</span>
+                      <img src={m.poster_path} alt={m.title} className="w-6 h-9 object-cover rounded-md border border-stone-300" />
+                      <span className="font-sans font-medium text-xs truncate max-w-[120px]">{m.title}</span>
                     </div>
                   ))}
                 </div>

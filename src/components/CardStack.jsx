@@ -67,23 +67,20 @@ export default function CardStack() {
   return (
     <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto flex flex-col items-center py-2 px-2 sm:px-4">
       {/* Turn Indicator Banner */}
-      <div className="w-full flex items-center justify-between px-2 mb-3">
+      <div className="w-full flex items-center justify-between px-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
-          </span>
-          <span className="text-xs font-black uppercase tracking-wider text-cyan-300">
+          <span className="w-2 h-2 rounded-full bg-amber-700/60"></span>
+          <span className="text-xs font-sans font-medium uppercase tracking-wider text-stone-600">
             {phase === 'p1_swiping' ? 'Player 1 Turn' : 'Player 2 Turn'}
           </span>
         </div>
-        <span className="text-xs font-extrabold text-slate-300 bg-slate-900/90 px-3 py-1 rounded-full border border-slate-800 shadow-md">
-          {currentIndex + 1} / {deck.length}
+        <span className="text-xs font-sans font-normal text-stone-500 bg-stone-200/50 px-3 py-1 rounded-full border border-stone-300/40">
+          {currentIndex + 1} of {deck.length}
         </span>
       </div>
 
-      {/* Cards Stack Container (Significantly Larger Poster) */}
-      <div className="relative w-full aspect-[2/3] h-[560px] sm:h-[640px] lg:h-[700px]">
+      {/* Cards Stack Container (Editorial Matting Poster Frame) */}
+      <div className="relative w-full aspect-[2/3] h-[560px] sm:h-[640px] lg:h-[680px]">
         <AnimatePresence>
           {visibleCards.map((movie, idx) => {
             const isTop = idx === 0;
@@ -101,16 +98,16 @@ export default function CardStack() {
         </AnimatePresence>
       </div>
 
-      {/* Controls Container with Keyboard Shortcuts Hints */}
+      {/* Controls Container (Organic Soft Stone Buttons) */}
       <div className="w-full flex items-center justify-center gap-5 mt-6">
         {/* Undo Button */}
         <button
           onClick={handleUndo}
           disabled={!canUndo}
-          className={`relative p-4 rounded-full border transition-all duration-200 shadow-lg ${
+          className={`relative p-4 rounded-2xl border transition-all duration-300 shadow-sm ${
             canUndo
-              ? 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-white hover:scale-105 active:scale-95'
-              : 'bg-slate-950/40 text-slate-700 border-slate-900 opacity-40 cursor-not-allowed'
+              ? 'bg-[#FFFDF9] text-stone-700 border-stone-200 hover:bg-stone-100 hover:text-stone-900 active:scale-95'
+              : 'bg-stone-100/50 text-stone-300 border-stone-200/50 opacity-40 cursor-not-allowed'
           }`}
           title="Undo previous swipe (Keyboard: Z)"
         >
@@ -120,28 +117,28 @@ export default function CardStack() {
         {/* Pass Button */}
         <button
           onClick={() => handleSwipe(currentMovie, 'left')}
-          className="relative p-5 rounded-full bg-slate-900 text-rose-500 border border-rose-500/40 hover:bg-rose-950/50 hover:border-rose-500 hover:scale-110 active:scale-95 transition-all duration-200 shadow-xl shadow-rose-950/40 group"
+          className="relative p-5 rounded-2xl bg-[#FFFDF9] text-stone-600 border border-stone-200/90 hover:bg-stone-100 hover:text-stone-900 hover:border-stone-300 active:scale-95 transition-all duration-300 shadow-sm group"
           title="Pass (Keyboard: ← Left Arrow)"
         >
-          <X className="w-8 h-8 group-hover:rotate-90 transition-transform duration-200" />
+          <X className="w-7 h-7 group-hover:rotate-90 transition-transform duration-300" />
         </button>
 
         {/* Info Button */}
         <button
           onClick={() => setDetailMovie(currentMovie)}
-          className="relative p-4 rounded-full bg-slate-900 text-indigo-400 border border-indigo-500/40 hover:bg-indigo-950/50 hover:border-indigo-500 hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg shadow-indigo-950/30"
+          className="relative p-4 rounded-2xl bg-[#FFFDF9] text-stone-700 border border-stone-200 hover:bg-stone-100 hover:text-stone-900 active:scale-95 transition-all duration-300 shadow-sm"
           title="Movie Info & Streaming Options (Keyboard: ↑ Up Arrow or Space)"
         >
-          <Info className="w-6 h-6" />
+          <Info className="w-5 h-5" />
         </button>
 
         {/* Like Button */}
         <button
           onClick={() => handleSwipe(currentMovie, 'right')}
-          className="relative p-5 rounded-full bg-slate-900 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-950/50 hover:border-emerald-500 hover:scale-110 active:scale-95 transition-all duration-200 shadow-xl shadow-emerald-950/40 group"
+          className="relative p-5 rounded-2xl bg-stone-900 text-stone-100 border border-stone-800 hover:bg-stone-800 active:scale-95 transition-all duration-300 shadow-md group"
           title="Like (Keyboard: → Right Arrow)"
         >
-          <Heart className="w-8 h-8 fill-emerald-500/20 group-hover:fill-emerald-500 group-hover:scale-110 transition-transform duration-200" />
+          <Heart className="w-7 h-7 fill-stone-100/20 group-hover:fill-stone-100 group-hover:scale-110 transition-transform duration-300" />
         </button>
       </div>
 
@@ -158,13 +155,13 @@ export default function CardStack() {
 
 function SwipeableCard({ movie, index, isTop, onSwipe, onOpenDetails }) {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-18, 18]);
+  const rotate = useTransform(x, [-200, 200], [-14, 14]);
   const likeOpacity = useTransform(x, [15, 120], [0, 1]);
   const passOpacity = useTransform(x, [-15, -120], [0, 1]);
 
   // Scaled stack effect for cards beneath top
-  const scale = 1 - index * 0.05;
-  const translateY = index * 14;
+  const scale = 1 - index * 0.04;
+  const translateY = index * 12;
 
   const handleDragEnd = (event, info) => {
     const offset = info.offset.x;
@@ -189,106 +186,108 @@ function SwipeableCard({ movie, index, isTop, onSwipe, onOpenDetails }) {
       drag={isTop ? 'x' : false}
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={handleDragEnd}
-      initial={{ scale: 0.9, opacity: 0 }}
+      initial={{ scale: 0.95, opacity: 0 }}
       animate={{ scale: isTop ? 1 : scale, opacity: 1, y: isTop ? 0 : translateY }}
       exit={{
         x: x.get() < 0 ? -300 : 300,
         opacity: 0,
-        rotate: x.get() < 0 ? -25 : 25,
-        transition: { duration: 0.2 }
+        rotate: x.get() < 0 ? -20 : 20,
+        transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
       }}
-      transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-      className={`absolute inset-0 rounded-3xl overflow-hidden glass-card shadow-2xl select-none cursor-grab active:cursor-grabbing border border-slate-700/60 ${
+      transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+      className={`absolute inset-0 rounded-3xl poster-matting flex flex-col justify-between select-none cursor-grab active:cursor-grabbing ${
         isTop ? 'touch-pan-y' : 'pointer-events-none'
       }`}
     >
-      {/* Background Poster Image with onError Fallback */}
-      <img
-        src={movie.poster_path || DEFAULT_POSTER}
-        alt={movie.title}
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = DEFAULT_POSTER;
-        }}
-        className="w-full h-full object-cover pointer-events-none"
-        loading="eager"
-      />
-
-      {/* Dark Gradient Overlay for Readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent pointer-events-none" />
-
-      {/* Dynamic Overlay Stamps (Like / Pass) */}
-      {isTop && (
-        <>
-          {/* LIKE Stamp */}
-          <motion.div
-            style={{ opacity: likeOpacity }}
-            className="absolute top-6 left-6 z-20 transform -rotate-12 border-4 border-emerald-400 bg-emerald-950/80 px-4 py-1.5 rounded-xl shadow-lg pointer-events-none"
-          >
-            <span className="text-2xl font-black tracking-widest text-emerald-400 uppercase">
-              LIKE
-            </span>
-          </motion.div>
-
-          {/* PASS Stamp */}
-          <motion.div
-            style={{ opacity: passOpacity }}
-            className="absolute top-6 right-6 z-20 transform rotate-12 border-4 border-rose-500 bg-rose-950/80 px-4 py-1.5 rounded-xl shadow-lg pointer-events-none"
-          >
-            <span className="text-2xl font-black tracking-widest text-rose-500 uppercase">
-              PASS
-            </span>
-          </motion.div>
-        </>
-      )}
-
-      {/* Top Details & Badges */}
-      <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-        <div className="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-slate-700/60">
-          <Star className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
-          <span className="text-xs font-black text-slate-100">{movie.vote_average}</span>
-        </div>
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenDetails();
+      {/* Framed Image Container */}
+      <div className="relative w-full flex-1 rounded-2xl overflow-hidden bg-stone-100">
+        <img
+          src={movie.poster_path || DEFAULT_POSTER}
+          alt={movie.title}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = DEFAULT_POSTER;
           }}
-          className="p-2 rounded-full bg-slate-950/70 backdrop-blur-md text-slate-300 hover:text-white border border-slate-700/60 transition-all pointer-events-auto"
-        >
-          <Info className="w-4 h-4" />
-        </button>
-      </div>
+          className="w-full h-full object-cover pointer-events-none"
+          loading="eager"
+        />
 
-      {/* Bottom Information Container */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 z-10 space-y-2.5 pointer-events-none bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent pt-20">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-lg tracking-tight">
-            {movie.title}
-          </h2>
-          {movie.release_date && (
-            <span className="text-sm font-extrabold text-cyan-300 flex-shrink-0 bg-slate-950/80 px-2.5 py-0.5 rounded-full border border-slate-800">
-              {movie.release_date.split('-')[0]}
-            </span>
-          )}
-        </div>
+        {/* Soft Warm Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-950/20 to-transparent pointer-events-none" />
 
-        {/* Genre Badges */}
-        <div className="flex flex-wrap gap-2">
-          {movie.genres?.slice(0, 3).map((g, i) => (
-            <span
-              key={i}
-              className="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-slate-900/90 text-cyan-200 border border-slate-700/80 shadow-sm"
+        {/* Dynamic Overlay Stamps (Like / Pass) */}
+        {isTop && (
+          <>
+            {/* LIKE Stamp */}
+            <motion.div
+              style={{ opacity: likeOpacity }}
+              className="absolute top-6 left-6 z-20 transform -rotate-6 border-2 border-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-xl shadow-md pointer-events-none"
             >
-              {g}
-            </span>
-          ))}
+              <span className="text-xl font-sans font-bold tracking-widest text-emerald-800 uppercase">
+                LIKE
+              </span>
+            </motion.div>
+
+            {/* PASS Stamp */}
+            <motion.div
+              style={{ opacity: passOpacity }}
+              className="absolute top-6 right-6 z-20 transform rotate-6 border-2 border-stone-400 bg-stone-100 px-4 py-1.5 rounded-xl shadow-md pointer-events-none"
+            >
+              <span className="text-xl font-sans font-bold tracking-widest text-stone-700 uppercase">
+                PASS
+              </span>
+            </motion.div>
+          </>
+        )}
+
+        {/* Top Details Badges */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
+          <div className="flex items-center gap-1.5 bg-[#FFFDF9]/90 backdrop-blur-md px-3 py-1 rounded-full border border-stone-200/80 shadow-sm">
+            <Star className="w-3.5 h-3.5 fill-amber-700 text-amber-700" />
+            <span className="text-xs font-sans font-medium text-stone-800">{movie.vote_average}</span>
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenDetails();
+            }}
+            className="p-2 rounded-full bg-[#FFFDF9]/90 backdrop-blur-md text-stone-700 hover:text-stone-900 border border-stone-200/80 transition-all pointer-events-auto shadow-sm"
+          >
+            <Info className="w-4 h-4" />
+          </button>
         </div>
 
-        {/* Short Synopsis */}
-        <p className="text-xs sm:text-sm text-slate-200 line-clamp-3 leading-relaxed opacity-95 font-medium drop-shadow-sm">
-          {movie.overview}
-        </p>
+        {/* Bottom Information Container inside framed image */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 z-10 space-y-2 pointer-events-none text-white">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-2xl sm:text-3xl font-serif text-white font-normal leading-snug drop-shadow-sm">
+              {movie.title}
+            </h2>
+            {movie.release_date && (
+              <span className="text-xs font-sans font-light text-stone-200 flex-shrink-0 bg-stone-900/60 px-2.5 py-0.5 rounded-full border border-stone-700/60">
+                {movie.release_date.split('-')[0]}
+              </span>
+            )}
+          </div>
+
+          {/* Genre Badges */}
+          <div className="flex flex-wrap gap-1.5">
+            {movie.genres?.slice(0, 3).map((g, i) => (
+              <span
+                key={i}
+                className="px-2.5 py-0.5 rounded-md text-[11px] font-sans font-light bg-stone-900/60 text-stone-200 border border-stone-700/60"
+              >
+                {g}
+              </span>
+            ))}
+          </div>
+
+          {/* Short Synopsis */}
+          <p className="text-xs font-sans font-light text-stone-200 line-clamp-2 leading-relaxed opacity-90">
+            {movie.overview}
+          </p>
+        </div>
       </div>
     </motion.div>
   );

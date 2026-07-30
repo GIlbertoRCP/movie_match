@@ -25,37 +25,37 @@ export default function OnlineSessionStatusBar() {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-xl mx-auto mb-4 px-3 py-2.5 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-indigo-500/30 text-slate-100 shadow-xl shadow-indigo-950/30 flex items-center justify-between gap-2"
+      className="w-full max-w-xl mx-auto mb-5 px-4 py-3 rounded-2xl bg-[#F5F2EB] border border-stone-300/70 text-stone-900 shadow-sm flex items-center justify-between gap-3"
     >
-      <div className="flex items-center gap-2.5 min-w-0">
-        <div className="relative flex items-center justify-center p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-          <Radio className="w-4 h-4 text-indigo-400 animate-pulse" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="relative flex items-center justify-center p-2 rounded-xl bg-stone-200/80 border border-stone-300/80 text-stone-700">
+          <Radio className="w-4 h-4 text-stone-700 animate-pulse" />
+          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
         </div>
 
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-black text-white truncate">
+            <span className="text-xs font-serif font-medium text-stone-900 truncate">
               {onlineSessionName || `Online Room #${onlineSessionId}`}
             </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0">
+            <span className="px-2 py-0.5 rounded-full text-[9px] font-sans font-light uppercase bg-stone-200 text-stone-700 border border-stone-300/80 flex-shrink-0">
               {onlineRole === 'p1' ? 'Host' : 'Partner'}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 truncate">
+          <p className="text-[11px] font-sans font-light text-stone-600 truncate">
             {p2Likes.length > 0
-              ? `Partner active! (${p2Likes.length} likes recorded)`
-              : 'Real-time WebSocket Sync Active • Share link to match'}
+              ? `Partner active (${p2Likes.length} picks recorded)`
+              : 'Real-time WebSockets Sync Active • Share link to match'}
           </p>
         </div>
       </div>
 
       <button
         onClick={handleCopy}
-        className={`px-3 py-1.5 rounded-xl font-extrabold text-xs transition-all flex items-center gap-1.5 flex-shrink-0 shadow-md ${
+        className={`px-3.5 py-1.5 rounded-xl font-sans font-medium text-xs transition-all duration-300 flex items-center gap-1.5 flex-shrink-0 shadow-sm ${
           copied
-            ? 'bg-emerald-600 text-white border border-emerald-400'
-            : 'bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400/40 active:scale-95'
+            ? 'bg-emerald-800 text-white border border-emerald-700'
+            : 'bg-stone-900 hover:bg-stone-800 text-stone-100 active:scale-95'
         }`}
         title="Copy live online room link"
       >
@@ -66,7 +66,7 @@ export default function OnlineSessionStatusBar() {
           </>
         ) : (
           <>
-            <Copy className="w-3.5 h-3.5 text-white" />
+            <Copy className="w-3.5 h-3.5 text-stone-100" />
             <span>Copy Link</span>
           </>
         )}

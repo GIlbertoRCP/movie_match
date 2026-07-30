@@ -28,18 +28,18 @@ export default function DesktopCinemaSpotlight() {
   const youtubeUrl = trailerData?.youtubeUrl || (ytKey ? `https://www.youtube.com/watch?v=${ytKey}` : null);
 
   return (
-    <div className="glass-card p-5 rounded-3xl border border-slate-800 space-y-4 shadow-2xl relative overflow-hidden group">
+    <div className="editorial-card p-6 rounded-3xl border border-stone-200/90 space-y-4 shadow-sm relative overflow-hidden group">
       {/* Top Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
-            <Film className="w-4 h-4 text-indigo-400" />
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-stone-100 text-stone-700 border border-stone-200">
+            <Film className="w-4 h-4 text-stone-700" />
           </div>
           <div>
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-200">
+            <h3 className="text-sm font-serif font-medium text-stone-900">
               Active Movie Spotlight
             </h3>
-            <p className="text-[11px] text-slate-400 font-semibold">
+            <p className="text-[11px] font-sans font-light text-stone-500">
               Live Preview & Streaming Data
             </p>
           </div>
@@ -47,15 +47,15 @@ export default function DesktopCinemaSpotlight() {
 
         <button
           onClick={() => setInspectedMovie && setInspectedMovie(currentMovie)}
-          className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+          className="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-stone-800 border border-stone-200 text-xs font-sans font-medium transition-all duration-300 flex items-center gap-1.5 active:scale-95 cursor-pointer shadow-sm"
         >
-          <Info className="w-3.5 h-3.5 text-cyan-400" />
+          <Info className="w-3.5 h-3.5 text-stone-600" />
           <span>Full Details</span>
         </button>
       </div>
 
       {/* Backdrop / Poster Media Showcase */}
-      <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-950 shadow-inner">
+      <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-stone-200 bg-stone-100 shadow-inner">
         {showTrailer && ytKey ? (
           <iframe
             src={`https://www.youtube.com/embed/${ytKey}?autoplay=1&rel=0&enablejsapi=1`}
@@ -70,19 +70,19 @@ export default function DesktopCinemaSpotlight() {
               src={currentMovie.backdrop_path || currentMovie.poster_path || DEFAULT_POSTER}
               alt={currentMovie.title}
               onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_POSTER; }}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent" />
 
             {/* Trailer Overlay Play Button if key exists */}
             {ytKey && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-950/30 hover:bg-slate-950/10 transition-colors group/play">
+              <div className="absolute inset-0 flex items-center justify-center bg-stone-900/20 hover:bg-stone-900/10 transition-colors duration-300 group/play">
                 <button
                   onClick={() => setShowTrailer(true)}
-                  className="w-14 h-14 rounded-2xl bg-indigo-600/90 hover:bg-indigo-500 text-white flex items-center justify-center shadow-2xl group-hover/play:scale-110 transition-transform border border-indigo-400/50 cursor-pointer"
+                  className="w-14 h-14 rounded-2xl bg-[#FFFDF9] hover:bg-white text-stone-900 flex items-center justify-center shadow-md group-hover/play:scale-105 transition-transform duration-300 border border-stone-200 cursor-pointer"
                   title="Play Trailer in Spotlight"
                 >
-                  <Play className="w-7 h-7 fill-white ml-0.5" />
+                  <Play className="w-6 h-6 fill-stone-900 ml-0.5 text-stone-900" />
                 </button>
               </div>
             )}
@@ -91,19 +91,19 @@ export default function DesktopCinemaSpotlight() {
       </div>
 
       {/* Movie Details Summary */}
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between">
-          <h4 className="text-base font-black text-white truncate">
+          <h4 className="text-lg font-serif font-normal text-stone-900 truncate">
             {currentMovie.title}
           </h4>
-          <div className="flex items-center gap-1 bg-slate-950 px-2.5 py-1 rounded-full border border-slate-800 text-xs font-black text-cyan-400">
-            <Star className="w-3.5 h-3.5 fill-cyan-400 text-cyan-400" />
+          <div className="flex items-center gap-1 bg-stone-100 px-2.5 py-1 rounded-full border border-stone-200 text-xs font-sans font-medium text-stone-800">
+            <Star className="w-3.5 h-3.5 fill-amber-700 text-amber-700" />
             <span>{currentMovie.vote_average}</span>
           </div>
         </div>
 
         {/* Overview Snippet */}
-        <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed">
+        <p className="text-xs font-sans font-light text-stone-600 line-clamp-3 leading-relaxed">
           {currentMovie.overview}
         </p>
 
@@ -112,7 +112,7 @@ export default function DesktopCinemaSpotlight() {
           {currentMovie.genres?.map((g, i) => (
             <span
               key={i}
-              className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-slate-950 text-indigo-300 border border-indigo-900/40"
+              className="px-2.5 py-0.5 rounded-lg text-[10px] font-sans font-light bg-stone-100 text-stone-700 border border-stone-200"
             >
               {g}
             </span>
