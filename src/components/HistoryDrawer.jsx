@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Drawer } from 'vaul';
 import { motion } from 'framer-motion';
 import { useMovieContext } from '../context/MovieContext';
-import { Heart, Sparkles, X } from 'lucide-react';
+import { Heart, Sparkles, X, HelpCircle } from 'lucide-react';
 import MovieDetailDrawer from './MovieDetailDrawer';
+import AboutModal from './AboutModal';
 
 const DEFAULT_POSTER = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80";
 
 export default function HistoryDrawer() {
   const { p1Likes, p2Likes, deck } = useMovieContext();
   const [inspectedMovie, setInspectedMovie] = useState(null);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   // Responsive Viewport Detection for Vaul Direction
   const [isDesktop, setIsDesktop] = useState(() => {
@@ -33,21 +35,34 @@ export default function HistoryDrawer() {
 
   return (
     <>
-      <Drawer.Root direction={isDesktop ? 'right' : 'bottom'} nested={false}>
-        {/* Floating Glassmorphism Trigger - Visible on Mobile & Desktop */}
-        <Drawer.Trigger asChild>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-8 z-40 px-4 py-2.5 rounded-full bg-stone-900/90 dark:bg-stone-100/95 text-stone-100 dark:text-stone-900 backdrop-blur-md shadow-xl font-serif text-xs font-medium tracking-wide transition-all cursor-pointer flex items-center gap-2 border border-stone-700/60 dark:border-stone-300/60"
-          >
-            <Heart strokeWidth={1.5} className="w-4 h-4 fill-stone-400 text-stone-400 dark:fill-stone-600 dark:text-stone-600" />
-            <span>Session Picks</span>
-            <span className="px-2 py-0.5 rounded-full bg-stone-800 dark:bg-stone-200 text-stone-200 dark:text-stone-800 text-[10px] font-sans font-bold">
-              {totalLikes}
-            </span>
-          </motion.button>
-        </Drawer.Trigger>
+      {/* Floating Bottom-Right Controls Dock */}
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-8 z-40 flex items-center gap-2.5">
+        {/* About MovieMatch & How It Works Trigger */}
+        <motion.button
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          onClick={() => setIsAboutOpen(true)}
+          className="p-2.5 rounded-full bg-stone-900/90 dark:bg-stone-100/95 text-stone-100 dark:text-stone-900 backdrop-blur-md shadow-xl border border-stone-700/60 dark:border-stone-300/60 cursor-pointer flex items-center justify-center"
+          title="About MovieMatch & How It Works"
+        >
+          <HelpCircle strokeWidth={1.5} className="w-4 h-4 text-stone-300 dark:text-stone-700" />
+        </motion.button>
+
+        {/* Session Picks Drawer Trigger */}
+        <Drawer.Root direction={isDesktop ? 'right' : 'bottom'} nested={false}>
+          <Drawer.Trigger asChild>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-2.5 rounded-full bg-stone-900/90 dark:bg-stone-100/95 text-stone-100 dark:text-stone-900 backdrop-blur-md shadow-xl font-serif text-xs font-medium tracking-wide transition-all cursor-pointer flex items-center gap-2 border border-stone-700/60 dark:border-stone-300/60"
+            >
+              <Heart strokeWidth={1.5} className="w-4 h-4 fill-stone-400 text-stone-400 dark:fill-stone-600 dark:text-stone-600" />
+              <span>Session Picks</span>
+              <span className="px-2 py-0.5 rounded-full bg-stone-800 dark:bg-stone-200 text-stone-200 dark:text-stone-800 text-[10px] font-sans font-bold">
+                {totalLikes}
+              </span>
+            </motion.button>
+          </Drawer.Trigger>
 
         {/* Drawer Shell */}
         <Drawer.Portal>
@@ -140,12 +155,18 @@ export default function HistoryDrawer() {
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
+      </div>
 
-      {/* Movie Info Detail Drawer when a session pick is clicked */}
       <MovieDetailDrawer
         movie={inspectedMovie}
         isOpen={Boolean(inspectedMovie)}
         onClose={() => setInspectedMovie(null)}
+      />
+
+      {/* About MovieMatch & How It Works Modal */}
+      <AboutModal
+        isOpen={isAboutOpen}
+        onClose={() => setIsAboutOpen(false)}
       />
     </>
   );

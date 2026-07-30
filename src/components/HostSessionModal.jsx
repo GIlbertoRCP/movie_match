@@ -231,7 +231,10 @@ export default function HostSessionModal({ isOpen, onClose }) {
                         : 'bg-stone-100/50 dark:bg-stone-900/50 border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-300'
                     }`}
                   >
-                    <div>Guest Link</div>
+                    <div className="flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 opacity-80" />
+                      <span>Guest Link</span>
+                    </div>
                     <div className="text-[10px] font-light opacity-80 mt-0.5">No login needed</div>
                   </button>
 
@@ -244,7 +247,10 @@ export default function HostSessionModal({ isOpen, onClose }) {
                         : 'bg-stone-100/50 dark:bg-stone-900/50 border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-300'
                     }`}
                   >
-                    <div>User Account</div>
+                    <div className="flex items-center gap-1.5">
+                      <UserCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+                      <span>User Account</span>
+                    </div>
                     <div className="text-[10px] font-light opacity-80 mt-0.5">Save to history</div>
                   </button>
                 </div>
