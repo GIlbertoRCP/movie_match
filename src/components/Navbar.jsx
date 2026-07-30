@@ -120,29 +120,25 @@ export default function Navbar() {
             {/* Filter Trigger */}
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="p-2.5 rounded-xl bg-[#FFFDF9] text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-all duration-300 border border-stone-300/80"
+              className="p-2.5 rounded-xl bg-[#FFFDF9] dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 transition-all duration-300 border border-stone-300/80 dark:border-stone-700"
               title="Genre & Rating Filters"
             >
-              <Sliders className="w-4 h-4 text-stone-600" />
+              <Sliders className="w-4 h-4" />
             </button>
 
-            {/* API Key Modal */}
+            {/* Theme Toggle (Light / Dark Mode) */}
             <button
-              onClick={() => setIsApiKeyOpen(true)}
-              className={`p-2.5 rounded-xl transition-all duration-300 border ${
-                apiKey
-                  ? 'text-stone-900 border-stone-400 bg-stone-200/60'
-                  : 'text-stone-500 bg-[#FFFDF9] border-stone-300/80 hover:text-stone-900 hover:bg-stone-100'
-              }`}
-              title={apiKey ? 'TMDB API Key Active' : 'Demo Mode (Click to set TMDB Key)'}
+              onClick={toggleTheme}
+              className="p-2.5 rounded-xl bg-[#FFFDF9] dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 transition-all duration-300 border border-stone-300/80 dark:border-stone-700 cursor-pointer"
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
             >
-              <Key className="w-4 h-4" />
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-stone-700" />}
             </button>
 
             {/* Reset Session */}
             <button
               onClick={() => resetSession()}
-              className="p-2.5 rounded-xl bg-[#FFFDF9] text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-all duration-300 border border-stone-300/80"
+              className="p-2.5 rounded-xl bg-[#FFFDF9] dark:bg-stone-800 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-all duration-300 border border-stone-300/80 dark:border-stone-700"
               title="Reset Deck & Session"
             >
               <RefreshCw className="w-4 h-4" />

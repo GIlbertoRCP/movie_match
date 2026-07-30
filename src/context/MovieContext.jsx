@@ -393,6 +393,16 @@ export const MovieProvider = ({ children }) => {
     return localStorage.getItem('movie_match_theme') || 'dark';
   });
 
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light-mode');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light-mode');
+    }
+  }, [theme]);
+
   const toggleTheme = () => {
     setThemeState(prev => {
       const nextTheme = prev === 'dark' ? 'light' : 'dark';

@@ -32,9 +32,9 @@ export default function WatchProviders({ movieId, initialRegion = 'US' }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-6 text-slate-400 gap-2">
-        <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
-        <span className="text-xs font-medium">Fetching streaming options...</span>
+      <div className="flex items-center justify-center py-6 text-stone-500 dark:text-stone-400 gap-2">
+        <Loader2 className="w-4 h-4 animate-spin text-stone-600 dark:text-stone-400" />
+        <span className="text-xs font-sans font-light">Fetching streaming availability...</span>
       </div>
     );
   }
@@ -47,16 +47,16 @@ export default function WatchProviders({ movieId, initialRegion = 'US' }) {
   return (
     <div className="w-full space-y-4">
       {/* Region Selector Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-        <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300">
-          <Globe className="w-3.5 h-3.5 text-purple-400" />
+      <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-2">
+        <div className="flex items-center gap-1.5 text-xs font-sans font-medium uppercase tracking-wider text-stone-600 dark:text-stone-400">
+          <Globe className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
           <span>Where to Watch</span>
         </div>
 
         <select
           value={selectedRegion}
           onChange={(e) => setSelectedRegion(e.target.value)}
-          className="bg-slate-900 border border-slate-700/60 text-slate-200 text-xs rounded-lg px-2 py-1 outline-none focus:border-purple-500 transition-all"
+          className="bg-[#FFFDF9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 text-stone-800 dark:text-stone-200 text-xs rounded-lg px-2.5 py-1 outline-none focus:border-stone-500 transition-all font-sans font-medium"
         >
           {REGIONS.map(r => (
             <option key={r.code} value={r.code}>
@@ -67,8 +67,8 @@ export default function WatchProviders({ movieId, initialRegion = 'US' }) {
       </div>
 
       {!hasAny ? (
-        <div className="text-center py-4 bg-slate-900/50 rounded-xl border border-slate-800">
-          <p className="text-xs text-slate-400 font-medium">
+        <div className="text-center py-4 bg-stone-100 dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800">
+          <p className="text-xs text-stone-600 dark:text-stone-400 font-sans font-light">
             No digital streaming options found for region ({selectedRegion}).
           </p>
         </div>
@@ -77,8 +77,8 @@ export default function WatchProviders({ movieId, initialRegion = 'US' }) {
           {/* Stream / Subscription */}
           {hasFlatrate && (
             <div>
-              <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 uppercase tracking-wider mb-2">
-                <Tv className="w-3 h-3" />
+              <div className="flex items-center gap-1 text-[11px] font-sans font-medium text-stone-700 dark:text-stone-300 uppercase tracking-wider mb-2">
+                <Tv className="w-3 h-3 text-emerald-700 dark:text-emerald-400" />
                 <span>Stream Subscription</span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -92,8 +92,8 @@ export default function WatchProviders({ movieId, initialRegion = 'US' }) {
           {/* Rent */}
           {hasRent && (
             <div>
-              <div className="flex items-center gap-1 text-[11px] font-semibold text-indigo-400 uppercase tracking-wider mb-2">
-                <Film className="w-3 h-3" />
+              <div className="flex items-center gap-1 text-[11px] font-sans font-medium text-stone-700 dark:text-stone-300 uppercase tracking-wider mb-2">
+                <Film className="w-3 h-3 text-stone-700 dark:text-stone-400" />
                 <span>Rent</span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -107,8 +107,8 @@ export default function WatchProviders({ movieId, initialRegion = 'US' }) {
           {/* Buy */}
           {hasBuy && (
             <div>
-              <div className="flex items-center gap-1 text-[11px] font-semibold text-amber-400 uppercase tracking-wider mb-2">
-                <ShoppingBag className="w-3 h-3" />
+              <div className="flex items-center gap-1 text-[11px] font-sans font-medium text-stone-700 dark:text-stone-300 uppercase tracking-wider mb-2">
+                <ShoppingBag className="w-3 h-3 text-stone-700 dark:text-stone-400" />
                 <span>Buy</span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -118,19 +118,22 @@ export default function WatchProviders({ movieId, initialRegion = 'US' }) {
               </div>
             </div>
           )}
-        </div>
-      )}
 
-      {providers?.link && (
-        <a
-          href={providers.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-[11px] text-purple-400 hover:text-purple-300 font-medium transition-colors pt-1"
-        >
-          <span>View on TMDB JustWatch</span>
-          <ExternalLink className="w-3 h-3" />
-        </a>
+          {/* JustWatch Credit */}
+          {providers?.link && (
+            <div className="pt-2 text-right">
+              <a
+                href={providers.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[10px] font-sans font-light text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors"
+              >
+                <span>Streaming data provided by JustWatch</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
@@ -138,22 +141,19 @@ export default function WatchProviders({ movieId, initialRegion = 'US' }) {
 
 function ProviderBadge({ provider }) {
   return (
-    <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-800 rounded-lg p-1.5 pr-3 shadow-sm hover:border-slate-700 transition-all">
+    <div className="flex items-center gap-2 p-1.5 pr-3 rounded-xl bg-[#FFFDF9] dark:bg-stone-800 border border-stone-300/70 dark:border-stone-700 shadow-sm">
       {provider.logo_path ? (
         <img
-          src={provider.logo_path}
+          src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
           alt={provider.provider_name}
           className="w-6 h-6 rounded-md object-cover"
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
         />
       ) : (
-        <div className="w-6 h-6 rounded-md bg-purple-900/40 text-purple-300 flex items-center justify-center font-bold text-[10px]">
+        <div className="w-6 h-6 rounded-md bg-stone-200 dark:bg-stone-700 flex items-center justify-center text-[10px] font-bold text-stone-700 dark:text-stone-300">
           {provider.provider_name.charAt(0)}
         </div>
       )}
-      <span className="text-xs font-semibold text-slate-200">{provider.provider_name}</span>
+      <span className="text-xs font-sans font-medium text-stone-800 dark:text-stone-200">{provider.provider_name}</span>
     </div>
   );
 }
