@@ -4,10 +4,17 @@ function getBackendUrl() {
   let url = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_BACKEND_URL) || '';
 
   if (url) {
+    url = url.trim().replace(/\/$/, '');
+
+    // If Render host property provided short hostname (e.g. movie-match-backend-tzu9), append .onrender.com
+    if (!url.includes('.') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+      url = `${url}.onrender.com`;
+    }
+
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = `https://${url}`;
     }
-    return url.replace(/\/$/, '');
+    return url;
   }
 
   // 2. Browser Environment Detection
@@ -21,10 +28,18 @@ function getBackendUrl() {
     }
 
     // Hosted Render static site deployment:
-    // Automatically map movie-match-frontend -> movie-match-backend
+    // Automatically map movie-match-frontend-tzu9.onrender.com -> movie-match-backend-tzu9.onrender.com
     if (hostname.includes('onrender.com')) {
-      const derivedHost = hostname.replace('-frontend', '-backend');
+      let derivedHost = hostname.replace('-frontend', '-backend');
+      if (!derivedHost.endsWith('.onrender.com')) {
+        derivedHost = `${derivedHost}.onrender.com`;
+      }
       return `https://${derivedHost}`;
+    }
+
+    // Fallback if hostname is short Render hostname
+    if (!hostname.includes('.')) {
+      return `https://${hostname.replace('-frontend', '-backend')}.onrender.com`;
     }
 
     // Default origin fallback
