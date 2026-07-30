@@ -388,29 +388,6 @@ export const MovieProvider = ({ children }) => {
     return generateShareableURL(p1Likes, filters, customMovieIds, activePack?.id);
   };
 
-  // Theme State ('dark' | 'light')
-  const [theme, setThemeState] = useState(() => {
-    return localStorage.getItem('movie_match_theme') || 'dark';
-  });
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light-mode');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light-mode');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setThemeState(prev => {
-      const nextTheme = prev === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('movie_match_theme', nextTheme);
-      return nextTheme;
-    });
-  };
-
   const value = {
     mode,
     setMode,
@@ -447,9 +424,7 @@ export const MovieProvider = ({ children }) => {
     startPlayer2Turn,
     resetSession,
     getShareLink,
-    canUndo: history.length > 0,
-    theme,
-    toggleTheme
+    canUndo: history.length > 0
   };
 
   return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useMovieContext } from '../context/MovieContext';
 import { useAuth } from '../context/AuthContext';
-import { Sliders, Share2, Layers, User, UserCheck, Play, RefreshCw } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { Sliders, Share2, Layers, User, UserCheck, Play, RefreshCw, Sun, Moon } from 'lucide-react';
 import FilterModal from './FilterModal';
 import CustomListModal from './CustomListModal';
 import AuthModal from './AuthModal';
@@ -10,6 +11,7 @@ import HostSessionModal from './HostSessionModal';
 export default function Navbar() {
   const { mode, setMode, resetSession, activePack, customMovieIds, onlineSessionId, getShareLink } = useMovieContext();
   const { user, isAuthenticated } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isCustomListOpen, setIsCustomListOpen] = useState(false);
@@ -20,7 +22,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 px-6 sm:px-8 py-5 bg-gradient-to-b from-stone-900/40 to-transparent pointer-events-none">
+      <header className="fixed top-0 left-0 w-full z-50 px-6 sm:px-8 py-6 bg-gradient-to-b from-stone-950/70 via-stone-900/40 to-transparent pointer-events-none">
         <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
           {/* Minimal Text Logo */}
           <div onClick={() => resetSession()} className="cursor-pointer">
@@ -63,11 +65,11 @@ export default function Navbar() {
               <Layers strokeWidth={1.25} className="w-5 h-5" />
             </button>
 
-            {/* Filter Catalog */}
+            {/* Settings (Filters & Appearance) */}
             <button
               onClick={() => setIsFilterOpen(true)}
               className="text-stone-50 opacity-60 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-              title="Filter Catalog"
+              title="Settings"
             >
               <Sliders strokeWidth={1.25} className="w-5 h-5" />
             </button>

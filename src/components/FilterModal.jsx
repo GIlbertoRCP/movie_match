@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMovieContext } from '../context/MovieContext';
+import { useTheme } from '../context/ThemeContext';
 import { TMDB_GENRES, REGIONS, STREAMING_PROVIDERS } from '../services/tmdbApi';
 import { X, Sliders, Star, Globe, Calendar, Check, Tv, Sun, Moon } from 'lucide-react';
 
 export default function FilterModal({ isOpen, onClose }) {
-  const { filters, updateFilters, theme, toggleTheme } = useMovieContext();
+  const { filters, updateFilters } = useMovieContext();
+  const { theme, toggleTheme } = useTheme();
   const [localFilters, setLocalFilters] = useState(filters);
 
   if (!isOpen) return null;
@@ -42,7 +44,7 @@ export default function FilterModal({ isOpen, onClose }) {
                 <Sliders className="w-4 h-4 text-stone-800" />
               </div>
               <h3 className="text-lg font-serif font-normal text-stone-900">
-                Filter Catalog
+                Settings
               </h3>
             </div>
 
@@ -159,6 +161,24 @@ export default function FilterModal({ isOpen, onClose }) {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Appearance / Dark Mode Toggle */}
+          <div className="space-y-2 pt-2 border-t border-stone-200">
+            <label className="text-xs font-sans font-medium text-stone-600 uppercase tracking-wider block">
+              Appearance
+            </label>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="w-full flex items-center justify-between p-3 rounded-xl border border-stone-300/80 bg-[#FFFDF9] text-stone-800 text-xs font-sans font-medium hover:bg-stone-100 transition-all cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                {theme === 'dark' ? <Moon className="w-4 h-4 text-indigo-600" /> : <Sun className="w-4 h-4 text-amber-600" />}
+                <span>Appearance: {theme === 'dark' ? 'Dark Obsidian' : 'Light Studio'}</span>
+              </div>
+              <span className="text-[10px] text-stone-500 uppercase tracking-wider">Toggle</span>
+            </button>
           </div>
 
           {/* Apply Button */}

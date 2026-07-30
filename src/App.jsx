@@ -1,6 +1,7 @@
 import React from 'react';
 import { MovieProvider, useMovieContext } from './context/MovieContext';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import CardStack from './components/CardStack';
 import TransitionScreen from './components/TransitionScreen';
@@ -55,10 +56,12 @@ function MainApp() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <MovieProvider>
-        <MainApp />
-      </MovieProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <MovieProvider>
+          <MainApp />
+        </MovieProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

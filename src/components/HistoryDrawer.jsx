@@ -1,19 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Drawer } from 'vaul';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMovieContext } from '../context/MovieContext';
 import { useAuth } from '../context/AuthContext';
+import { ThemeContext, useTheme } from '../context/ThemeContext';
 import { Heart, Sparkles, X, Settings, ArrowLeft, Sun, Moon, RefreshCw } from 'lucide-react';
 
 const DEFAULT_POSTER = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80";
 
 export default function HistoryDrawer() {
   // ── Theme & Session Context ──────────────────────────────────────────
-  const { p1Likes, p2Likes, deck, theme, toggleTheme, resetSession } = useMovieContext();
+  const { theme, toggleTheme } = useTheme();
+  const { p1Likes, p2Likes, deck, resetSession } = useMovieContext();
   const { user, isAuthenticated, logout } = useAuth();
 
   // ── Internal View State ──────────────────────────────────────────────
   const [activeView, setActiveView] = useState('history'); // 'history' | 'settings'
+
+  // ── Responsive Viewport Detection for Vaul Direction ─────────────────
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 768px)');
+    const handler = (e) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
 
   // ── Derived Data ─────────────────────────────────────────────────────
   const p1LikedMovies = deck.filter(m => p1Likes.includes(m.id));
@@ -28,10 +45,10 @@ export default function HistoryDrawer() {
   };
 
   return (
-    <Drawer.Root direction="bottom" nested={false}>
-      {/* ── Fixed Bottom Trigger ─────────────────────────────────── */}
+    <Drawer.Root direction={isDesktop ? 'right' : 'bottom'} nested={false}>
+      {/* ── Flat Text-Based Bottom Trigger ─────────────────────────── */}
       <Drawer.Trigger asChild>
-        <button className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 text-stone-600 dark:text-stone-400 font-serif text-xs uppercase tracking-widest hover:text-stone-900 dark:hover:text-stone-100 transition-colors cursor-pointer flex items-center gap-2 bg-[#FBF9F5]/90 dark:bg-[#121110]/90 px-4 py-2 rounded-full border border-stone-300/60 dark:border-stone-800 shadow-sm backdrop-blur-md">
+        <button className="fixed bottom-0 left-1/2 -translate-x-1/2 pb-6 z-40 text-stone-600 dark:text-stone-400 font-serif text-xs uppercase tracking-widest hover:text-stone-900 dark:hover:text-stone-100 transition-colors cursor-pointer flex items-center gap-2 bg-transparent border-0 shadow-none">
           <Heart strokeWidth={1.25} className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300 fill-stone-700 dark:fill-stone-300" />
           <span>Session Picks ({totalLikes})</span>
         </button>
