@@ -16,35 +16,19 @@ const PORT = process.env.PORT || 5001;
 // Trust reverse proxy headers (required on Render, Heroku, Nginx)
 app.set('trust proxy', 1);
 
-// Allowed Origins for CORS Security (Normalizes Render host strings with https://)
-const rawOrigins = [
-  process.env.CLIENT_URL,
-  process.env.FRONTEND_URL,
-  'http://localhost:5173',
-  'http://localhost:3000'
-].filter(Boolean);
-
-const allowedOrigins = [
-  '*',
-  ...rawOrigins.flatMap(url => [
-    url,
-    url.startsWith('http') ? url : `https://${url}`,
-    url.startsWith('http') ? url : `http://${url}`
-  ])
-];
-
-app.use(cors({
+// Permissive CORS middleware for cross-origin authentication & API requests
+const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin) || origin.endsWith('.onrender.com')) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Permissive fallback
-    }
+    // Reflect origin dynamically to satisfy credentials: true specification across browsers
+    callback(null, true);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-tmdb-key'],
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 

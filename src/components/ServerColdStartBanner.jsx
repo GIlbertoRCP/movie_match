@@ -11,16 +11,15 @@ export default function ServerColdStartBanner() {
   useEffect(() => {
     let timeoutId;
     let isSubscribed = true;
-    let retries = 0;
 
     async function checkServerHealth() {
-      // Set 3 second threshold for cold start notification
+      // Set 4 second threshold for cold start notification
       timeoutId = setTimeout(() => {
         if (isSubscribed && !dismissed) {
           setIsWaking(true);
           setIsReady(false);
         }
-      }, 3000);
+      }, 4000);
 
       try {
         const start = Date.now();
@@ -31,31 +30,20 @@ export default function ServerColdStartBanner() {
 
         if (res.ok && isSubscribed) {
           setIsReady(true);
-          if (elapsed > 3000) {
+          if (elapsed > 4000) {
             setTimeout(() => {
               if (isSubscribed) setIsWaking(false);
-            }, 2000);
+            }, 2500);
           } else {
             setIsWaking(false);
           }
         } else if (isSubscribed) {
-          retries += 1;
-          if (retries < 3) {
-            setTimeout(checkServerHealth, 5000);
-          } else {
-            // Auto-hide after 3 retries so user is not stuck
-            setIsWaking(false);
-          }
+          setIsWaking(false);
         }
       } catch (err) {
+        clearTimeout(timeoutId);
         if (isSubscribed) {
-          retries += 1;
-          if (retries < 3) {
-            setTimeout(checkServerHealth, 5000);
-          } else {
-            // Auto-hide after 3 retries to prevent blocking UI
-            setIsWaking(false);
-          }
+          setIsWaking(false);
         }
       }
     }
@@ -73,25 +61,26 @@ export default function ServerColdStartBanner() {
   return (
     <AnimatePresence>
       <motion.div
+        id="server-cold-start-banner"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -50, opacity: 0 }}
-        className="fixed top-16 left-1/2 -translate-x-1/2 z-50 max-w-md w-[92%] p-3.5 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-cyan-500/30 text-slate-100 shadow-2xl shadow-cyan-950/30 flex items-center justify-between gap-3"
+        className="fixed top-16 left-1/2 -translate-x-1/2 z-50 max-w-md w-[92%] p-3.5 rounded-2xl bg-stone-900/95 dark:bg-stone-100/95 text-stone-100 dark:text-stone-900 backdrop-blur-xl border border-stone-700/60 dark:border-stone-300/60 shadow-2xl flex items-center justify-between gap-3"
       >
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex-shrink-0">
+          <div className="p-2 rounded-xl bg-stone-800 dark:bg-stone-200 border border-stone-700 dark:border-stone-300 text-stone-300 dark:text-stone-700 flex-shrink-0">
             {!isReady ? (
-              <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+              <Loader2 className="w-4 h-4 animate-spin text-stone-300 dark:text-stone-700" />
             ) : (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-600" />
             )}
           </div>
 
           <div>
-            <h4 className="text-xs font-black text-slate-100 flex items-center gap-1.5">
+            <h4 className="text-xs font-serif font-normal text-stone-100 dark:text-stone-900 flex items-center gap-1.5">
               {!isReady ? 'Waking Up Movie Server...' : 'Server Connected!'}
             </h4>
-            <p className="text-[11px] text-slate-400 font-medium">
+            <p className="text-[11px] font-sans font-light text-stone-400 dark:text-stone-600">
               {!isReady
                 ? 'Server is spinning up from sleep mode (~30s on free hosting)'
                 : 'Backend active & ready'}
@@ -104,7 +93,7 @@ export default function ServerColdStartBanner() {
             setDismissed(true);
             setIsWaking(false);
           }}
-          className="p-1.5 rounded-full bg-slate-950/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-colors flex-shrink-0 cursor-pointer"
+          className="p-1.5 rounded-full bg-stone-800/80 dark:bg-stone-200/80 hover:bg-stone-700 dark:hover:bg-stone-300 text-stone-400 dark:text-stone-600 hover:text-stone-100 dark:hover:text-stone-900 border border-stone-700/60 dark:border-stone-300/60 transition-colors flex-shrink-0 cursor-pointer"
           title="Dismiss Banner"
         >
           <X className="w-3.5 h-3.5" />

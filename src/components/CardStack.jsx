@@ -51,7 +51,7 @@ export default function CardStack() {
     if (typeof document === 'undefined') return false;
     if (document.querySelector('input:focus, textarea:focus, select:focus')) return true;
     
-    const modals = document.querySelectorAll('[role="dialog"], .z-50.fixed:not(.pointer-events-none)');
+    const modals = document.querySelectorAll('[role="dialog"], .z-50.fixed:not(.pointer-events-none):not(#server-cold-start-banner)');
     return modals.length > 0;
   };
 
