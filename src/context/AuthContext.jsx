@@ -51,34 +51,54 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
-  // Helper for safe fetch handling
-  const safeAuthFetch = async (url, bodyData) => {
-    let res;
-    try {
-      res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyData)
-      });
-    } catch (networkErr) {
-      console.error('Network connection error during auth fetch:', networkErr);
-      throw new Error(
-        'Unable to reach server. The backend may be waking up from sleep mode (~30s on free hosting)—please wait a few seconds and try again.'
-      );
+  // Helper for safe fetch handling with automatic retry for server spin-up
+  const safeAuthFetch = async (url, bodyData, retries = 3) => {
+    let lastError;
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyData)
+        });
+
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (parseErr) {
+          // Non-JSON response
+        }
+
+        if (!res.ok) {
+          throw new Error(data.error || data.message || `Authentication failed (Status ${res.status})`);
+        }
+
+        return data;
+      } catch (err) {
+        lastError = err;
+        console.warn(`Auth attempt ${attempt}/${retries} failed for ${url}:`, err.message);
+
+        // If it's a validation error or user exists error, throw immediately without retrying
+        if (
+          err.message.includes('already exists') ||
+          err.message.includes('required') ||
+          err.message.includes('must be at least') ||
+          err.message.includes('Invalid')
+        ) {
+          throw err;
+        }
+
+        if (attempt < retries) {
+          // Wait 2.5 seconds before retrying (gives sleeping free-tier backend time to complete cold-start)
+          await new Promise(resolve => setTimeout(resolve, 2500));
+        }
+      }
     }
 
-    let data = {};
-    try {
-      data = await res.json();
-    } catch (parseErr) {
-      // Non-JSON response
-    }
-
-    if (!res.ok) {
-      throw new Error(data.error || data.message || `Authentication failed (Status ${res.status})`);
-    }
-
-    return data;
+    throw new Error(
+      lastError?.message || 'Unable to reach server. The backend may be waking up from sleep mode (~30s on free hosting)—please wait a few seconds and try again.'
+    );
   };
 
   // Login action

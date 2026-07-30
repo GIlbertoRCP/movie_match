@@ -1,23 +1,38 @@
-let rawUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_BACKEND_URL) || '';
+// Resolve Backend Base URL automatically across environments
+function getBackendUrl() {
+  // 1. Check explicit environment variable (VITE_BACKEND_URL)
+  let url = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_BACKEND_URL) || '';
 
-if (typeof window !== 'undefined') {
-  if (rawUrl) {
-    if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
-      rawUrl = `https://${rawUrl}`;
+  if (url) {
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = `https://${url}`;
     }
-    // Force HTTPS when host page is loaded over HTTPS to eliminate Mixed Content blocking
-    if (window.location.protocol === 'https:' && rawUrl.startsWith('http://') && !rawUrl.includes('localhost') && !rawUrl.includes('127.0.0.1')) {
-      rawUrl = rawUrl.replace('http://', 'https://');
-    }
-  } else {
-    // When VITE_BACKEND_URL is not set, use relative endpoints.
-    // In local Vite dev mode, Vite automatically proxies /api -> http://localhost:5001.
-    // In production, relative /api hits the backend on the current origin.
-    rawUrl = '';
+    return url.replace(/\/$/, '');
   }
-} else if (!rawUrl) {
-  rawUrl = 'http://localhost:5001';
+
+  // 2. Browser Environment Detection
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
+
+    if (isLocal) {
+      // Local development -> express backend runs on port 5001
+      return 'http://localhost:5001';
+    }
+
+    // Hosted Render static site deployment:
+    // Automatically map movie-match-frontend -> movie-match-backend
+    if (hostname.includes('onrender.com')) {
+      const derivedHost = hostname.replace('-frontend', '-backend');
+      return `https://${derivedHost}`;
+    }
+
+    // Default origin fallback
+    return window.location.origin.replace(/\/$/, '');
+  }
+
+  return 'http://localhost:5001';
 }
 
-export const BACKEND_URL = rawUrl ? rawUrl.replace(/\/$/, '') : '';
-export const BACKEND_API = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
+export const BACKEND_URL = getBackendUrl();
+export const BACKEND_API = `${BACKEND_URL}/api`;
