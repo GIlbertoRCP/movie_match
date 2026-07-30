@@ -3,8 +3,31 @@ import { BACKEND_API } from '../config';
 
 const AuthContext = createContext();
 
+// Parse JWT token payload safely without throwing
+function parseJwt(tokenStr) {
+  try {
+    if (!tokenStr) return null;
+    const base64Url = tokenStr.split('.')[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const parsed = JSON.parse(jsonPayload);
+    // Check expiration
+    if (parsed.exp && parsed.exp * 1000 < Date.now()) {
+      return null;
+    }
+    return parsed;
+  } catch (e) {
+    return null;
+  }
+}
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -17,32 +40,73 @@ export const AuthProvider = ({ children }) => {
     }
     return localStorage.getItem('movie_match_jwt_token') || '';
   });
+
+  const [user, setUser] = useState(() => {
+    const payload = parseJwt(token);
+    if (payload) {
+      return { id: payload.id, username: payload.username, email: payload.email };
+    }
+    return null;
+  });
+
   const [loading, setLoading] = useState(true);
 
-  // Check auth on mount if token exists
+  // Check auth on mount or when token updates
   useEffect(() => {
     async function checkAuth() {
       if (!token) {
+        setUser(null);
         setLoading(false);
         return;
       }
 
-      try {
-        const res = await fetch(`${BACKEND_API}/auth/me`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+      const decoded = parseJwt(token);
+      if (!decoded) {
+        // Token has expired
+        logout();
+        setLoading(false);
+        return;
+      }
 
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-        } else {
-          // Token expired or invalid
-          logout();
+      // Preserve decoded user payload immediately
+      setUser(prev => prev || { id: decoded.id, username: decoded.username, email: decoded.email });
+
+      // Verify token with backend candidates
+      try {
+        const candidateUrls = [];
+        if (BACKEND_API) candidateUrls.push(`${BACKEND_API.replace(/\/$/, '')}/auth/me`);
+        candidateUrls.push('/api/auth/me');
+        if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+          candidateUrls.push('http://localhost:5001/api/auth/me');
+        }
+
+        let verified = false;
+        for (const url of candidateUrls) {
+          try {
+            const res = await fetch(url, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.status === 401 || res.status === 403) {
+              // Token invalid according to server
+              logout();
+              return;
+            }
+
+            if (res.ok) {
+              const data = await res.json();
+              if (data.user) {
+                setUser(data.user);
+              }
+              verified = true;
+              break;
+            }
+          } catch (netErr) {
+            // Ignore single candidate network error and try next
+          }
         }
       } catch (err) {
-        console.error('Auth verification failed:', err);
+        console.warn('Auth verification check failed:', err);
       } finally {
         setLoading(false);
       }

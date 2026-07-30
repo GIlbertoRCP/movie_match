@@ -35,21 +35,21 @@ export default function HistoryDrawer() {
 
   return (
     <>
-      {/* Floating Bottom-Right Controls Dock */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-8 z-40 flex items-center gap-2.5">
-        {/* About MovieMatch & How It Works Trigger */}
-        <motion.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          onClick={() => setIsAboutOpen(true)}
-          className="p-2.5 rounded-full bg-stone-900/90 dark:bg-stone-100/95 text-stone-100 dark:text-stone-900 backdrop-blur-md shadow-xl border border-stone-700/60 dark:border-stone-300/60 cursor-pointer flex items-center justify-center"
-          title="About MovieMatch & How It Works"
-        >
-          <HelpCircle strokeWidth={1.5} className="w-4 h-4 text-stone-300 dark:text-stone-700" />
-        </motion.button>
+      <Drawer.Root direction={isDesktop ? 'right' : 'bottom'} nested={false}>
+        {/* Floating Bottom-Right Controls Dock */}
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-8 z-40 flex items-center gap-2.5">
+          {/* About MovieMatch & How It Works Trigger */}
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setIsAboutOpen(true)}
+            className="p-2.5 rounded-full bg-stone-900/90 dark:bg-stone-100/95 text-stone-100 dark:text-stone-900 backdrop-blur-md shadow-xl border border-stone-700/60 dark:border-stone-300/60 cursor-pointer flex items-center justify-center"
+            title="About MovieMatch & How It Works"
+          >
+            <HelpCircle strokeWidth={1.5} className="w-4 h-4 text-stone-300 dark:text-stone-700" />
+          </motion.button>
 
-        {/* Session Picks Drawer Trigger */}
-        <Drawer.Root direction={isDesktop ? 'right' : 'bottom'} nested={false}>
+          {/* Session Picks Drawer Trigger */}
           <Drawer.Trigger asChild>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -63,6 +63,7 @@ export default function HistoryDrawer() {
               </span>
             </motion.button>
           </Drawer.Trigger>
+        </div>
 
         {/* Drawer Shell */}
         <Drawer.Portal>
@@ -155,7 +156,6 @@ export default function HistoryDrawer() {
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
-      </div>
 
       <MovieDetailDrawer
         movie={inspectedMovie}
