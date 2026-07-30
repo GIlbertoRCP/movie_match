@@ -19,14 +19,11 @@ export default function CardStack() {
   } = useMovieContext();
 
   const [detailMovie, setDetailMovie] = useState(null);
+  const currentMovie = deck[currentIndex];
 
-  const visibleCards = deck.slice(currentIndex, currentIndex + 3);
-  const currentMovie = visibleCards[0];
-
-  // Global Keyboard Shortcuts (Arrow keys & Z for undo)
+  // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Don't intercept when modal or drawer is open or input focused
       if (detailMovie || document.querySelector('input:focus')) return;
 
       if (e.key === 'ArrowRight') {
@@ -48,98 +45,52 @@ export default function CardStack() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[460px] p-6 text-center">
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-rose-500 animate-spin p-1">
-            <div className="w-full h-full bg-slate-950 rounded-[12px] flex items-center justify-center">
-              <Sparkles className="w-8 h-8 text-purple-400" />
-            </div>
+          <div className="w-14 h-14 rounded-2xl bg-stone-900 dark:bg-stone-100 flex items-center justify-center shadow-md">
+            <Sparkles className="w-6 h-6 text-stone-100 dark:text-stone-900 animate-spin" />
           </div>
         </div>
-        <p className="mt-4 text-sm font-semibold text-slate-300">Assembling Movie Deck...</p>
-        <p className="text-xs text-slate-500 mt-1">Filtering by TMDB scores & preferences</p>
+        <p className="mt-4 text-sm font-serif font-medium text-stone-900 dark:text-stone-100">Curating Feed...</p>
+        <p className="text-xs font-sans font-light text-stone-500 dark:text-stone-400 mt-1">Filtering catalog by scores & region</p>
       </div>
     );
   }
 
   if (!currentMovie || currentIndex >= deck.length) {
-    return null; // Parent component will show completion or transition screen
+    return null;
   }
 
   return (
-    <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto flex flex-col items-center py-2 px-2 sm:px-4">
+    <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto flex flex-col items-center h-[calc(100vh-4.5rem)] relative">
       {/* Turn Indicator Banner */}
-      <div className="w-full flex items-center justify-between px-2 mb-4">
+      <div className="w-full flex items-center justify-between px-3 py-2 border-b border-stone-200/60 dark:border-stone-800/60 flex-shrink-0 bg-[#FBF9F5]/90 dark:bg-[#121110]/90 backdrop-blur-sm z-20">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-amber-700/60"></span>
-          <span className="text-xs font-sans font-medium uppercase tracking-wider text-stone-600">
+          <span className="w-2 h-2 rounded-full bg-amber-700/80"></span>
+          <span className="text-xs font-sans font-medium uppercase tracking-wider text-stone-700 dark:text-stone-300">
             {phase === 'p1_swiping' ? 'Player 1 Turn' : 'Player 2 Turn'}
           </span>
         </div>
-        <span className="text-xs font-sans font-normal text-stone-500 bg-stone-200/50 px-3 py-1 rounded-full border border-stone-300/40">
-          {currentIndex + 1} of {deck.length}
+        <span className="text-xs font-sans font-light text-stone-500 dark:text-stone-400 bg-stone-200/50 dark:bg-stone-800/60 px-3 py-0.5 rounded-full border border-stone-300/40 dark:border-stone-700/60">
+          Movie {currentIndex + 1} of {deck.length}
         </span>
       </div>
 
-      {/* Cards Stack Container (Editorial Matting Poster Frame) */}
-      <div className="relative w-full aspect-[2/3] h-[560px] sm:h-[640px] lg:h-[680px]">
-        <AnimatePresence>
-          {visibleCards.map((movie, idx) => {
-            const isTop = idx === 0;
-            return (
-              <SwipeableCard
-                key={movie.id}
+      {/* Vertical Snap-Scrolling Container */}
+      <div className="w-full flex-1 overflow-y-scroll snap-y snap-mandatory scroll-smooth scrollbar-none py-2 space-y-6">
+        {deck.slice(currentIndex, currentIndex + 5).map((movie, idx) => {
+          const isFocused = idx === 0;
+          return (
+            <div key={movie.id} className="snap-center min-h-[calc(100vh-8.5rem)] w-full flex items-center justify-center p-2">
+              <VerticalMovieCard
                 movie={movie}
-                index={idx}
-                isTop={isTop}
-                onSwipe={(direction) => handleSwipe(movie, direction)}
+                isFocused={isFocused}
+                onSwipe={(dir) => handleSwipe(movie, dir)}
                 onOpenDetails={() => setDetailMovie(movie)}
+                onUndo={handleUndo}
+                canUndo={canUndo}
               />
-            );
-          })}
-        </AnimatePresence>
-      </div>
-
-      {/* Controls Container (Organic Soft Stone Buttons) */}
-      <div className="w-full flex items-center justify-center gap-5 mt-6">
-        {/* Undo Button */}
-        <button
-          onClick={handleUndo}
-          disabled={!canUndo}
-          className={`relative p-4 rounded-2xl border transition-all duration-300 shadow-sm ${
-            canUndo
-              ? 'bg-[#FFFDF9] text-stone-700 border-stone-200 hover:bg-stone-100 hover:text-stone-900 active:scale-95'
-              : 'bg-stone-100/50 text-stone-300 border-stone-200/50 opacity-40 cursor-not-allowed'
-          }`}
-          title="Undo previous swipe (Keyboard: Z)"
-        >
-          <RotateCcw className="w-5 h-5" />
-        </button>
-
-        {/* Pass Button */}
-        <button
-          onClick={() => handleSwipe(currentMovie, 'left')}
-          className="relative p-5 rounded-2xl bg-[#FFFDF9] text-stone-600 border border-stone-200/90 hover:bg-stone-100 hover:text-stone-900 hover:border-stone-300 active:scale-95 transition-all duration-300 shadow-sm group"
-          title="Pass (Keyboard: ← Left Arrow)"
-        >
-          <X className="w-7 h-7 group-hover:rotate-90 transition-transform duration-300" />
-        </button>
-
-        {/* Info Button */}
-        <button
-          onClick={() => setDetailMovie(currentMovie)}
-          className="relative p-4 rounded-2xl bg-[#FFFDF9] text-stone-700 border border-stone-200 hover:bg-stone-100 hover:text-stone-900 active:scale-95 transition-all duration-300 shadow-sm"
-          title="Movie Info & Streaming Options (Keyboard: ↑ Up Arrow or Space)"
-        >
-          <Info className="w-5 h-5" />
-        </button>
-
-        {/* Like Button */}
-        <button
-          onClick={() => handleSwipe(currentMovie, 'right')}
-          className="relative p-5 rounded-2xl bg-stone-900 text-stone-100 border border-stone-800 hover:bg-stone-800 active:scale-95 transition-all duration-300 shadow-md group"
-          title="Like (Keyboard: → Right Arrow)"
-        >
-          <Heart className="w-7 h-7 fill-stone-100/20 group-hover:fill-stone-100 group-hover:scale-110 transition-transform duration-300" />
-        </button>
+            </div>
+          );
+        })}
       </div>
 
       {/* Detail Drawer */}
@@ -153,54 +104,16 @@ export default function CardStack() {
   );
 }
 
-function SwipeableCard({ movie, index, isTop, onSwipe, onOpenDetails }) {
-  const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-14, 14]);
-  const likeOpacity = useTransform(x, [15, 120], [0, 1]);
-  const passOpacity = useTransform(x, [-15, -120], [0, 1]);
-
-  // Scaled stack effect for cards beneath top
-  const scale = 1 - index * 0.04;
-  const translateY = index * 12;
-
-  const handleDragEnd = (event, info) => {
-    const offset = info.offset.x;
-    const velocity = info.velocity.x;
-
-    if (offset > 100 || velocity > 500) {
-      onSwipe('right');
-    } else if (offset < -100 || velocity < -500) {
-      onSwipe('left');
-    }
-  };
-
+function VerticalMovieCard({ movie, isFocused, onSwipe, onOpenDetails, onUndo, canUndo }) {
   return (
     <motion.div
-      style={{
-        x: isTop ? x : 0,
-        rotate: isTop ? rotate : 0,
-        scale: isTop ? 1 : scale,
-        y: isTop ? 0 : translateY,
-        zIndex: 10 - index
-      }}
-      drag={isTop ? 'x' : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      onDragEnd={handleDragEnd}
-      initial={{ scale: 0.95, opacity: 0 }}
-      animate={{ scale: isTop ? 1 : scale, opacity: 1, y: isTop ? 0 : translateY }}
-      exit={{
-        x: x.get() < 0 ? -300 : 300,
-        opacity: 0,
-        rotate: x.get() < 0 ? -20 : 20,
-        transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
-      }}
-      transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-      className={`absolute inset-0 rounded-3xl poster-matting flex flex-col justify-between select-none cursor-grab active:cursor-grabbing ${
-        isTop ? 'touch-pan-y' : 'pointer-events-none'
-      }`}
+      initial={{ opacity: 0, y: 30, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 180, damping: 24 }}
+      className="editorial-card relative w-full h-[580px] sm:h-[640px] rounded-3xl p-4 sm:p-5 flex flex-col justify-between shadow-sm overflow-hidden"
     >
-      {/* Framed Image Container */}
-      <div className="relative w-full flex-1 rounded-2xl overflow-hidden bg-stone-100">
+      {/* Framed Matting Media Image Container */}
+      <div className="relative w-full flex-1 rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800">
         <img
           src={movie.poster_path || DEFAULT_POSTER}
           alt={movie.title}
@@ -213,53 +126,25 @@ function SwipeableCard({ movie, index, isTop, onSwipe, onOpenDetails }) {
         />
 
         {/* Soft Warm Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-950/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/20 to-transparent pointer-events-none" />
 
-        {/* Dynamic Overlay Stamps (Like / Pass) */}
-        {isTop && (
-          <>
-            {/* LIKE Stamp */}
-            <motion.div
-              style={{ opacity: likeOpacity }}
-              className="absolute top-6 left-6 z-20 transform -rotate-6 border-2 border-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-xl shadow-md pointer-events-none"
-            >
-              <span className="text-xl font-sans font-bold tracking-widest text-emerald-800 uppercase">
-                LIKE
-              </span>
-            </motion.div>
-
-            {/* PASS Stamp */}
-            <motion.div
-              style={{ opacity: passOpacity }}
-              className="absolute top-6 right-6 z-20 transform rotate-6 border-2 border-stone-400 bg-stone-100 px-4 py-1.5 rounded-xl shadow-md pointer-events-none"
-            >
-              <span className="text-xl font-sans font-bold tracking-widest text-stone-700 uppercase">
-                PASS
-              </span>
-            </motion.div>
-          </>
-        )}
-
-        {/* Top Details Badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-          <div className="flex items-center gap-1.5 bg-[#FFFDF9]/90 backdrop-blur-md px-3 py-1 rounded-full border border-stone-200/80 shadow-sm">
-            <Star className="w-3.5 h-3.5 fill-amber-700 text-amber-700" />
-            <span className="text-xs font-sans font-medium text-stone-800">{movie.vote_average}</span>
-          </div>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenDetails();
-            }}
-            className="p-2 rounded-full bg-[#FFFDF9]/90 backdrop-blur-md text-stone-700 hover:text-stone-900 border border-stone-200/80 transition-all pointer-events-auto shadow-sm"
-          >
-            <Info className="w-4 h-4" />
-          </button>
+        {/* Rating Badge */}
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-[#FFFDF9]/90 dark:bg-stone-900/90 backdrop-blur-md px-3 py-1 rounded-full border border-stone-200/80 dark:border-stone-700/80 shadow-sm z-10">
+          <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+          <span className="text-xs font-sans font-medium text-stone-900 dark:text-stone-100">{movie.vote_average}</span>
         </div>
 
-        {/* Bottom Information Container inside framed image */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 z-10 space-y-2 pointer-events-none text-white">
+        {/* Info Trigger Button */}
+        <button
+          onClick={onOpenDetails}
+          className="absolute top-3 right-3 p-2 rounded-full bg-[#FFFDF9]/90 dark:bg-stone-900/90 backdrop-blur-md text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 border border-stone-200/80 dark:border-stone-700/80 transition-all z-10 shadow-sm cursor-pointer"
+          title="Movie Information & Trailers"
+        >
+          <Info className="w-4 h-4" />
+        </button>
+
+        {/* Bottom Information Details Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 z-10 space-y-2 text-white pointer-events-none">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-2xl sm:text-3xl font-serif text-white font-normal leading-snug drop-shadow-sm">
               {movie.title}
@@ -287,6 +172,44 @@ function SwipeableCard({ movie, index, isTop, onSwipe, onOpenDetails }) {
           <p className="text-xs font-sans font-light text-stone-200 line-clamp-2 leading-relaxed opacity-90">
             {movie.overview}
           </p>
+        </div>
+      </div>
+
+      {/* Floating Organic Controls */}
+      <div className="w-full flex items-center justify-between pt-3.5 px-2">
+        <button
+          onClick={onUndo}
+          disabled={!canUndo}
+          className={`p-3 rounded-2xl border transition-all duration-300 shadow-sm ${
+            canUndo
+              ? 'bg-[#FFFDF9] dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700 active:scale-95 cursor-pointer'
+              : 'bg-stone-100/50 dark:bg-stone-900/50 text-stone-300 dark:text-stone-700 border-stone-200/50 dark:border-stone-800 opacity-40 cursor-not-allowed'
+          }`}
+          title="Undo previous pick (Z)"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </button>
+
+        <div className="flex items-center gap-4">
+          {/* Pass Button */}
+          <button
+            onClick={() => onSwipe('left')}
+            className="px-6 py-3 rounded-2xl bg-[#FFFDF9] dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-700 active:scale-95 transition-all duration-300 shadow-sm flex items-center gap-2 cursor-pointer font-sans font-medium text-xs group"
+            title="Pass (← Arrow)"
+          >
+            <X className="w-4 h-4 text-stone-500 group-hover:rotate-90 transition-transform duration-300" />
+            <span>Pass</span>
+          </button>
+
+          {/* Like Button */}
+          <button
+            onClick={() => onSwipe('right')}
+            className="px-7 py-3 rounded-2xl bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 border border-stone-800 dark:border-stone-200 hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-95 transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer font-sans font-medium text-xs group"
+            title="Like (→ Arrow)"
+          >
+            <Heart className="w-4 h-4 fill-stone-100 dark:fill-stone-900 group-hover:scale-110 transition-transform duration-300" />
+            <span>Like</span>
+          </button>
         </div>
       </div>
     </motion.div>
