@@ -115,8 +115,8 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
-  // Helper for safe fetch handling with multi-endpoint resolution & automatic retries
-  const safeAuthFetch = async (path, bodyData, retriesPerUrl = 2) => {
+  // Helper for safe fetch handling with multi-endpoint resolution
+  const safeAuthFetch = async (path, bodyData) => {
     const candidateUrls = [];
 
     // 1. Primary BACKEND_API endpoint
@@ -144,55 +144,68 @@ export const AuthProvider = ({ children }) => {
     let lastError;
 
     for (const targetUrl of candidateUrls) {
-      for (let attempt = 1; attempt <= retriesPerUrl; attempt++) {
+      try {
+        console.log(`[Auth] Executing fetch to candidate URL: ${targetUrl}`);
+        const res = await fetch(targetUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyData)
+        });
+
+        // Parse JSON response
+        let data = {};
         try {
-          const res = await fetch(targetUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyData)
-          });
+          data = await res.json();
+        } catch (parseErr) {
+          // If response was not JSON (e.g. static HTML 200 index.html), skip this candidate URL
+          console.warn(`[Auth] Candidate URL ${targetUrl} returned non-JSON response, skipping.`);
+          continue;
+        }
 
-          let data = {};
-          try {
-            data = await res.json();
-          } catch (parseErr) {
-            // Non-JSON response
-          }
+        // If server responded with an error status (400, 401, 409, 500),
+        // THROW the exact server error message immediately!
+        if (!res.ok) {
+          const serverErrorMessage = data.error || data.message || `Authentication failed (Status ${res.status})`;
+          console.error(`[Auth] Server returned error (${res.status}):`, serverErrorMessage);
+          throw new Error(serverErrorMessage);
+        }
 
-          if (!res.ok) {
-            throw new Error(data.error || data.message || `Authentication failed (Status ${res.status})`);
-          }
+        // Verify that the response contains a valid token and user payload
+        if (!data || !data.token) {
+          console.warn(`[Auth] Candidate URL ${targetUrl} responded OK but missing token, skipping.`);
+          continue;
+        }
 
-          return data;
-        } catch (err) {
-          lastError = err;
-          console.warn(`Auth attempt ${attempt}/${retriesPerUrl} failed for ${targetUrl}:`, err.message);
+        return data;
+      } catch (err) {
+        lastError = err;
 
-          // Validation or user exists errors should fail immediately and notify user
-          if (
-            err.message.includes('already exists') ||
-            err.message.includes('required') ||
-            err.message.includes('must be at least') ||
-            err.message.includes('Invalid')
-          ) {
-            throw err;
-          }
+        // If this is an explicit server error message (from throw new Error(serverErrorMessage) above),
+        // ALWAYS rethrow immediately so the UI displays the error feedback!
+        const isNetworkError =
+          !err.message ||
+          err.message.includes('Failed to fetch') ||
+          err.message.includes('NetworkError') ||
+          err.message.includes('Network Error') ||
+          err.message.includes('Load failed');
 
-          if (attempt < retriesPerUrl) {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-          }
+        if (!isNetworkError) {
+          throw err;
         }
       }
     }
 
     throw new Error(
-      lastError?.message || 'Unable to reach backend server. Please verify network connection or try again in a few seconds.'
+      lastError?.message || 'Unable to reach backend server. Please check your network connection or try again.'
     );
   };
 
   // Login action
   const login = async (usernameOrEmail, password) => {
     const data = await safeAuthFetch('/auth/login', { usernameOrEmail, password });
+    if (!data || !data.token || !data.user) {
+      throw new Error('Authentication failed: Missing token in response.');
+    }
     localStorage.setItem('movie_match_jwt_token', data.token);
     setToken(data.token);
     setUser(data.user);
@@ -202,6 +215,9 @@ export const AuthProvider = ({ children }) => {
   // Register action
   const register = async (username, email, password) => {
     const data = await safeAuthFetch('/auth/register', { username, email, password });
+    if (!data || !data.token || !data.user) {
+      throw new Error('Registration failed: Missing token in response.');
+    }
     localStorage.setItem('movie_match_jwt_token', data.token);
     setToken(data.token);
     setUser(data.user);
