@@ -22,21 +22,21 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 w-full bg-[#FBF9F5]/90 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-8 py-3.5">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      <header className="fixed top-0 left-0 right-0 z-50 px-6 sm:px-10 py-5 bg-gradient-to-b from-stone-950/90 via-stone-950/40 to-transparent pointer-events-none transition-opacity duration-300">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 pointer-events-auto">
           {/* Logo & Title */}
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => resetSession()}>
-            <div className="w-9 h-9 rounded-xl bg-[#FFFDF9] border border-stone-300/80 p-0.5 shadow-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-              <Film className="w-4 h-4 text-stone-800" />
+            <div className="w-8 h-8 flex items-center justify-center text-white opacity-80 group-hover:opacity-100 transition-opacity">
+              <Film className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-serif text-stone-900 tracking-tight flex items-center gap-2">
+              <h1 className="text-lg font-serif text-white tracking-tight flex items-center gap-2 drop-shadow-sm font-normal">
                 Movie Match
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-sans font-medium uppercase tracking-widest bg-stone-200/70 text-stone-700">
-                  EDITION
+                <span className="text-[10px] font-sans font-light uppercase tracking-widest text-stone-300 opacity-75">
+                  EDITORIAL
                 </span>
               </h1>
-              <p className="text-[10px] font-sans font-light text-stone-500 uppercase tracking-widest hidden sm:block">
+              <p className="text-[10px] font-sans font-light text-stone-300 opacity-70 uppercase tracking-widest hidden sm:block">
                 {onlineSessionId
                   ? `Room #${onlineSessionId} • ${onlineRole === 'p1' ? 'Host' : 'Partner'}`
                   : activePack
@@ -44,104 +44,96 @@ export default function Navbar() {
                   : customMovieIds.length > 0
                   ? `Custom Deck (${customMovieIds.length})`
                   : mode === 'couch'
-                  ? 'Pass & Play Mode'
-                  : 'Link Share Mode'}
+                  ? 'Pass & Play'
+                  : 'Link Share'}
               </p>
             </div>
           </div>
 
-          {/* Mode Switcher Segmented Control */}
-          <div className="flex items-center bg-stone-200/50 p-1 rounded-xl border border-stone-300/40">
+          {/* Mode Switcher Flat Controls */}
+          <div className="flex items-center gap-5">
             <button
               onClick={() => setMode('couch')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all duration-300 ${
-                mode === 'couch'
-                  ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
-                  : 'text-stone-600 hover:text-stone-900'
+              className={`text-xs font-sans font-medium transition-opacity duration-300 flex items-center gap-1.5 cursor-pointer ${
+                mode === 'couch' ? 'text-white opacity-100' : 'text-stone-300 opacity-50 hover:opacity-90'
               }`}
               title="Pass & Play on the same phone"
             >
-              <Users className="w-3.5 h-3.5 text-stone-600" />
+              <Users className="w-4 h-4" />
               <span className="hidden xs:inline">Couch</span>
             </button>
 
             <button
               onClick={() => setMode('async')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-sans font-medium transition-all duration-300 ${
-                mode === 'async'
-                  ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
-                  : 'text-stone-600 hover:text-stone-900'
+              className={`text-xs font-sans font-medium transition-opacity duration-300 flex items-center gap-1.5 cursor-pointer ${
+                mode === 'async' ? 'text-white opacity-100' : 'text-stone-300 opacity-50 hover:opacity-90'
               }`}
               title="Share link with remote partner"
             >
-              <Share2 className="w-3.5 h-3.5 text-stone-600" />
+              <Share2 className="w-4 h-4" />
               <span className="hidden xs:inline">Link Share</span>
             </button>
           </div>
 
-          {/* Right Action Bar */}
-          <div className="flex items-center gap-2">
+          {/* Right Action Icons (Flat, Transparent with Opacity Hover) */}
+          <div className="flex items-center gap-4">
             {/* Host Session Button */}
             <button
               onClick={() => setIsHostSessionOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-stone-900 text-stone-100 font-sans font-medium text-xs shadow-sm hover:bg-stone-800 active:scale-95 transition-all duration-300 flex items-center gap-1.5"
+              className="text-white opacity-70 hover:opacity-100 transition-opacity duration-300 text-xs font-sans font-medium flex items-center gap-1.5 cursor-pointer"
               title="Host Match Session"
             >
-              <Play className="w-3.5 h-3.5 fill-stone-100" />
+              <Play className="w-4 h-4 fill-white" />
               <span className="hidden md:inline">Host Session</span>
             </button>
 
             {/* User Auth Button */}
             <button
               onClick={() => setIsAuthOpen(true)}
-              className={`p-2.5 rounded-xl transition-all duration-300 border ${
-                isAuthenticated
-                  ? 'text-stone-900 border-stone-400 bg-stone-200/60 shadow-sm'
-                  : 'text-stone-600 hover:text-stone-900 bg-[#FFFDF9] border-stone-300/80 hover:bg-stone-100'
+              className={`transition-opacity duration-300 cursor-pointer ${
+                isAuthenticated ? 'text-emerald-300 opacity-90 hover:opacity-100' : 'text-white opacity-70 hover:opacity-100'
               }`}
               title={isAuthenticated ? `Logged in as ${user.username}` : 'Log In / Authentik SSO'}
             >
-              {isAuthenticated ? <UserCheck className="w-4 h-4 text-stone-900" /> : <User className="w-4 h-4 text-stone-600" />}
+              {isAuthenticated ? <UserCheck className="w-4.5 h-4.5 text-emerald-300" /> : <User className="w-4.5 h-4.5 text-white" />}
             </button>
 
             {/* Custom Lists & Theme Packs Trigger */}
             <button
               onClick={() => setIsCustomListOpen(true)}
-              className={`p-2.5 rounded-xl transition-all duration-300 border ${
-                isCustomActive
-                  ? 'text-stone-900 border-stone-400 bg-stone-200/60 shadow-sm'
-                  : 'text-stone-600 hover:text-stone-900 bg-[#FFFDF9] border-stone-300/80 hover:bg-stone-100'
+              className={`transition-opacity duration-300 cursor-pointer ${
+                isCustomActive ? 'text-amber-300 opacity-90 hover:opacity-100' : 'text-white opacity-70 hover:opacity-100'
               }`}
               title="Curated Series & Custom Watchlists"
             >
-              <Layers className="w-4 h-4 text-stone-600" />
+              <Layers className="w-4.5 h-4.5 text-white" />
             </button>
 
             {/* Filter Trigger */}
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="p-2.5 rounded-xl bg-[#FFFDF9] dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 transition-all duration-300 border border-stone-300/80 dark:border-stone-700"
+              className="text-white opacity-70 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
               title="Genre & Rating Filters"
             >
-              <Sliders className="w-4 h-4" />
+              <Sliders className="w-4.5 h-4.5" />
             </button>
 
             {/* Theme Toggle (Light / Dark Mode) */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-[#FFFDF9] dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 transition-all duration-300 border border-stone-300/80 dark:border-stone-700 cursor-pointer"
+              className="text-white opacity-70 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-stone-700" />}
+              {theme === 'dark' ? <Sun className="w-4.5 h-4.5 text-amber-300" /> : <Moon className="w-4.5 h-4.5 text-stone-200" />}
             </button>
 
             {/* Reset Session */}
             <button
               onClick={() => resetSession()}
-              className="p-2.5 rounded-xl bg-[#FFFDF9] dark:bg-stone-800 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-all duration-300 border border-stone-300/80 dark:border-stone-700"
+              className="text-white opacity-60 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
               title="Reset Deck & Session"
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className="w-4.5 h-4.5" />
             </button>
           </div>
         </div>
