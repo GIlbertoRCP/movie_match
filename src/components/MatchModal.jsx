@@ -13,7 +13,7 @@ export default function MatchModal() {
   useEffect(() => {
     if (isMatchModalOpen && matchedMovie) {
       // Fire celebratory confetti cannons
-      const count = 200;
+      const count = 160;
       const defaults = { origin: { y: 0.7 } };
 
       function fire(particleRatio, opts) {
@@ -24,11 +24,9 @@ export default function MatchModal() {
         });
       }
 
-      fire(0.25, { spread: 26, startVelocity: 55 });
+      fire(0.25, { spread: 26, startVelocity: 45 });
       fire(0.2, { spread: 60 });
-      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-      fire(0.1, { spread: 120, startVelocity: 45 });
+      fire(0.35, { spread: 90, decay: 0.91, scalar: 0.8 });
     }
   }, [isMatchModalOpen, matchedMovie]);
 
@@ -37,7 +35,7 @@ export default function MatchModal() {
   return (
     <AnimatePresence>
       {isMatchModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 backdrop-blur-sm">
           {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -49,77 +47,74 @@ export default function MatchModal() {
 
           {/* Modal Card */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0, y: 20 }}
+            initial={{ scale: 0.95, opacity: 0, y: 15 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            className="relative w-full max-w-md bg-slate-900 border border-purple-500/30 rounded-3xl shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            exit={{ scale: 0.95, opacity: 0, y: 15 }}
+            transition={{ type: 'spring', damping: 24, stiffness: 280 }}
+            className="relative w-full max-w-md bg-[#FFFDF9] dark:bg-[#1C1A17] border border-stone-200/80 dark:border-stone-800 rounded-3xl shadow-xl overflow-hidden z-10 max-h-[90vh] flex flex-col text-stone-900 dark:text-stone-100"
           >
             {/* Header Backdrop & Match Title */}
-            <div className="relative h-56 w-full bg-slate-950 flex-shrink-0">
+            <div className="relative h-52 w-full bg-stone-900 flex-shrink-0 overflow-hidden">
               {matchedMovie.backdrop_path ? (
                 <img
                   src={matchedMovie.backdrop_path}
                   alt={matchedMovie.title}
                   onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_POSTER; }}
-                  className="w-full h-full object-cover opacity-60"
+                  className="w-full h-full object-cover opacity-50"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-purple-900 to-rose-900 flex items-center justify-center">
-                  <Film className="w-20 h-20 text-slate-700" />
+                <div className="w-full h-full bg-stone-900 flex items-center justify-center">
+                  <Film className="w-16 h-16 text-stone-700" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#FFFDF9] dark:from-[#1C1A17] via-stone-950/40 to-transparent" />
 
               {/* Close Button */}
               <button
                 onClick={() => setIsMatchModalOpen(false)}
-                className="absolute top-3 right-3 p-2 rounded-full bg-slate-950/60 text-slate-300 hover:text-white backdrop-blur-md border border-slate-700/50 transition-all"
+                className="absolute top-3 right-3 p-1.5 rounded-full bg-stone-950/60 text-stone-300 hover:text-white backdrop-blur-md border border-stone-700/50 transition-all cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X strokeWidth={1.25} className="w-5 h-5" />
               </button>
 
               {/* Celebratory Banner */}
-              <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-rose-600 text-white text-xs font-black uppercase tracking-widest px-3.5 py-1.5 rounded-full shadow-lg border border-purple-400/30 animate-pulse-subtle">
-                <Sparkles className="w-4 h-4 text-amber-300" />
+              <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-amber-700 text-white text-[11px] font-sans font-medium uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                <Sparkles strokeWidth={1.25} className="w-3.5 h-3.5" />
                 <span>IT'S A MATCH!</span>
               </div>
 
-              {/* Poster and Title */}
-              <div className="absolute bottom-3 left-4 right-4 flex items-end gap-4">
+              {/* Poster and Title Overlay */}
+              <div className="absolute bottom-3 left-4 right-4 flex items-end gap-3.5">
                 <img
                   src={matchedMovie.poster_path || DEFAULT_POSTER}
                   alt={matchedMovie.title}
                   onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_POSTER; }}
-                  className="w-24 aspect-[2/3] object-cover rounded-2xl shadow-2xl border-2 border-purple-500/60"
+                  className="w-20 aspect-[2/3] object-cover rounded-xl shadow-lg border border-stone-200/80 dark:border-stone-700 flex-shrink-0"
                 />
-                <div className="flex-1 pb-1">
-                  <div className="flex items-center gap-1 text-emerald-400 text-xs font-bold mb-1">
-                    <Heart className="w-3.5 h-3.5 fill-emerald-400" />
+                <div className="flex-1 min-w-0 pb-1">
+                  <div className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 text-xs font-sans font-medium mb-0.5">
+                    <Heart strokeWidth={1.25} className="w-3.5 h-3.5 fill-emerald-700 dark:fill-emerald-400 text-emerald-700 dark:text-emerald-400" />
                     <span>Both of you liked this movie!</span>
                   </div>
-                  <h2 className="text-2xl font-black text-white leading-tight drop-shadow-md">
+                  <h2 className="text-xl font-serif font-normal text-stone-900 dark:text-stone-100 leading-snug truncate">
                     {matchedMovie.title}
                   </h2>
-                  <div className="flex items-center gap-2 text-xs text-slate-300 mt-1">
-                    <span className="flex items-center gap-1 font-bold text-amber-400">
-                      <Star className="w-3.5 h-3.5 fill-amber-400" />
+                  <div className="flex items-center gap-2 text-xs font-sans font-light text-stone-600 dark:text-stone-400 mt-0.5">
+                    <span className="flex items-center gap-1 font-medium text-amber-700 dark:text-amber-500">
+                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                       {matchedMovie.vote_average}
                     </span>
                     <span>•</span>
-                    <span className="flex items-center gap-1 text-slate-400">
-                      <Calendar className="w-3 h-3" />
-                      {matchedMovie.release_date?.split('-')[0]}
-                    </span>
+                    <span>{matchedMovie.release_date?.split('-')[0]}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Scrollable Content */}
-            <div className="p-5 overflow-y-auto space-y-5 flex-1">
+            <div className="p-5 overflow-y-auto space-y-4 flex-1">
               {/* Synopsis */}
-              <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
+              <p className="text-xs font-sans font-light text-stone-600 dark:text-stone-300 leading-relaxed bg-stone-100/70 dark:bg-stone-900/60 p-3 rounded-2xl border border-stone-200/60 dark:border-stone-800">
                 {matchedMovie.overview}
               </p>
 
@@ -130,16 +125,16 @@ export default function MatchModal() {
               <div className="pt-2 flex flex-col gap-2">
                 <button
                   onClick={() => setIsMatchModalOpen(false)}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-600 text-white font-extrabold text-sm shadow-xl shadow-purple-900/40 hover:opacity-95 active:scale-95 transition-all"
+                  className="w-full py-3.5 rounded-2xl bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 font-sans font-medium text-xs hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-95 transition-all shadow-sm cursor-pointer"
                 >
                   Keep Swiping More Movies
                 </button>
 
                 <button
                   onClick={() => resetSession()}
-                  className="w-full py-2 text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 text-xs font-sans font-light text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <RefreshCw className="w-3.5 h-3.5" />
+                  <RefreshCw strokeWidth={1.25} className="w-3.5 h-3.5" />
                   <span>Start a New Deck</span>
                 </button>
               </div>

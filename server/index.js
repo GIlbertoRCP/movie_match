@@ -13,20 +13,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Allowed Origins for CORS Security
-const allowedOrigins = [
+// Allowed Origins for CORS Security (Normalizes Render host strings with https://)
+const rawOrigins = [
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
   'http://localhost:5173',
   'http://localhost:3000'
 ].filter(Boolean);
 
+const allowedOrigins = [
+  '*',
+  ...rawOrigins.flatMap(url => [
+    url,
+    url.startsWith('http') ? url : `https://${url}`,
+    url.startsWith('http') ? url : `http://${url}`
+  ])
+];
+
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin) || origin.endsWith('.onrender.com')) {
       callback(null, true);
     } else {
-      callback(null, true); // Permissive in dev/testing
+      callback(null, true); // Permissive fallback
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -67,6 +76,27 @@ io.on('connection', (socket) => {
     if (!sessionId) return;
     socket.join(sessionId);
     socket.to(sessionId).emit('participant_joined', { role, timestamp: new Date() });
+  });
+
+  socket.on('leave_session', ({ sessionId, role }) => {
+    if (!sessionId) return;
+    socket.to(sessionId).emit('session_terminated', {
+      message: 'Participant left the session',
+      role,
+      timestamp: new Date()
+    });
+    socket.leave(sessionId);
+  });
+
+  socket.on('disconnecting', () => {
+    for (const room of socket.rooms) {
+      if (room !== socket.id) {
+        socket.to(room).emit('session_terminated', {
+          message: 'Partner closed their window or disconnected',
+          timestamp: new Date()
+        });
+      }
+    }
   });
 
   socket.on('swipe_card', ({ sessionId, player, movieId, isLike }) => {

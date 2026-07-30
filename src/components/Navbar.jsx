@@ -42,18 +42,6 @@ export default function Navbar() {
               <Play strokeWidth={1.25} className="w-5 h-5" />
             </button>
 
-            {/* Share Link Button */}
-            <button
-              onClick={() => {
-                const link = getShareLink();
-                navigator.clipboard.writeText(link);
-              }}
-              className="text-stone-50 opacity-60 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-              title="Share Link"
-            >
-              <Share2 strokeWidth={1.25} className="w-5 h-5" />
-            </button>
-
             {/* Curated Lists & Series */}
             <button
               onClick={() => setIsCustomListOpen(true)}

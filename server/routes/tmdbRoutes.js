@@ -96,13 +96,13 @@ router.get('/videos/:id', async (req, res) => {
 router.get('/discover', async (req, res) => {
   try {
     const clientApiKey = req.headers['x-tmdb-key'];
-    const { genre, minScore, startYear, endYear, sortBy, provider, region } = req.query;
+    const { genre, minScore, startYear, endYear, sortBy, provider, region, page } = req.query;
 
     const params = {
       sort_by: sortBy || 'popularity.desc',
       include_adult: 'false',
       include_video: 'false',
-      page: '1',
+      page: page || '1',
       'vote_count.gte': '100'
     };
 

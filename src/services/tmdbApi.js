@@ -1,4 +1,4 @@
-import { BACKEND_API } from '../config';
+import { BACKEND_API } from '../config.js';
 
 const BACKEND_TMDB_PROXY = `${BACKEND_API}/tmdb`;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
@@ -367,10 +367,16 @@ const DEFAULT_MOCK_PROVIDERS = {
 /**
  * Live search movies by title via Express backend proxy or TMDB API directly
  */
+function getActiveKey(apiKey = null) {
+  const DEFAULT_TMDB_KEY = 'b992337b97dc83be1869733cc4ecb839';
+  const envKey = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_TMDB_API_KEY : null;
+  return apiKey || envKey || DEFAULT_TMDB_KEY;
+}
+
 export async function searchMovies(query = '', apiKey = null) {
   if (!query.trim()) return [];
 
-  const activeKey = apiKey || import.meta.env.VITE_TMDB_API_KEY;
+  const activeKey = getActiveKey(apiKey);
 
   try {
     const headers = {};
@@ -408,8 +414,8 @@ export async function searchMovies(query = '', apiKey = null) {
 /**
  * Fetch movies deck from TMDB or Fallback
  */
-export async function fetchDiscoverMovies(filters = {}, apiKey = null) {
-  const activeKey = apiKey || import.meta.env.VITE_TMDB_API_KEY;
+export async function fetchDiscoverMovies(filters = {}, apiKey = null, page = 1) {
+  const activeKey = getActiveKey(apiKey);
 
   try {
     const headers = {};
@@ -420,6 +426,7 @@ export async function fetchDiscoverMovies(filters = {}, apiKey = null) {
     if (filters.minScore) params.append('minScore', filters.minScore);
     if (filters.startYear) params.append('startYear', filters.startYear);
     if (filters.endYear) params.append('endYear', filters.endYear);
+    params.append('page', page);
 
     const res = await fetch(`${BACKEND_TMDB_PROXY}/discover?${params.toString()}`, { headers });
     if (res.ok) {
@@ -429,11 +436,7 @@ export async function fetchDiscoverMovies(filters = {}, apiKey = null) {
       }
     }
   } catch (err) {
-    // Fallback
-  }
-
-  if (!activeKey) {
-    return filterMockMovies(filters);
+    // Fallback to direct TMDB API call
   }
 
   try {
@@ -443,7 +446,7 @@ export async function fetchDiscoverMovies(filters = {}, apiKey = null) {
       sort_by: filters.sortBy || 'popularity.desc',
       include_adult: 'false',
       include_video: 'false',
-      page: '1',
+      page: String(page),
       'vote_count.gte': '100'
     });
 
@@ -461,21 +464,17 @@ export async function fetchDiscoverMovies(filters = {}, apiKey = null) {
     }
 
     const response = await fetch(`${TMDB_BASE_URL}/discover/movie?${params.toString()}`);
-    if (!response.ok) {
-      console.warn(`TMDB API response status ${response.status}. Switching to curated movies deck...`);
-      return filterMockMovies(filters);
+    if (response.ok) {
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        return data.results.map(movie => formatMovieData(movie));
+      }
     }
-
-    const data = await response.json();
-    if (!data.results || data.results.length === 0) {
-      return filterMockMovies(filters);
-    }
-
-    return data.results.map(movie => formatMovieData(movie));
   } catch (err) {
     console.warn('Unable to connect to TMDB API directly, using curated movie deck fallback.', err);
-    return filterMockMovies(filters);
   }
+
+  return filterMockMovies(filters, page);
 }
 
 /**
@@ -618,7 +617,7 @@ function formatMovieData(movie) {
   };
 }
 
-function filterMockMovies(filters = {}) {
+function filterMockMovies(filters = {}, page = 1) {
   let list = [...MOCK_MOVIES];
 
   if (filters.genreId && filters.genreId !== 'all') {
@@ -639,6 +638,13 @@ function filterMockMovies(filters = {}) {
       const year = parseInt(m.release_date.split('-')[0], 10);
       return year <= Number(filters.endYear);
     });
+  }
+
+  if (page > 1) {
+    return list.map((m, idx) => ({
+      ...m,
+      id: m.id + (page - 1) * 10000 + idx
+    }));
   }
 
   return list.slice(0, 20);

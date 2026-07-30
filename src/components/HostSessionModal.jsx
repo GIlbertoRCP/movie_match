@@ -8,9 +8,14 @@ import { X, Play, Users, UserCheck, Share2, Check, Sparkles, Smartphone, ShieldC
 import confetti from 'canvas-confetti';
 
 export default function HostSessionModal({ isOpen, onClose }) {
-  const { deck, activePack, customMovieIds, setOnlineSessionId, setOnlineRole } = useMovieContext();
+  const { deck, activePack, customMovieIds, p1Likes, setOnlineSessionId, setOnlineRole, setDeck, exitOnlineSession } = useMovieContext();
   const { user } = useAuth();
 
+  const p1LikedMovies = deck.filter(m => p1Likes.includes(m.id));
+  const hasLikedMovies = p1LikedMovies.length > 0;
+
+  // Deck Source Selection Mode: 'liked' | 'current'
+  const [deckSource, setDeckSource] = useState(hasLikedMovies ? 'liked' : 'current');
   const [sessionName, setSessionName] = useState(
     user ? `${user.username}'s Movie Match` : 'Movie Night Match'
   );
@@ -23,11 +28,20 @@ export default function HostSessionModal({ isOpen, onClose }) {
 
   const handleCreateSession = async () => {
     setIsCreating(true);
+
+    // Clear any stale previous session before hosting new session
+    if (exitOnlineSession) {
+      exitOnlineSession();
+    }
     let sessionData = null;
-    const movieIds = deck.map(m => m.id);
+
+    // Use liked movies deck if selected
+    const targetMovies = deckSource === 'liked' && hasLikedMovies
+      ? p1LikedMovies
+      : deck;
+    const movieIds = targetMovies.map(m => m.id);
 
     try {
-      // Attempt backend API call
       const res = await fetch(`${BACKEND_API}/sessions/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -47,7 +61,6 @@ export default function HostSessionModal({ isOpen, onClose }) {
       console.warn('Backend server unavailable, falling back to instant client session code generation.');
     }
 
-    // Always guarantee session creation even if backend port is offline
     if (!sessionData) {
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
       sessionData = {
@@ -63,8 +76,12 @@ export default function HostSessionModal({ isOpen, onClose }) {
       setOnlineSessionId(sessionData.id);
       setOnlineRole('p1');
     }
+    // If hosting with liked movies deck, set active deck
+    if (deckSource === 'liked' && hasLikedMovies) {
+      setDeck(p1LikedMovies);
+    }
     setIsCreating(false);
-    confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+    confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
   };
 
   const handleCopyLink = async () => {
@@ -79,7 +96,7 @@ export default function HostSessionModal({ isOpen, onClose }) {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -89,29 +106,29 @@ export default function HostSessionModal({ isOpen, onClose }) {
         />
 
         <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 10 }}
+          initial={{ scale: 0.95, opacity: 0, y: 10 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 10 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden z-10 p-6 space-y-5"
+          exit={{ scale: 0.95, opacity: 0, y: 10 }}
+          transition={{ type: 'spring', damping: 24, stiffness: 280 }}
+          className="relative w-full max-w-md bg-[#FFFDF9] dark:bg-[#1C1A17] border border-stone-200/80 dark:border-stone-800 rounded-3xl shadow-xl overflow-hidden z-10 p-6 space-y-5 text-stone-900 dark:text-stone-100"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-purple-950/60 text-purple-400 border border-purple-800/40">
-                <Play className="w-5 h-5 fill-purple-400" />
+          <div className="flex items-center justify-between border-b border-stone-200/60 dark:border-stone-800 pb-3.5">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 border border-stone-200/80 dark:border-stone-700">
+                <Play strokeWidth={1.25} className="w-5 h-5 fill-stone-900 dark:fill-stone-100" />
               </div>
               <div>
-                <h3 className="text-lg font-extrabold text-white">Host Match Session</h3>
-                <p className="text-xs text-slate-400">Start a match deck and invite Player 2</p>
+                <h3 className="text-base font-serif font-normal text-stone-900 dark:text-stone-100">Host Session with Friend</h3>
+                <p className="text-xs font-sans font-light text-stone-500 dark:text-stone-400">Share your picks & find mutual matches</p>
               </div>
             </div>
 
             <button
               onClick={onClose}
-              className="p-2 rounded-full bg-slate-950/60 text-slate-400 hover:text-white border border-slate-800 transition-colors"
+              className="p-1.5 rounded-full text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X strokeWidth={1.25} className="w-5 h-5" />
             </button>
           </div>
 
@@ -119,83 +136,117 @@ export default function HostSessionModal({ isOpen, onClose }) {
             <div className="space-y-4">
               {/* Session Name */}
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
-                  Session Name
+                <label className="text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider block px-0.5">
+                  Session Title
                 </label>
                 <input
                   type="text"
                   value={sessionName}
                   onChange={(e) => setSessionName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-xl p-3 outline-none focus:border-purple-500 font-semibold"
+                  className="w-full bg-stone-100/80 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 text-stone-900 dark:text-stone-100 text-xs rounded-2xl p-3 outline-none focus:border-stone-400 font-sans font-medium"
                 />
               </div>
 
-              {/* Current Deck Summary */}
-              <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-400 font-medium">Selected Deck:</span>
-                <span className="font-bold text-purple-300">
-                  {activePack ? activePack.title : customMovieIds.length > 0 ? `Custom (${customMovieIds.length} Movies)` : `Discovery (${deck.length} Movies)`}
-                </span>
-              </div>
-
-              {/* Partner Mode Choice Cards */}
+              {/* Shared Deck Choice */}
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
-                  Player 2 Participation Mode
+                <label className="text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider block px-0.5">
+                  Initial Swiping Deck for Friend
                 </label>
 
-                {/* Guest Mode Card */}
+                {/* Liked Movies Deck Option */}
+                {hasLikedMovies && (
+                  <div
+                    onClick={() => setDeckSource('liked')}
+                    className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                      deckSource === 'liked'
+                        ? 'bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 border-stone-900 dark:border-stone-100 shadow-xs'
+                        : 'bg-stone-100/50 dark:bg-stone-900/50 border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:border-stone-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-xl ${
+                        deckSource === 'liked'
+                          ? 'bg-stone-800 text-stone-100 dark:bg-stone-200 dark:text-stone-900'
+                          : 'bg-stone-200 dark:bg-stone-800 text-stone-800 dark:text-stone-200'
+                      }`}>
+                        <Sparkles strokeWidth={1.25} className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-serif font-normal flex items-center gap-2">
+                          <span>Your Liked Movies Deck ({p1LikedMovies.length})</span>
+                          <span className={`text-[9px] font-sans font-medium px-2 py-0.5 rounded-md ${
+                            deckSource === 'liked'
+                              ? 'bg-stone-800 text-stone-200 dark:bg-stone-200 dark:text-stone-800'
+                              : 'bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300'
+                          }`}>
+                            Recommended
+                          </span>
+                        </h4>
+                        <p className="text-[11px] font-sans font-light opacity-80 mt-0.5">
+                          Friend swipes on your liked movies first for instant matches.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Discovery Catalog Option */}
                 <div
-                  onClick={() => setPartnerMode('guest')}
+                  onClick={() => setDeckSource('current')}
                   className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                    partnerMode === 'guest'
-                      ? 'bg-purple-950/40 border-purple-500 shadow-lg shadow-purple-950/30'
-                      : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
+                    deckSource === 'current'
+                      ? 'bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 border-stone-900 dark:border-stone-100'
+                      : 'bg-stone-100/50 dark:bg-stone-900/50 border-stone-200/60 dark:border-stone-800 hover:border-stone-300'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-purple-900/50 text-purple-300">
-                      <Smartphone className="w-5 h-5" />
+                    <div className="p-2 rounded-xl bg-stone-200 dark:bg-stone-800 text-stone-800 dark:text-stone-200">
+                      <Smartphone strokeWidth={1.25} className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <span>Guest Mode (Instant)</span>
-                        <span className="bg-purple-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">
-                          Zero Setup
-                        </span>
+                      <h4 className="text-xs font-serif font-normal">
+                        Full Catalog Feed ({deck.length} Movies)
                       </h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        Player 2 joins via share link or passes phone. No account required.
+                      <p className="text-[11px] font-sans font-light opacity-80 mt-0.5">
+                        Start with live TMDB discovery feed from page 1.
                       </p>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Logged Account Mode Card */}
-                <div
-                  onClick={() => setPartnerMode('account')}
-                  className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                    partnerMode === 'account'
-                      ? 'bg-emerald-950/40 border-emerald-500 shadow-lg shadow-emerald-950/30'
-                      : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-emerald-900/50 text-emerald-300">
-                      <UserCheck className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <span>Logged Account Mode</span>
-                        <span className="bg-emerald-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">
-                          Saved History
-                        </span>
-                      </h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        Player 2 logs in / uses Authentik SSO. Matches save to user profiles.
-                      </p>
-                    </div>
-                  </div>
+              {/* Partner Participation Mode */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider block px-0.5">
+                  Participation Mode
+                </label>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPartnerMode('guest')}
+                    className={`p-3 rounded-2xl border text-xs font-sans font-medium text-left transition-all cursor-pointer ${
+                      partnerMode === 'guest'
+                        ? 'bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 border-stone-900 dark:border-stone-100'
+                        : 'bg-stone-100/50 dark:bg-stone-900/50 border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-300'
+                    }`}
+                  >
+                    <div>Guest Link</div>
+                    <div className="text-[10px] font-light opacity-80 mt-0.5">No login needed</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPartnerMode('account')}
+                    className={`p-3 rounded-2xl border text-xs font-sans font-medium text-left transition-all cursor-pointer ${
+                      partnerMode === 'account'
+                        ? 'bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 border-stone-900 dark:border-stone-100'
+                        : 'bg-stone-100/50 dark:bg-stone-900/50 border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-300'
+                    }`}
+                  >
+                    <div>User Account</div>
+                    <div className="text-[10px] font-light opacity-80 mt-0.5">Save to history</div>
+                  </button>
                 </div>
               </div>
 
@@ -203,51 +254,51 @@ export default function HostSessionModal({ isOpen, onClose }) {
               <button
                 onClick={handleCreateSession}
                 disabled={isCreating}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-600 text-white font-extrabold text-sm shadow-xl shadow-indigo-950/50 hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-2 border border-indigo-400/30 cursor-pointer"
+                className="w-full py-3.5 rounded-2xl bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 font-sans font-medium text-xs hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
               >
                 {isCreating ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-white" />
+                  <Loader2 className="w-4 h-4 animate-spin text-stone-100 dark:text-stone-900" />
                 ) : (
                   <>
-                    <span>Generate Session Invite</span>
-                    <ArrowRight className="w-5 h-5" />
+                    <span>Generate Session Link</span>
+                    <ArrowRight strokeWidth={1.25} className="w-4 h-4" />
                   </>
                 )}
               </button>
             </div>
           ) : (
-            /* Session Created Invite Card */
+            /* Invite Link Generated */
             <div className="space-y-4 text-center">
-              <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold flex items-center justify-center gap-2">
-                <Check className="w-4 h-4 text-emerald-400" />
-                <span>Session #{createdSession.id} Active & Ready!</span>
+              <div className="p-3 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 text-stone-900 dark:text-stone-100 text-xs font-serif font-normal flex items-center justify-center gap-2">
+                <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                <span>Session #{createdSession.id} Active</span>
               </div>
 
-              <div className="glass-card p-4 rounded-2xl border border-slate-800 space-y-3">
-                <p className="text-xs text-slate-300 font-semibold">
-                  Share this link with Player 2 ({partnerMode === 'guest' ? 'Guest Mode' : 'Account Mode'}):
+              <div className="p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 space-y-3 bg-[#FFFDF9] dark:bg-[#121110]">
+                <p className="text-xs font-sans font-light text-stone-600 dark:text-stone-400">
+                  Share link with your friend:
                 </p>
-                <div className="bg-slate-950 p-3 rounded-xl font-mono text-xs text-cyan-300 truncate border border-slate-800">
+                <div className="bg-stone-100 dark:bg-stone-900 p-3 rounded-xl font-mono text-[11px] text-stone-800 dark:text-stone-200 truncate border border-stone-200/60 dark:border-stone-800">
                   {`${window.location.origin}${window.location.pathname}?session=${createdSession.id}&mode=${partnerMode}`}
                 </div>
 
                 <button
                   onClick={handleCopyLink}
-                  className={`w-full py-3.5 rounded-xl font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+                  className={`w-full py-3 rounded-xl font-sans font-medium text-xs transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer ${
                     copied
-                      ? 'bg-emerald-600 text-white shadow-emerald-900/40'
-                      : 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:opacity-90 active:scale-95 shadow-indigo-950/40 border border-indigo-400/30'
+                      ? 'bg-emerald-800 text-white'
+                      : 'bg-stone-900 dark:bg-stone-100 text-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-95'
                   }`}
                 >
                   {copied ? (
                     <>
                       <Check className="w-4 h-4" />
-                      <span>Invite Link Copied!</span>
+                      <span>Link Copied!</span>
                     </>
                   ) : (
                     <>
                       <Share2 className="w-4 h-4" />
-                      <span>Copy Session Invite Link</span>
+                      <span>Copy Invite Link</span>
                     </>
                   )}
                 </button>
@@ -255,7 +306,7 @@ export default function HostSessionModal({ isOpen, onClose }) {
 
               <button
                 onClick={onClose}
-                className="text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors"
+                className="text-xs font-sans font-light text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors cursor-pointer"
               >
                 Close & Start Swiping
               </button>

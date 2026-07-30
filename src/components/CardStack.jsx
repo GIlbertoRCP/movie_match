@@ -15,11 +15,23 @@ export default function CardStack() {
     handleUndo,
     canUndo,
     filters,
-    phase
+    phase,
+    mode,
+    onlineSessionId,
+    fetchNextPage
   } = useMovieContext();
 
   const [detailMovie, setDetailMovie] = useState(null);
   const currentMovie = deck[currentIndex];
+
+  const showStatusBar = Boolean(onlineSessionId) || mode === 'couch' || phase === 'p2_swiping';
+
+  const handleScroll = (e) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+    if (scrollHeight - scrollTop - clientHeight < 800) {
+      fetchNextPage();
+    }
+  };
 
   // Global Keyboard Shortcuts
   useEffect(() => {
@@ -61,22 +73,9 @@ export default function CardStack() {
 
   return (
     <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto flex flex-col items-center h-[calc(100vh-4.5rem)] relative">
-      {/* Turn Indicator Banner */}
-      <div className="w-full flex items-center justify-between px-3 py-2 border-b border-stone-200/60 dark:border-stone-800/60 flex-shrink-0 bg-[#FBF9F5]/90 dark:bg-[#121110]/90 backdrop-blur-sm z-20">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-amber-700/80"></span>
-          <span className="text-xs font-sans font-medium uppercase tracking-wider text-stone-700 dark:text-stone-300">
-            {phase === 'p1_swiping' ? 'Player 1 Turn' : 'Player 2 Turn'}
-          </span>
-        </div>
-        <span className="text-xs font-sans font-light text-stone-500 dark:text-stone-400 bg-stone-200/50 dark:bg-stone-800/60 px-3 py-0.5 rounded-full border border-stone-300/40 dark:border-stone-700/60">
-          Movie {currentIndex + 1} of {deck.length}
-        </span>
-      </div>
-
       {/* Vertical Snap-Scrolling Container */}
-      <div className="w-full flex-1 overflow-y-scroll snap-y snap-mandatory scroll-smooth scrollbar-none py-2 space-y-6">
-        {deck.slice(currentIndex, currentIndex + 5).map((movie, idx) => {
+      <div onScroll={handleScroll} className="w-full flex-1 overflow-y-scroll snap-y snap-mandatory scroll-smooth scrollbar-none py-2 space-y-6">
+        {deck.slice(currentIndex, deck.length).map((movie, idx) => {
           const isFocused = idx === 0;
           return (
             <div key={movie.id} className="snap-center min-h-[calc(100vh-8.5rem)] w-full flex items-center justify-center p-2">

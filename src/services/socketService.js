@@ -27,9 +27,14 @@ class SocketService {
     s.emit('join_session', { sessionId, role });
   }
 
-  sendSwipe(sessionId, player, movieId, isLike) {
+  leaveSession(sessionId, role = 'p1') {
     const s = this.connect();
-    s.emit('swipe_card', { sessionId, player, movieId, isLike });
+    s.emit('leave_session', { sessionId, role });
+  }
+
+  onSessionTerminated(callback) {
+    const s = this.connect();
+    s.on('session_terminated', callback);
   }
 
   onMatchFound(callback) {

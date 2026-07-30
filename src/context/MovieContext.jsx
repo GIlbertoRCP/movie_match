@@ -77,6 +77,9 @@ export const MovieProvider = ({ children }) => {
     setHistory([]);
   };
 
+  const [page, setPage] = useState(1);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
   // Load Deck based on filters, mode, custom lists or preset packs
   const loadDeck = useCallback(async (currentFilters = filters, isP2LinkMode = false, p1LikedIds = [], targetCustomIds = [], packId = null) => {
     setIsLoadingDeck(true);
@@ -94,19 +97,20 @@ export const MovieProvider = ({ children }) => {
         movies = await fetchMoviesByIds(targetCustomIds, apiKey);
       } else if (isP2LinkMode && p1LikedIds.length > 0) {
         const p1Movies = await fetchMoviesByIds(p1LikedIds, apiKey);
-        const discoverMovies = await fetchDiscoverMovies(currentFilters, apiKey);
+        const discoverMovies = await fetchDiscoverMovies(currentFilters, apiKey, 1);
         
         const existingIds = new Set(p1Movies.map(m => m.id));
         const extraMovies = discoverMovies.filter(m => !existingIds.has(m.id));
-        movies = [...p1Movies, ...extraMovies].slice(0, 20);
+        movies = [...p1Movies, ...extraMovies];
       } else {
         setActivePack(null);
         setCustomMovieIds([]);
-        movies = await fetchDiscoverMovies(currentFilters, apiKey);
+        movies = await fetchDiscoverMovies(currentFilters, apiKey, 1);
       }
 
       setDeck(movies);
       setCurrentIndex(0);
+      setPage(1);
       setHistory([]);
     } catch (err) {
       console.error('Error loading deck:', err);
@@ -114,6 +118,28 @@ export const MovieProvider = ({ children }) => {
       setIsLoadingDeck(false);
     }
   }, [filters, apiKey]);
+
+  // Fetch next page of TMDB movies for infinite scrolling deck
+  const fetchNextPage = useCallback(async () => {
+    if (isFetchingMore || activePack || customMovieIds.length > 0) return;
+    setIsFetchingMore(true);
+    try {
+      const nextPage = page + 1;
+      const newMovies = await fetchDiscoverMovies(filters, apiKey, nextPage);
+      if (newMovies && newMovies.length > 0) {
+        setDeck(prevDeck => {
+          const existingIds = new Set(prevDeck.map(m => m.id));
+          const filteredNew = newMovies.filter(m => !existingIds.has(m.id));
+          return [...prevDeck, ...filteredNew];
+        });
+        setPage(nextPage);
+      }
+    } catch (err) {
+      console.error('Error fetching next page:', err);
+    } finally {
+      setIsFetchingMore(false);
+    }
+  }, [page, isFetchingMore, filters, apiKey, activePack, customMovieIds]);
 
   // Initial check for URL state (Online Room or Async Link Share Mode)
   useEffect(() => {
@@ -161,12 +187,38 @@ export const MovieProvider = ({ children }) => {
     }
   }, [loadDeck]);
 
-  // Real-Time Socket.io WebSockets Room Synchronization & Instant Match Handler
+  // Helper to exit online multiplayer session cleanly
+  const exitOnlineSession = useCallback(() => {
+    if (onlineSessionId) {
+      socketService.leaveSession(onlineSessionId, onlineRole);
+    }
+    setOnlineSessionId(null);
+    setOnlineSessionName(null);
+    setOnlineRole('p1');
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [onlineSessionId, onlineRole]);
+
+  // Real-Time Socket.io WebSockets Room Synchronization & Disconnect Listener
   useEffect(() => {
     if (!onlineSessionId) return;
 
     // Join room via WebSockets
     socketService.joinSession(onlineSessionId, onlineRole);
+
+    // Listen for partner window close or session termination
+    socketService.onSessionTerminated(() => {
+      console.log('Session was terminated by partner or tab close.');
+      exitOnlineSession();
+    });
+
+    // Notify partner if window/tab is closed
+    const handleBeforeUnload = () => {
+      socketService.leaveSession(onlineSessionId, onlineRole);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     // Listen for instant match found emission
     socketService.onMatchFound(async ({ matchedMovieId }) => {
@@ -178,7 +230,6 @@ export const MovieProvider = ({ children }) => {
       if (found) {
         setMatchedMovie(found);
         setIsMatchModalOpen(true);
-        setPhase('matched');
       }
     });
 
@@ -188,38 +239,10 @@ export const MovieProvider = ({ children }) => {
       if (updatedP2) setP2Likes(updatedP2);
     });
 
-    // Fallback polling loop (3s backup)
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`${BACKEND_API}/sessions/${onlineSessionId}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        const s = data.session;
-
-        if (s.p1_likes) setP1Likes(s.p1_likes);
-        if (s.p2_likes) setP2Likes(s.p2_likes);
-
-        if (s.matched_movie_id && !matchedMovie) {
-          let found = deck.find(m => m.id === s.matched_movie_id);
-          if (!found) {
-            const fetched = await fetchMoviesByIds([s.matched_movie_id], apiKey);
-            found = fetched[0];
-          }
-          if (found) {
-            setMatchedMovie(found);
-            setIsMatchModalOpen(true);
-            setPhase('matched');
-          }
-        }
-      } catch (err) {
-        // Backup catch
-      }
-    }, 3000);
-
     return () => {
-      clearInterval(interval);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [onlineSessionId, onlineRole, deck, matchedMovie, apiKey]);
+  }, [onlineSessionId, onlineRole, deck, apiKey, exitOnlineSession]);
 
   // Load a Preset Theme Pack
   const loadPresetPack = (packId) => {
@@ -299,7 +322,11 @@ export const MovieProvider = ({ children }) => {
       }
 
       const nextIdx = currentIndex + 1;
-      if (nextIdx >= deck.length) {
+      if (nextIdx >= deck.length - 5) {
+        fetchNextPage();
+      }
+
+      if (nextIdx >= deck.length && (activePack || customMovieIds.length > 0)) {
         setPhase('p1_finished');
       } else {
         setCurrentIndex(nextIdx);
@@ -318,7 +345,11 @@ export const MovieProvider = ({ children }) => {
       }
 
       const nextIdx = currentIndex + 1;
-      if (nextIdx >= deck.length) {
+      if (nextIdx >= deck.length - 5) {
+        fetchNextPage();
+      }
+
+      if (nextIdx >= deck.length && (activePack || customMovieIds.length > 0)) {
         setPhase(matchedMovie ? 'matched' : 'p1_finished');
       } else {
         setCurrentIndex(nextIdx);
@@ -402,6 +433,7 @@ export const MovieProvider = ({ children }) => {
     onlineRole,
     setOnlineRole,
     onlineSessionName,
+    exitOnlineSession,
     activePack,
     customMovieIds,
     loadPresetPack,
@@ -424,7 +456,9 @@ export const MovieProvider = ({ children }) => {
     startPlayer2Turn,
     resetSession,
     getShareLink,
-    canUndo: history.length > 0
+    canUndo: history.length > 0,
+    fetchNextPage,
+    isFetchingMore
   };
 
   return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;
