@@ -1,30 +1,23 @@
 let rawUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_BACKEND_URL) || '';
 
 if (typeof window !== 'undefined') {
-  // If no env variable set, resolve backend URL based on host environment
-  if (!rawUrl) {
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    if (isLocal) {
-      rawUrl = 'http://localhost:5001';
-    } else if (window.location.hostname.endsWith('.onrender.com')) {
-      // Default to render backend service on Render deployments
-      rawUrl = 'https://movie-match-backend.onrender.com';
-    } else {
-      rawUrl = window.location.origin;
+  if (rawUrl) {
+    if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+      rawUrl = `https://${rawUrl}`;
     }
-  }
-
-  // Always force HTTPS when page is loaded over HTTPS to eliminate Mixed Content blocking
-  if (window.location.protocol === 'https:' && rawUrl.startsWith('http://')) {
-    rawUrl = rawUrl.replace('http://', 'https://');
+    // Force HTTPS when host page is loaded over HTTPS to eliminate Mixed Content blocking
+    if (window.location.protocol === 'https:' && rawUrl.startsWith('http://') && !rawUrl.includes('localhost') && !rawUrl.includes('127.0.0.1')) {
+      rawUrl = rawUrl.replace('http://', 'https://');
+    }
+  } else {
+    // When VITE_BACKEND_URL is not set, use relative endpoints.
+    // In local Vite dev mode, Vite automatically proxies /api -> http://localhost:5001.
+    // In production, relative /api hits the backend on the current origin.
+    rawUrl = '';
   }
 } else if (!rawUrl) {
   rawUrl = 'http://localhost:5001';
 }
 
-if (rawUrl && !rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
-  rawUrl = `https://${rawUrl}`;
-}
-
-export const BACKEND_URL = rawUrl.replace(/\/$/, '');
-export const BACKEND_API = `${BACKEND_URL}/api`;
+export const BACKEND_URL = rawUrl ? rawUrl.replace(/\/$/, '') : '';
+export const BACKEND_API = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
