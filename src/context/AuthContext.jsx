@@ -115,11 +115,11 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
-  // Helper for safe fetch handling with multi-endpoint resolution
-  const safeAuthFetch = async (path, bodyData) => {
+  // Helper for safe fetch handling with multi-endpoint resolution & automatic cold-start retries
+  const safeAuthFetch = async (path, bodyData, retriesPerUrl = 3) => {
     const candidateUrls = [];
 
-    // 1. Primary BACKEND_API endpoint
+    // 1. Primary BACKEND_API endpoint (e.g. https://movie-match-backend-tzu9.onrender.com/api)
     if (BACKEND_API) {
       candidateUrls.push(`${BACKEND_API.replace(/\/$/, '')}${path}`);
     }
@@ -144,59 +144,67 @@ export const AuthProvider = ({ children }) => {
     let lastError;
 
     for (const targetUrl of candidateUrls) {
-      try {
-        console.log(`[Auth] Executing fetch to candidate URL: ${targetUrl}`);
-        const res = await fetch(targetUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bodyData)
-        });
-
-        // Parse JSON response
-        let data = {};
+      for (let attempt = 1; attempt <= retriesPerUrl; attempt++) {
         try {
-          data = await res.json();
-        } catch (parseErr) {
-          // If response was not JSON (e.g. static HTML 200 index.html), skip this candidate URL
-          console.warn(`[Auth] Candidate URL ${targetUrl} returned non-JSON response, skipping.`);
-          continue;
-        }
+          console.log(`[Auth] Fetching ${targetUrl} (Attempt ${attempt}/${retriesPerUrl})...`);
+          const res = await fetch(targetUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyData)
+          });
 
-        // If server responded with an error status (400, 401, 409, 500),
-        // THROW the exact server error message immediately!
-        if (!res.ok) {
-          const serverErrorMessage = data.error || data.message || `Authentication failed (Status ${res.status})`;
-          console.error(`[Auth] Server returned error (${res.status}):`, serverErrorMessage);
-          throw new Error(serverErrorMessage);
-        }
+          // Parse JSON response
+          let data = {};
+          try {
+            data = await res.json();
+          } catch (parseErr) {
+            // Non-JSON response (e.g. static HTML 200 from CDN), skip candidate
+            console.warn(`[Auth] Non-JSON response from ${targetUrl}, skipping candidate.`);
+            break; // Skip retries for non-API endpoints
+          }
 
-        // Verify that the response contains a valid token and user payload
-        if (!data || !data.token) {
-          console.warn(`[Auth] Candidate URL ${targetUrl} responded OK but missing token, skipping.`);
-          continue;
-        }
+          // If the server responded with an explicit error HTTP status (400, 401, 409, 500)
+          if (!res.ok) {
+            const serverMsg = data.error || data.message || `Authentication failed (Status ${res.status})`;
+            console.error(`[Auth] Server returned error (${res.status}):`, serverMsg);
+            throw new Error(serverMsg);
+          }
 
-        return data;
-      } catch (err) {
-        lastError = err;
+          // Valid response must have a token
+          if (!data || !data.token) {
+            console.warn(`[Auth] Response from ${targetUrl} missing token.`);
+            break;
+          }
 
-        // If this is an explicit server error message (from throw new Error(serverErrorMessage) above),
-        // ALWAYS rethrow immediately so the UI displays the error feedback!
-        const isNetworkError =
-          !err.message ||
-          err.message.includes('Failed to fetch') ||
-          err.message.includes('NetworkError') ||
-          err.message.includes('Network Error') ||
-          err.message.includes('Load failed');
+          return data;
+        } catch (err) {
+          lastError = err;
 
-        if (!isNetworkError) {
-          throw err;
+          // If this is an explicit server error (e.g. 401 Invalid credentials, 409 User exists, 400 Bad request),
+          // DO NOT retry or loop to other candidate URLs — rethrow IMMEDIATELY so the UI displays the error message!
+          const isNetworkError =
+            !err.message ||
+            err.message.includes('Failed to fetch') ||
+            err.message.includes('NetworkError') ||
+            err.message.includes('Network Error') ||
+            err.message.includes('Load failed') ||
+            err.message.includes('ERR_NAME_NOT_RESOLVED');
+
+          if (!isNetworkError) {
+            throw err;
+          }
+
+          // On network connection error (e.g. Render backend spinning up), wait 2.5s and retry
+          if (attempt < retriesPerUrl) {
+            console.log(`[Auth] Network error on ${targetUrl}, waiting 2.5s for server spin-up...`);
+            await new Promise(resolve => setTimeout(resolve, 2500));
+          }
         }
       }
     }
 
     throw new Error(
-      lastError?.message || 'Unable to reach backend server. Please check your network connection or try again.'
+      lastError?.message || 'Unable to reach backend server. The backend may be waking up from sleep mode (~30s on free hosting)—please try again in a few seconds.'
     );
   };
 

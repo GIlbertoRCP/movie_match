@@ -165,25 +165,29 @@ export default function AuthModal({ isOpen, onClose }) {
             </div>
           ) : (
             <>
-              {/* Authentik SSO Button */}
-              <button
-                onClick={handleAuthentikLogin}
-                className="w-full py-3.5 px-4 rounded-2xl bg-[#FFFDF9] hover:bg-stone-100 text-stone-800 font-sans font-medium text-xs shadow-sm hover:border-stone-300 transition-all flex items-center justify-between border border-stone-300/80 cursor-pointer group"
-              >
-                <div className="flex items-center gap-2.5">
-                  <ShieldCheck className="w-4.5 h-4.5 text-stone-700" />
-                  <span>Authenticate with Authentik SSO</span>
-                </div>
-                <ExternalLink className="w-4 h-4 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
-              </button>
+              {/* Authentik SSO Button (Only visible if Authentik server is configured) */}
+              {authentikConfigured && (
+                <>
+                  <button
+                    onClick={handleAuthentikLogin}
+                    className="w-full py-3.5 px-4 rounded-2xl bg-[#FFFDF9] hover:bg-stone-100 text-stone-800 font-sans font-medium text-xs shadow-sm hover:border-stone-300 transition-all flex items-center justify-between border border-stone-300/80 cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <ShieldCheck className="w-4.5 h-4.5 text-stone-700" />
+                      <span>Authenticate with Authentik SSO</span>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
 
-              <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-stone-200"></div>
-                <span className="flex-shrink mx-3 text-[10px] font-sans font-light text-stone-500 uppercase tracking-widest">
-                  or email login
-                </span>
-                <div className="flex-grow border-t border-stone-200"></div>
-              </div>
+                  <div className="relative flex py-1 items-center">
+                    <div className="flex-grow border-t border-stone-200"></div>
+                    <span className="flex-shrink mx-4 text-[10px] font-sans font-medium uppercase tracking-wider text-stone-400">
+                      Or Email Login
+                    </span>
+                    <div className="flex-grow border-t border-stone-200"></div>
+                  </div>
+                </>
+              )}
 
               {/* Login / Signup Tabs */}
               <div className="flex bg-stone-200/50 p-1 rounded-2xl border border-stone-300/40">

@@ -134,9 +134,10 @@ router.get('/authentik/login', (req, res) => {
   const redirectUri = process.env.AUTHENTIK_REDIRECT_URI || 'http://localhost:5001/api/auth/authentik/callback';
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-  // If Client ID is set, perform real Authentik OIDC authorization redirect
-  if (clientId && clientId.trim().length > 0 && issuerUrl) {
-    const authUrl = `${issuerUrl.replace(/\/$/, '')}/authorize/?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20profile%20email`;
+  // If Client ID & Issuer URL are provided, perform real Authentik OIDC authorization redirect
+  if (clientId && clientId.trim().length > 0 && issuerUrl && issuerUrl.trim().length > 0) {
+    const baseUrl = issuerUrl.trim().replace(/\/$/, '');
+    const authUrl = `${baseUrl}/authorize/?client_id=${encodeURIComponent(clientId.trim())}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20profile%20email`;
     return res.redirect(authUrl);
   }
 
@@ -177,14 +178,15 @@ router.get('/authentik/callback', async (req, res) => {
   }
 
   try {
-    const tokenEndpoint = `${issuerUrl.replace(/\/$/, '')}/token/`;
-    const userinfoEndpoint = `${issuerUrl.replace(/\/$/, '')}/userinfo/`;
+    const baseUrl = issuerUrl ? issuerUrl.trim().replace(/\/$/, '') : '';
+    const tokenEndpoint = `${baseUrl}/token/`;
+    const userinfoEndpoint = `${baseUrl}/userinfo/`;
 
     // 1. Exchange code for access token
     const tokenParams = new URLSearchParams({
       grant_type: 'authorization_code',
-      client_id: clientId,
-      client_secret: clientSecret,
+      client_id: clientId ? clientId.trim() : '',
+      client_secret: clientSecret ? clientSecret.trim() : '',
       code,
       redirect_uri: redirectUri
     });

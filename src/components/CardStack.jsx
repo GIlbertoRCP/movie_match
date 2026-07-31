@@ -211,12 +211,8 @@ export default function CardStack() {
                 // Swipe Down -> Pass & Next
                 triggerPassNext();
               } else if (offset.y < -threshold || velocity.y < -250) {
-                // Swipe Up -> Undo / Previous
-                if (canUndo) {
-                  triggerUndoPrev();
-                } else if (currentMovie) {
-                  setDetailMovie(currentMovie);
-                }
+                // Swipe Up -> Pass & Next
+                triggerPassNext();
               }
             }}
             className="editorial-card relative w-full h-[520px] xs:h-[550px] sm:h-[620px] lg:h-[720px] xl:h-[780px] rounded-3xl p-3.5 sm:p-5 lg:p-6 flex flex-col justify-between shadow-xl overflow-hidden touch-none cursor-grab active:cursor-grabbing select-none"
