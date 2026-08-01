@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.js';
 import tmdbRoutes from './routes/tmdbRoutes.js';
 import listRoutes from './routes/listRoutes.js';
 import sessionRoutes, { recordSwipeInDb, cleanupOldSessions } from './routes/sessionRoutes.js';
+import mlRoutes from './routes/mlRoutes.js';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tmdb', tmdbRoutes);
 app.use('/api/lists', listRoutes);
 app.use('/api/sessions', sessionRoutes);
+app.use('/api/ml', mlRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

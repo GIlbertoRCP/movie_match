@@ -15,7 +15,9 @@ export default function CardStack() {
     handleUndo,
     canUndo,
     filters,
-    fetchNextPage
+    fetchNextPage,
+    tasteMatrix,
+    calculateMatchScore
   } = useMovieContext();
 
   const [detailMovie, setDetailMovie] = useState(null);
@@ -233,10 +235,21 @@ export default function CardStack() {
               {/* Soft Warm Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent pointer-events-none" />
 
-              {/* Rating Badge */}
-              <div className="absolute top-3.5 left-3.5 lg:top-5 lg:left-5 flex items-center gap-1.5 bg-[#FFFDF9]/90 dark:bg-stone-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-stone-200/80 dark:border-stone-700/80 shadow-sm z-10">
-                <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <span className="text-xs lg:text-sm font-sans font-medium text-stone-900 dark:text-stone-100">{currentMovie.vote_average}</span>
+              {/* Rating & Personalized Taste Match Badges */}
+              <div className="absolute top-3.5 left-3.5 lg:top-5 lg:left-5 flex items-center gap-2 z-10">
+                {/* TMDB Rating Badge */}
+                <div className="flex items-center gap-1.5 bg-[#FFFDF9]/90 dark:bg-stone-900/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-stone-200/80 dark:border-stone-700/80 shadow-sm">
+                  <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                  <span className="text-xs lg:text-sm font-sans font-medium text-stone-900 dark:text-stone-100">{currentMovie.vote_average}</span>
+                </div>
+
+                {/* Personalized Taste Match Badge */}
+                <div className="flex items-center gap-1.5 bg-stone-900/90 dark:bg-stone-100/95 text-stone-100 dark:text-stone-900 backdrop-blur-md px-3 py-1.5 rounded-full border border-stone-700/80 dark:border-stone-300/80 shadow-md">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 dark:text-amber-500 fill-amber-400 dark:fill-amber-500" />
+                  <span className="text-xs lg:text-sm font-sans font-medium">
+                    {currentMovie.matchScore || calculateMatchScore(currentMovie, tasteMatrix)}% Match
+                  </span>
+                </div>
               </div>
 
               {/* Info Trigger Button */}

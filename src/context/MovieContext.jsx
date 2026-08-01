@@ -3,6 +3,7 @@ import { fetchDiscoverMovies, fetchMoviesByIds, PRESET_PACKS } from '../services
 import { parseURLState, generateShareableURL } from '../utils/urlState';
 import { BACKEND_API } from '../config';
 import socketService from '../services/socketService';
+import { createInitialTasteMatrix, updateTasteMatrix, calculateMatchScore, rankAndBalanceDeck } from '../utils/recommendationEngine';
 
 const MovieContext = createContext();
 
@@ -46,6 +47,9 @@ export const MovieProvider = ({ children }) => {
 
   // Filters State
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
+
+  // Recommendation Matrix & Dynamic Feed Taste Matrix State
+  const [tasteMatrix, setTasteMatrix] = useState(createInitialTasteMatrix);
 
   // User Account Saved Watchlists & Persistent Likes State
   const [userWatchlists, setUserWatchlists] = useState([]);
@@ -202,7 +206,9 @@ export const MovieProvider = ({ children }) => {
         movies = await fetchDiscoverMovies(currentFilters, apiKey, 1);
       }
 
-      setDeck(movies);
+      // Rank & Score movies dynamically via Recommendation Matrix
+      const scoredDeck = rankAndBalanceDeck(movies, tasteMatrix);
+      setDeck(scoredDeck);
       setCurrentIndex(0);
       setPage(1);
       setHistory([]);
@@ -211,9 +217,9 @@ export const MovieProvider = ({ children }) => {
     } finally {
       setIsLoadingDeck(false);
     }
-  }, [filters, apiKey]);
+  }, [filters, apiKey, tasteMatrix]);
 
-  // Fetch next page of TMDB movies for infinite scrolling deck
+  // Fetch next page of TMDB movies for infinite scrolling deck with Recommendation Scoring
   const fetchNextPage = useCallback(async () => {
     if (isFetchingMore || activePack || customMovieIds.length > 0) return;
     setIsFetchingMore(true);
@@ -221,9 +227,10 @@ export const MovieProvider = ({ children }) => {
       const nextPage = page + 1;
       const newMovies = await fetchDiscoverMovies(filters, apiKey, nextPage);
       if (newMovies && newMovies.length > 0) {
+        const scoredNewMovies = rankAndBalanceDeck(newMovies, tasteMatrix);
         setDeck(prevDeck => {
           const existingIds = new Set(prevDeck.map(m => m.id));
-          const filteredNew = newMovies.filter(m => !existingIds.has(m.id));
+          const filteredNew = scoredNewMovies.filter(m => !existingIds.has(m.id));
           return [...prevDeck, ...filteredNew];
         });
         setPage(nextPage);
@@ -233,7 +240,7 @@ export const MovieProvider = ({ children }) => {
     } finally {
       setIsFetchingMore(false);
     }
-  }, [page, isFetchingMore, filters, apiKey, activePack, customMovieIds]);
+  }, [page, isFetchingMore, filters, apiKey, activePack, customMovieIds, tasteMatrix]);
 
   // Initial check for URL state (Online Room or Async Link Share Mode)
   useEffect(() => {
@@ -423,6 +430,24 @@ export const MovieProvider = ({ children }) => {
       }
     }
 
+    // Update Recommendation Taste Matrix in real-time
+    setTasteMatrix(prev => {
+      const updated = updateTasteMatrix(prev, movie, isLike);
+      
+      // Dynamically update upcoming cards' match scores based on new taste vector
+      setDeck(prevDeck => {
+        return prevDeck.map((m, idx) => {
+          if (idx <= currentIndex) return m;
+          return {
+            ...m,
+            matchScore: calculateMatchScore(m, updated)
+          };
+        });
+      });
+
+      return updated;
+    });
+
     if (isPlayer1) {
       if (isLike) {
         setP1Likes(prev => [...prev, movie.id]);
@@ -431,7 +456,7 @@ export const MovieProvider = ({ children }) => {
       }
 
       const nextIdx = currentIndex + 1;
-      if (nextIdx >= deck.length - 5) {
+      if (nextIdx >= deck.length - 4) {
         fetchNextPage();
       }
 
@@ -571,7 +596,9 @@ export const MovieProvider = ({ children }) => {
     userWatchlists,
     saveWatchlistToAccount,
     deleteUserWatchlist,
-    fetchUserWatchlists
+    fetchUserWatchlists,
+    tasteMatrix,
+    calculateMatchScore
   };
 
   return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;

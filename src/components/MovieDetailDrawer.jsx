@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Star, Calendar, Clock, Film, Play, Loader2 } from 'lucide-react';
+import { X, Star, Calendar, Clock, Film, Play, Loader2, Cpu } from 'lucide-react';
 import WatchProviders from './WatchProviders';
 import { fetchMovieTrailer } from '../services/tmdbApi';
 
@@ -171,6 +171,33 @@ export default function MovieDetailDrawer({ movie, isOpen, onClose, region = 'US
                   {movie.overview}
                 </p>
               </div>
+
+              {/* Two-Tower Neural Network Feature Attribution Card */}
+              {movie.featureAttributions && movie.featureAttributions.length > 0 && (
+                <div className="p-4 rounded-2xl bg-stone-900 text-stone-100 border border-stone-800 space-y-3 shadow-md">
+                  <div className="flex items-center justify-between border-b border-stone-800 pb-2">
+                    <div className="flex items-center gap-2">
+                      <Cpu className="w-4 h-4 text-amber-400" />
+                      <h4 className="text-xs font-serif font-medium text-stone-200">Two-Tower Neural ML Breakdown</h4>
+                    </div>
+                    <span className="text-[10px] font-sans font-medium text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
+                      {movie.matchScore || 92}% Match Score
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {movie.featureAttributions.map((item, idx) => (
+                      <div key={idx} className="flex items-start justify-between gap-2 text-xs">
+                        <div>
+                          <p className="font-sans font-medium text-stone-200">{item.feature}</p>
+                          <p className="font-sans font-light text-stone-400 text-[11px]">{item.description}</p>
+                        </div>
+                        <span className="font-mono text-emerald-400 font-medium">{item.weight}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Streaming Availability */}
               <WatchProviders movieId={movie.id} initialRegion={region} />
