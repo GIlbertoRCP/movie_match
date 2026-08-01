@@ -51,6 +51,30 @@ export const MovieProvider = ({ children }) => {
   // Recommendation Matrix & Dynamic Feed Taste Matrix State
   const [tasteMatrix, setTasteMatrix] = useState(createInitialTasteMatrix);
 
+  // Persistent Liked Movies History Objects State
+  const [likedMovieObjects, setLikedMovieObjects] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('movie_match_saved_liked_movies');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {
+        console.warn('Error reading saved liked movies:', e);
+      }
+    }
+    return [];
+  });
+
+  // Sync likedMovieObjects to localStorage whenever updated
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('movie_match_saved_liked_movies', JSON.stringify(likedMovieObjects));
+      } catch (e) {
+        console.warn('Error writing saved liked movies to localStorage:', e);
+      }
+    }
+  }, [likedMovieObjects]);
+
   // User Account Saved Watchlists & Persistent Likes State
   const [userWatchlists, setUserWatchlists] = useState([]);
 
@@ -93,12 +117,25 @@ export const MovieProvider = ({ children }) => {
         const data = await res.json();
         if (data.movieIds && data.movieIds.length > 0) {
           setP1Likes(prev => Array.from(new Set([...prev, ...data.movieIds])));
+
+          // Fetch full movie objects for missing backend liked IDs
+          const missingIds = data.movieIds.filter(id => !likedMovieObjects.some(m => m.id === id));
+          if (missingIds.length > 0) {
+            const fetched = await fetchMoviesByIds(missingIds, apiKey);
+            if (fetched && fetched.length > 0) {
+              setLikedMovieObjects(prev => {
+                const existingMap = new Map(prev.map(m => [m.id, m]));
+                fetched.forEach(m => existingMap.set(m.id, m));
+                return Array.from(existingMap.values());
+              });
+            }
+          }
         }
       }
     } catch (err) {
       console.error('Error fetching user likes:', err);
     }
-  }, []);
+  }, [apiKey, likedMovieObjects]);
 
   // Save a custom watchlist deck to logged-in user account
   const saveWatchlistToAccount = async (title, movieIds) => {
@@ -415,8 +452,13 @@ export const MovieProvider = ({ children }) => {
       .catch(err => console.error('Error posting online swipe:', err));
     }
 
-    // Persist liked movie to backend user account if authenticated
+    // Persist liked movie to local history & backend user account
     if (isLike) {
+      setLikedMovieObjects(prev => {
+        if (prev.some(m => m.id === movie.id)) return prev;
+        return [movie, ...prev];
+      });
+
       const token = getAuthToken();
       if (token) {
         fetch(`${BACKEND_API}/lists/likes`, {
@@ -598,7 +640,8 @@ export const MovieProvider = ({ children }) => {
     deleteUserWatchlist,
     fetchUserWatchlists,
     tasteMatrix,
-    calculateMatchScore
+    calculateMatchScore,
+    likedMovieObjects
   };
 
   return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;

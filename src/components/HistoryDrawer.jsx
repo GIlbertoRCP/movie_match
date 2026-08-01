@@ -9,7 +9,7 @@ import AboutModal from './AboutModal';
 const DEFAULT_POSTER = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80";
 
 export default function HistoryDrawer() {
-  const { p1Likes, p2Likes, deck } = useMovieContext();
+  const { p1Likes, p2Likes, deck, likedMovieObjects } = useMovieContext();
   const [inspectedMovie, setInspectedMovie] = useState(null);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
 
@@ -28,9 +28,17 @@ export default function HistoryDrawer() {
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  // Derived Data
-  const p1LikedMovies = deck.filter(m => p1Likes.includes(m.id));
-  const commonLikes = deck.filter(m => p1Likes.includes(m.id) && p2Likes.includes(m.id));
+  // Derived Data: Combine likedMovieObjects with deck matches so 100% of liked movies are preserved
+  const allLikedMap = new Map();
+  if (Array.isArray(likedMovieObjects)) {
+    likedMovieObjects.forEach(m => allLikedMap.set(m.id, m));
+  }
+  if (Array.isArray(deck)) {
+    deck.filter(m => p1Likes.includes(m.id)).forEach(m => allLikedMap.set(m.id, m));
+  }
+
+  const p1LikedMovies = Array.from(allLikedMap.values());
+  const commonLikes = p1LikedMovies.filter(m => p2Likes.includes(m.id));
   const totalLikes = p1LikedMovies.length;
 
   return (

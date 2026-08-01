@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useMovieContext } from '../context/MovieContext';
 import { useAuth } from '../context/AuthContext';
 import { PRESET_PACKS, searchMovies } from '../services/tmdbApi';
-import { X, Sparkles, Search, Plus, Trash2, Check, Film, Layers, ArrowRight, Loader2, Bookmark, Play, Save, UserCheck, ShieldAlert } from 'lucide-react';
+import { X, Sparkles, Search, Plus, Trash2, Check, Film, Layers, ArrowRight, Loader2, Bookmark, Play, Save, UserCheck, ShieldAlert, Heart } from 'lucide-react';
 
 const DEFAULT_POSTER = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=500&q=80";
 
@@ -15,7 +15,8 @@ export default function CustomListModal({ isOpen, onClose }) {
     apiKey,
     userWatchlists,
     saveWatchlistToAccount,
-    deleteUserWatchlist
+    deleteUserWatchlist,
+    likedMovieObjects
   } = useMovieContext();
 
   const { isAuthenticated } = useAuth();
@@ -191,6 +192,74 @@ export default function CustomListModal({ isOpen, onClose }) {
                   transition={{ duration: 0.2, ease: 'easeOut' }}
                   className="grid grid-cols-1 gap-3.5"
                 >
+                  {/* Persistent Liked Movies History Collection Card */}
+                  {likedMovieObjects && likedMovieObjects.length > 0 && (
+                    <motion.div
+                      whileHover={{ scale: 1.01, y: -2 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                      onClick={() => {
+                        loadCustomList(likedMovieObjects);
+                        onClose();
+                      }}
+                      className="group relative p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden shadow-md bg-stone-900 text-stone-100 dark:bg-stone-900 border-rose-800/80 hover:border-rose-600"
+                    >
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          {/* Posters collage of saved liked movies */}
+                          <div className="relative w-20 h-24 flex-shrink-0 flex items-center justify-center">
+                            {likedMovieObjects.slice(0, 3).map((movie, idx) => (
+                              <img
+                                key={idx}
+                                src={movie.poster_path || DEFAULT_POSTER}
+                                alt=""
+                                className={`absolute w-14 h-20 object-cover rounded-lg border border-rose-700/60 shadow-md transition-transform duration-300 group-hover:scale-105 ${
+                                  idx === 0
+                                    ? 'z-30 left-0 top-1 -rotate-6'
+                                    : idx === 1
+                                    ? 'z-20 left-3 top-2 rotate-0 opacity-90'
+                                    : 'z-10 left-6 top-3 rotate-6 opacity-80'
+                                }`}
+                              />
+                            ))}
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10px] font-sans font-medium px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-800/80 flex items-center gap-1">
+                                <Heart className="w-3 h-3 text-rose-400 fill-rose-400" /> Saved History
+                              </span>
+                              <span className="text-[10px] font-sans font-light text-rose-200/80">
+                                {likedMovieObjects.length} Movies
+                              </span>
+                            </div>
+
+                            <h4 className="text-base sm:text-lg font-serif font-normal text-stone-100">
+                              Your All-Time Liked History
+                            </h4>
+
+                            <p className="text-xs font-sans font-light text-stone-300 line-clamp-1">
+                              Play a deck created from every single movie you've swiped right on.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              loadCustomList(likedMovieObjects);
+                              onClose();
+                            }}
+                            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-serif text-xs font-medium transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            <span>Play Stack</span>
+                            <Play className="w-3.5 h-3.5 fill-current" />
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
                   {PRESET_PACKS.map(pack => {
                     const isActive = activePack?.id === pack.id;
                     return (
