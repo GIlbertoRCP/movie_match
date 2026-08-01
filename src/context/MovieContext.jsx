@@ -49,7 +49,7 @@ export const MovieProvider = ({ children }) => {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
 
   // Recommendation Matrix & Dynamic Feed Taste Matrix State
-  const [tasteMatrix, setTasteMatrix] = useState(createInitialTasteMatrix);
+  const [tasteMatrix, setTasteMatrix] = useState(() => createInitialTasteMatrix());
 
   // Persistent Liked Movies History Objects State
   const [likedMovieObjects, setLikedMovieObjects] = useState(() => {

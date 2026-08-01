@@ -32,13 +32,16 @@ export function createInitialTasteMatrix() {
 }
 
 export function updateTasteMatrix(currentMatrix, movie, isLike) {
-  if (!movie || !movie.id) return currentMatrix;
+  if (!movie || !movie.id) return currentMatrix || createInitialTasteMatrix();
+
+  const safeMatrix = currentMatrix || createInitialTasteMatrix();
 
   const matrix = {
-    ...currentMatrix,
-    genreWeights: { ...currentMatrix.genreWeights },
-    decadeWeights: { ...currentMatrix.decadeWeights },
-    swipedIds: new Set(currentMatrix.swipedIds || [])
+    ...createInitialTasteMatrix(),
+    ...safeMatrix,
+    genreWeights: { ...(safeMatrix.genreWeights || {}) },
+    decadeWeights: { ...(safeMatrix.decadeWeights || {}) },
+    swipedIds: new Set(safeMatrix.swipedIds || [])
   };
 
   matrix.swipedIds.add(movie.id);
@@ -78,8 +81,9 @@ export function updateTasteMatrix(currentMatrix, movie, isLike) {
 export function calculateMatchScore(movie, tasteMatrix) {
   if (!movie) return 75;
 
+  const matrix = tasteMatrix || createInitialTasteMatrix();
   let score = 70;
-  const totalSwipes = (tasteMatrix.likedCount || 0) + (tasteMatrix.passedCount || 0);
+  const totalSwipes = (matrix.likedCount || 0) + (matrix.passedCount || 0);
 
   // Cold start (fewer than 2 swipes): calculate initial score from TMDB rating
   if (totalSwipes < 2) {
@@ -96,18 +100,18 @@ export function calculateMatchScore(movie, tasteMatrix) {
   if (genreIds.length > 0) {
     let genreSum = 0;
     genreIds.forEach(id => {
-      genreSum += (tasteMatrix.genreWeights[id] || 0);
+      genreSum += (matrix.genreWeights?.[id] || 0);
     });
     const genreAvg = genreSum / genreIds.length;
     score += Math.min(25, Math.max(-25, genreAvg * 3.5));
   }
 
   // 2. Decade Affinity Contribution (-10 to +15 points)
-  const decadeVal = tasteMatrix.decadeWeights[decade] || 0;
+  const decadeVal = matrix.decadeWeights?.[decade] || 0;
   score += Math.min(15, Math.max(-10, decadeVal * 2.0));
 
   // 3. TMDB Quality Rating Contribution (-15 to +15 points)
-  const minScore = tasteMatrix.preferredMinScore || 6.5;
+  const minScore = matrix.preferredMinScore || 6.5;
   if (voteAverage >= minScore) {
     score += Math.min(15, (voteAverage - minScore) * 3.5);
   } else {
@@ -121,8 +125,9 @@ export function calculateMatchScore(movie, tasteMatrix) {
 export function rankAndBalanceDeck(candidateMovies, tasteMatrix) {
   if (!candidateMovies || candidateMovies.length === 0) return [];
 
-  const swiped = tasteMatrix.swipedIds || new Set();
-  const unswiped = candidateMovies.filter(m => !swiped.has(m.id));
+  const matrix = tasteMatrix || createInitialTasteMatrix();
+  const swiped = matrix.swipedIds || new Set();
+  const unswiped = candidateMovies.filter(m => m && !swiped.has(m.id));
 
   // Compute match score for each unswiped movie
   const scored = unswiped.map(movie => ({
