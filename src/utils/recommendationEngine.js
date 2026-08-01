@@ -1,4 +1,5 @@
 // Recommendation Matrix & Dynamic Feed Scoring Engine
+import { BACKEND_API } from '../config.js';
 
 export function getDecadeKey(releaseDate) {
   if (!releaseDate) return '2020s';
@@ -162,7 +163,6 @@ export async function fetchTwoTowerMLRecommendations(candidateMovies, likedMovie
   if (!candidateMovies || candidateMovies.length === 0) return [];
 
   try {
-    const { BACKEND_API } = await import('../config.js');
     const res = await fetch(`${BACKEND_API}/ml/recommend`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
