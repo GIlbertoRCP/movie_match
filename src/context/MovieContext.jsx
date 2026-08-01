@@ -78,6 +78,23 @@ export const MovieProvider = ({ children }) => {
   // User Account Saved Watchlists & Persistent Likes State
   const [userWatchlists, setUserWatchlists] = useState([]);
 
+  // Selected Movie for Detail Drawer
+  const [inspectedMovie, setInspectedMovie] = useState(null);
+
+  // TMDB API Key State
+  const [apiKey, setApiKeyState] = useState(() => {
+    return typeof window !== 'undefined' ? localStorage.getItem('movie_match_api_key') || '' : '';
+  });
+
+  const saveApiKey = (key) => {
+    setApiKeyState(key);
+    if (key) {
+      localStorage.setItem('movie_match_api_key', key);
+    } else {
+      localStorage.removeItem('movie_match_api_key');
+    }
+  };
+
   // Helper to get stored auth token
   const getAuthToken = () => {
     return typeof window !== 'undefined' ? localStorage.getItem('movie_match_jwt_token') || '' : '';
@@ -119,23 +136,27 @@ export const MovieProvider = ({ children }) => {
           setP1Likes(prev => Array.from(new Set([...prev, ...data.movieIds])));
 
           // Fetch full movie objects for missing backend liked IDs
-          const missingIds = data.movieIds.filter(id => !likedMovieObjects.some(m => m.id === id));
-          if (missingIds.length > 0) {
-            const fetched = await fetchMoviesByIds(missingIds, apiKey);
-            if (fetched && fetched.length > 0) {
-              setLikedMovieObjects(prev => {
-                const existingMap = new Map(prev.map(m => [m.id, m]));
-                fetched.forEach(m => existingMap.set(m.id, m));
-                return Array.from(existingMap.values());
-              });
+          setLikedMovieObjects(prev => {
+            const missingIds = data.movieIds.filter(id => !prev.some(m => m && m.id === id));
+            if (missingIds.length > 0) {
+              fetchMoviesByIds(missingIds, apiKey).then(fetched => {
+                if (fetched && fetched.length > 0) {
+                  setLikedMovieObjects(curr => {
+                    const existingMap = new Map(curr.map(m => [m.id, m]));
+                    fetched.forEach(m => existingMap.set(m.id, m));
+                    return Array.from(existingMap.values());
+                  });
+                }
+              }).catch(e => console.error('Error fetching missing liked movies:', e));
             }
-          }
+            return prev;
+          });
         }
       }
     } catch (err) {
       console.error('Error fetching user likes:', err);
     }
-  }, [apiKey, likedMovieObjects]);
+  }, [apiKey]);
 
   // Save a custom watchlist deck to logged-in user account
   const saveWatchlistToAccount = async (title, movieIds) => {
@@ -183,21 +204,6 @@ export const MovieProvider = ({ children }) => {
     fetchUserWatchlists();
     fetchUserLikes();
   }, [fetchUserWatchlists, fetchUserLikes]);
-  const [apiKey, setApiKeyState] = useState(() => {
-    return localStorage.getItem('movie_match_api_key') || '';
-  });
-
-  // Selected Movie for Detail Drawer
-  const [inspectedMovie, setInspectedMovie] = useState(null);
-
-  const saveApiKey = (key) => {
-    setApiKeyState(key);
-    if (key) {
-      localStorage.setItem('movie_match_api_key', key);
-    } else {
-      localStorage.removeItem('movie_match_api_key');
-    }
-  };
 
   // Helper to reset swiping session state
   const resetSessionState = () => {
