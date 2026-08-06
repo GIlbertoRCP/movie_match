@@ -18,8 +18,8 @@ const authLimiter = rateLimit({
   message: { error: 'Too many authentication attempts from this IP. Please try again in 15 minutes.' }
 });
 
-router.use('/login', authLimiter);
-router.use('/register', authLimiter);
+// Protect all auth endpoints against brute force attacks
+router.use(authLimiter);
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 

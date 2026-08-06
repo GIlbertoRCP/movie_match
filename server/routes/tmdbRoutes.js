@@ -1,8 +1,21 @@
 import express from 'express';
 import NodeCache from 'node-cache';
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+
+// Rate Limiter for TMDB Proxy Routes (prevents API key exhaustion & abuse)
+const tmdbLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 120, // 120 requests per IP per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS',
+  message: { error: 'Too many requests to TMDB proxy. Please try again in a few minutes.' }
+});
+
+router.use(tmdbLimiter);
 
 // Server-side In-Memory Cache (Std TTL 8 Hours = 28800 seconds)
 const tmdbCache = new NodeCache({ stdTTL: 28800, checkperiod: 3600 });

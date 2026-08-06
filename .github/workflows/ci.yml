@@ -1,0 +1,45 @@
+name: Movie Matcher CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    name: Build, Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Frontend & Root Dependencies
+        run: npm ci || npm install
+
+      - name: Install Backend Server Dependencies
+        run: cd server && (npm ci || npm install)
+
+      - name: Code Quality & Linting Check (Oxlint)
+        run: npx oxlint
+
+      - name: Verify Backend Server Syntax
+        run: |
+          node --check server/index.js
+          node --check server/ml/twoTowerEngine.js
+          node --check server/routes/authRoutes.js
+          node --check server/routes/tmdbRoutes.js
+          node --check server/routes/mlRoutes.js
+
+      - name: Execute Automated Unit Test Suite
+        run: npm test
+
+      - name: Validate Vite Frontend Build
+        run: npm run build

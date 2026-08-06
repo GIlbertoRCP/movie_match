@@ -150,6 +150,51 @@ export function buildUserEmbedding(likedMovies = [], passedMovies = []) {
 }
 
 /**
+ * Dynamic Online Learning: Real-time user embedding vector update on WebSocket swipe events
+ * Applies stochastic online update: userVec = userVec + learningRate * (isLike ? +1.0 : -0.4) * movieEmbed
+ */
+export function updateOnlineUserVector(currentVec, movieEmbed, isLike, learningRate = 0.15) {
+  const userVec = currentVec && currentVec.length === 64
+    ? [...currentVec]
+    : new Array(64).fill(0.5);
+
+  const weight = isLike ? 1.0 : -0.4;
+
+  for (let i = 0; i < Math.min(userVec.length, movieEmbed.length); i++) {
+    userVec[i] += learningRate * weight * movieEmbed[i];
+  }
+
+  // Normalize back to unit sphere
+  const mag = magnitude(userVec);
+  if (mag > 0) {
+    for (let i = 0; i < userVec.length; i++) {
+      userVec[i] = userVec[i] / mag;
+    }
+  }
+
+  return userVec;
+}
+
+/**
+ * ONNX Runtime Integration Helper (optional ONNX model weight execution)
+ */
+let onnxSession = null;
+
+export async function initOnnxModel(modelPath) {
+  try {
+    const ort = await import('onnxruntime-node');
+    if (fs.existsSync(modelPath)) {
+      onnxSession = await ort.InferenceSession.create(modelPath);
+      console.log('🧠 ONNX Model loaded successfully from:', modelPath);
+      return true;
+    }
+  } catch (err) {
+    // Graceful fallback to Deep MLP engine if onnxruntime-node is not present
+  }
+  return false;
+}
+
+/**
  * Tower 2: Deep MLP Ranking Tower
  * 3-Layer Deep Multi-Layer Perceptron (64 -> 32 -> 16 -> 1 output)
  * Predicts P(Like | UserEmbedding, MovieEmbedding)
@@ -245,12 +290,15 @@ export function computeFeatureAttribution(userVec, movie) {
 
 /**
  * Main Two-Tower Pipeline: Retrieves, Scores, and Ranks candidate movies
+ * Supports userVectorOverride for real-time online learning vectors
  */
-export function processTwoTowerRecommendations(candidateMovies, likedMovies = [], passedMovies = []) {
+export function processTwoTowerRecommendations(candidateMovies, likedMovies = [], passedMovies = [], userVectorOverride = null) {
   if (!candidateMovies || candidateMovies.length === 0) return [];
 
-  // 1. Build User Embedding Vector
-  const userVec = buildUserEmbedding(likedMovies, passedMovies);
+  // 1. Build or use active online User Embedding Vector
+  const userVec = (Array.isArray(userVectorOverride) && userVectorOverride.length === 64)
+    ? userVectorOverride
+    : buildUserEmbedding(likedMovies, passedMovies);
 
   // 2. Tower 1 (Candidate Retrieval) & Tower 2 (Deep MLP Ranking)
   const scored = candidateMovies.map(movie => {

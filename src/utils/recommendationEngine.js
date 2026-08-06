@@ -164,7 +164,7 @@ export function rankAndBalanceDeck(candidateMovies, tasteMatrix) {
 }
 
 // Fetch Two-Tower Neural Network recommendations from backend ML service
-export async function fetchTwoTowerMLRecommendations(candidateMovies, likedMovies = [], passedMovies = []) {
+export async function fetchTwoTowerMLRecommendations(candidateMovies, likedMovies = [], passedMovies = [], userVector = null) {
   if (!candidateMovies || candidateMovies.length === 0) return [];
 
   try {
@@ -174,7 +174,8 @@ export async function fetchTwoTowerMLRecommendations(candidateMovies, likedMovie
       body: JSON.stringify({
         candidateMovies,
         likedMovies,
-        passedMovies
+        passedMovies,
+        userVector
       })
     });
 
@@ -190,4 +191,27 @@ export async function fetchTwoTowerMLRecommendations(candidateMovies, likedMovie
 
   // Fallback to client-side recommendation engine if ML service is unreachable
   return rankAndBalanceDeck(candidateMovies, createInitialTasteMatrix());
+}
+
+// Client-side online learning vector update helper
+export async function updateClientOnlineVector(currentVector, movie, isLike) {
+  try {
+    const res = await fetch(`${BACKEND_API}/ml/online-update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        currentVector,
+        movie,
+        isLike
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return data.userVector;
+    }
+  } catch (err) {
+    console.warn('Failed to update online vector via ML service:', err);
+  }
+  return currentVector;
 }

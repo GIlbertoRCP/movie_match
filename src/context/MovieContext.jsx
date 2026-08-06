@@ -344,7 +344,10 @@ export const MovieProvider = ({ children }) => {
     }
   }, [onlineSessionId, onlineRole]);
 
-  // Real-Time Socket.io WebSockets Room Synchronization & Disconnect Listener
+  // Online Partner Presence State
+  const [partnerOnlineState, setPartnerOnlineState] = useState({ p1Online: true, p2Online: false });
+
+  // Real-Time Socket.io WebSockets Room Synchronization, Reconnection Recovery & Heartbeat Listener
   useEffect(() => {
     if (!onlineSessionId) return;
 
@@ -363,6 +366,30 @@ export const MovieProvider = ({ children }) => {
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Listen for state recovery following socket reconnection
+    socketService.onStateRecovered(async (recovered) => {
+      if (!recovered) return;
+      console.log('🔄 Reconnected & Recovered active session state:', recovered);
+      if (recovered.p1Likes) setP1Likes(recovered.p1Likes);
+      if (recovered.p2Likes) setP2Likes(recovered.p2Likes);
+      if (recovered.matchedMovieId) {
+        let found = deck.find(m => m.id === recovered.matchedMovieId);
+        if (!found) {
+          const fetched = await fetchMoviesByIds([recovered.matchedMovieId], apiKey);
+          found = fetched[0];
+        }
+        if (found) {
+          setMatchedMovie(found);
+          setIsMatchModalOpen(true);
+        }
+      }
+    });
+
+    // Listen for live room presence changes
+    socketService.onPartnerPresenceChanged((presence) => {
+      if (presence) setPartnerOnlineState(presence);
+    });
 
     // Listen for instant match found emission
     socketService.onMatchFound(async ({ matchedMovieId }) => {
@@ -434,8 +461,8 @@ export const MovieProvider = ({ children }) => {
     if (onlineSessionId) {
       const playerNum = onlineRole === 'p2' ? 2 : 1;
       
-      // Instant WebSocket Broadcast
-      socketService.sendSwipe(onlineSessionId, playerNum, movie.id, isLike);
+      // Instant WebSocket Broadcast with online ML learning vector update
+      socketService.sendSwipe(onlineSessionId, playerNum, movie.id, isLike, movie);
 
       // HTTP fallback POST for record keeping
       fetch(`${BACKEND_API}/sessions/${onlineSessionId}/swipe`, {
@@ -647,7 +674,8 @@ export const MovieProvider = ({ children }) => {
     fetchUserWatchlists,
     tasteMatrix,
     calculateMatchScore,
-    likedMovieObjects
+    likedMovieObjects,
+    partnerOnlineState
   };
 
   return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;
