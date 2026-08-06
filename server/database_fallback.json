@@ -1,0 +1,18 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "Authentik SSO User",
+      "email": "authentik.user@moviematch.io",
+      "password_hash": "authentik-sso-demo-sub-2026",
+      "authentik_sub": "authentik-sso-demo-sub-2026",
+      "created_at": "2026-08-06T22:25:03.873Z"
+    }
+  ],
+  "watchlists": [],
+  "hosted_sessions": [],
+  "user_likes": [],
+  "lastUserId": 1,
+  "lastWatchlistId": 0,
+  "lastLikeId": 0
+}
