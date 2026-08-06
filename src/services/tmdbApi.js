@@ -452,6 +452,11 @@ export async function searchMovies(query = '', apiKey = null) {
 export async function fetchDiscoverMovies(filters = {}, apiKey = null, page = 1) {
   const activeKey = getActiveKey(apiKey);
 
+  // Dynamic sort options for fresh variety when no specific sort filter is selected
+  const sortOptions = ['popularity.desc', 'vote_count.desc', 'vote_average.desc', 'revenue.desc'];
+  const randomSort = sortOptions[Math.floor(Math.random() * sortOptions.length)];
+  const sortBy = filters.sortBy || randomSort;
+
   try {
     const headers = {};
     if (activeKey) headers['x-tmdb-key'] = activeKey;
@@ -461,13 +466,16 @@ export async function fetchDiscoverMovies(filters = {}, apiKey = null, page = 1)
     if (filters.minScore) params.append('minScore', filters.minScore);
     if (filters.startYear) params.append('startYear', filters.startYear);
     if (filters.endYear) params.append('endYear', filters.endYear);
+    params.append('sortBy', sortBy);
     params.append('page', page);
 
     const res = await fetch(`${BACKEND_TMDB_PROXY}/discover?${params.toString()}`, { headers });
     if (res.ok) {
       const data = await res.json();
       if (data.results && data.results.length > 0) {
-        return data.results.map(movie => formatMovieData(movie));
+        const formatted = data.results.map(movie => formatMovieData(movie));
+        // Shuffle candidate results for fresh presentation on every fetch
+        return shuffleArray(formatted);
       }
     }
   } catch (err) {
@@ -478,7 +486,7 @@ export async function fetchDiscoverMovies(filters = {}, apiKey = null, page = 1)
     const params = new URLSearchParams({
       api_key: activeKey,
       language: 'en-US',
-      sort_by: filters.sortBy || 'popularity.desc',
+      sort_by: sortBy,
       include_adult: 'false',
       include_video: 'false',
       page: String(page),
@@ -502,7 +510,8 @@ export async function fetchDiscoverMovies(filters = {}, apiKey = null, page = 1)
     if (response.ok) {
       const data = await response.json();
       if (data.results && data.results.length > 0) {
-        return data.results.map(movie => formatMovieData(movie));
+        const formatted = data.results.map(movie => formatMovieData(movie));
+        return shuffleArray(formatted);
       }
     }
   } catch (err) {
@@ -510,6 +519,16 @@ export async function fetchDiscoverMovies(filters = {}, apiKey = null, page = 1)
   }
 
   return filterMockMovies(filters, page);
+}
+
+// Helper to shuffle array
+function shuffleArray(arr) {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
 }
 
 /**

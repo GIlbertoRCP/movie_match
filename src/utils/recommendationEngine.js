@@ -142,11 +142,19 @@ export function rankAndBalanceDeck(candidateMovies, tasteMatrix) {
     return (b.matchScore + jitterB) - (a.matchScore + jitterA);
   });
 
-  if (scored.length <= 4) return scored;
-
   // Interleave 80% top recommendations + 20% fresh discovery titles to avoid echo chamber
-  const topTier = scored.slice(0, Math.ceil(scored.length * 0.8));
+  let topTier = scored.slice(0, Math.ceil(scored.length * 0.8));
   const discoveryPool = scored.slice(Math.ceil(scored.length * 0.8));
+
+  const totalSwipes = (matrix.likedCount || 0) + (matrix.passedCount || 0);
+  if (totalSwipes < 2 && topTier.length > 1) {
+    // Cold start: Shuffle top tier so every page refresh/entry starts with a different fresh movie
+    topTier = [...topTier];
+    for (let i = topTier.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [topTier[i], topTier[j]] = [topTier[j], topTier[i]];
+    }
+  }
 
   const balanced = [];
   let dIdx = 0;
@@ -164,7 +172,42 @@ export function rankAndBalanceDeck(candidateMovies, tasteMatrix) {
     dIdx++;
   }
 
-  return balanced;
+  // Interleave genres so consecutive cards in the stack present diverse genres
+  return interleaveGenreDiversity(balanced);
+}
+
+/**
+ * Genre Diversity Interleaving: Prevents back-to-back cards of the same genre
+ */
+export function interleaveGenreDiversity(movies) {
+  if (!movies || movies.length <= 2) return movies;
+
+  const result = [];
+  const pool = [...movies];
+  const lastGenres = new Set();
+
+  while (pool.length > 0) {
+    // Look for candidate whose primary genre isn't in recent genre set
+    let candidateIndex = pool.findIndex(m => {
+      const gIds = getMovieGenreIds(m);
+      const primaryGenre = gIds[0];
+      return primaryGenre !== undefined && !lastGenres.has(primaryGenre);
+    });
+
+    if (candidateIndex === -1) {
+      candidateIndex = 0;
+    }
+
+    const chosen = pool.splice(candidateIndex, 1)[0];
+    result.push(chosen);
+
+    // Keep track of recent genres (keep last 2 genres)
+    lastGenres.clear();
+    const chosenGenres = getMovieGenreIds(chosen);
+    chosenGenres.slice(0, 2).forEach(g => lastGenres.add(g));
+  }
+
+  return result;
 }
 
 // Fetch Two-Tower Neural Network recommendations from backend ML service

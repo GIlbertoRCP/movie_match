@@ -256,7 +256,14 @@ export const MovieProvider = ({ children }) => {
         [...page1Movies, ...page2Movies].forEach(m => {
           if (m && m.id) mergedMap.set(m.id, m);
         });
-        movies = Array.from(mergedMap.values());
+        const combined = Array.from(mergedMap.values());
+        
+        // Fisher-Yates Shuffle candidates for maximum variety on entry / refresh
+        for (let i = combined.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [combined[i], combined[j]] = [combined[j], combined[i]];
+        }
+        movies = combined;
         setPage(randomStartPage + 1);
       }
 
