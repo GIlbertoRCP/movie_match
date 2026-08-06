@@ -246,14 +246,24 @@ export const MovieProvider = ({ children }) => {
       } else {
         setActivePack(null);
         setCustomMovieIds([]);
-        movies = await fetchDiscoverMovies(currentFilters, apiKey, 1);
+        
+        // Randomize initial discover start page (between pages 1 and 5) for fresh variety on every refresh or visit
+        const randomStartPage = Math.floor(Math.random() * 5) + 1;
+        const page1Movies = await fetchDiscoverMovies(currentFilters, apiKey, randomStartPage);
+        const page2Movies = await fetchDiscoverMovies(currentFilters, apiKey, randomStartPage + 1);
+
+        const mergedMap = new Map();
+        [...page1Movies, ...page2Movies].forEach(m => {
+          if (m && m.id) mergedMap.set(m.id, m);
+        });
+        movies = Array.from(mergedMap.values());
+        setPage(randomStartPage + 1);
       }
 
       // Rank & Score movies dynamically via Recommendation Matrix
       const scoredDeck = rankAndBalanceDeck(movies, tasteMatrix);
       setDeck(scoredDeck);
       setCurrentIndex(0);
-      setPage(1);
       setHistory([]);
     } catch (err) {
       console.error('Error loading deck:', err);

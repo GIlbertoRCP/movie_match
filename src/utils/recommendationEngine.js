@@ -135,8 +135,12 @@ export function rankAndBalanceDeck(candidateMovies, tasteMatrix) {
     matchScore: calculateMatchScore(movie, tasteMatrix)
   }));
 
-  // Sort by matchScore descending
-  scored.sort((a, b) => b.matchScore - a.matchScore);
+  // Sort by matchScore descending with subtle exploration tie-break jitter for dynamic card order
+  scored.sort((a, b) => {
+    const jitterA = (Math.sin((a.id || 0) * 1.3) * 0.5) + (Math.random() * 1.5 - 0.75);
+    const jitterB = (Math.sin((b.id || 0) * 1.3) * 0.5) + (Math.random() * 1.5 - 0.75);
+    return (b.matchScore + jitterB) - (a.matchScore + jitterA);
+  });
 
   if (scored.length <= 4) return scored;
 
