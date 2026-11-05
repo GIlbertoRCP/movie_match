@@ -58,7 +58,8 @@ The project drifted before because features were added faster than any one was f
 | Swiping-era UI | `FilterModal.jsx`, `WatchProviders.jsx`, `HistoryDrawer.jsx`, `AboutModal.jsx`, `Navbar.jsx` | **Delete or rebuild small** as needed by the new screens |
 | `MovieContext.jsx` (662 lines) | | **Replace** with a small game-state store driven by server events |
 | SQLite | `server/config/db.js`, `database.sqlite` | **Drop for v1.** Rooms live in memory (see §5) |
-| README | `README.md` | **Rewrite.** It's still the Vite template |
+| README | `README.md` | **Rewrite.** An accurate interim README landed with M1; the polished version is M6 |
+| CI + TMDB rate limit (from `main`, Aug 6) | `.github/workflows/ci.yml`, `tmdbRoutes.js` | **Kept.** CI now runs lint, server syntax check, build and a server smoke test; tests return in M2 |
 
 ## 5. Game engine design
 
