@@ -144,11 +144,13 @@ Each milestone ends in a working, deployable state.
 - [x] App still builds and boots to an empty "Create / Join room" screen
 
 **M2: Game engine** (≈ 3–5 days)
-- [ ] Pure room reducer + unit tests
-- [ ] Socket layer: create/join room, start game, guess, server timers
-- [ ] Reconnection with grace window + test
-- [ ] Integration test of a full round
-- [ ] CI green
+- [x] Pure room reducer + unit tests (`server/game/room.js`)
+- [x] Socket layer: create/join room, start game, guess, server timers (`server/game/manager.js`, `socket.js`; the event protocol is documented at the top of `socket.js`)
+- [x] Reconnection with grace window + test
+- [x] Integration test of a full round
+- [ ] CI green (server tests are wired into CI; passes locally, awaiting the first GitHub run)
+
+> M2 notes: written in plain JavaScript (see open decision 1). Rounds come from a small hand-written fixture source (`server/game/questions.js`) until M3 adds TMDB clues. Beyond the plan, the engine also handles a second tab taking over a seat, per-socket guess rate limiting, and sequel numbers in answers ("Toy Story" ≠ "Toy Story 2").
 
 **M3: Clues and content** (≈ 3–4 days)
 - [ ] Movie pool builder script + cached pool
@@ -175,7 +177,7 @@ Rough total: **3–4 weeks of part-time work.**
 
 ## 12. Open decisions
 
-1. **TypeScript or not?** Recommended, but it adds friction to M1. Could be limited to the server and shared types.
+1. **TypeScript or not?** Recommended, but it adds friction to M1. Could be limited to the server and shared types. *(M2 stayed in JavaScript; the engine is pure functions, so converting later is mechanical.)*
 2. **Hosting budget:** paid always-on instance vs. free tier + keep-alive ping.
 3. **Name:** needed before the README and domain.
 4. **Keep the current visual style or start fresh?** Whichever you pick, freeze it after M4.

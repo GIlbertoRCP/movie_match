@@ -18,17 +18,17 @@ export default function HomeScreen() {
   const nameValid = trimmedName.length > 0;
   const codeValid = code.length === CODE_LENGTH;
 
-  // Room creation/joining is wired to the server in milestone 2.
+  // The server side of rooms is done (milestone 2); these screens get wired up in milestone 4.
   const handleCreate = (event) => {
     event.preventDefault();
     if (!nameValid) return;
-    setNotice(`Creating rooms isn't live yet, ${trimmedName}. It lands in milestone 2.`);
+    setNotice(`Creating rooms isn't live yet, ${trimmedName}. The game screens land in milestone 4.`);
   };
 
   const handleJoin = (event) => {
     event.preventDefault();
     if (!nameValid || !codeValid) return;
-    setNotice(`Joining room ${code} isn't live yet. It lands in milestone 2.`);
+    setNotice(`Joining room ${code} isn't live yet. The game screens land in milestone 4.`);
   };
 
   const inputClass =

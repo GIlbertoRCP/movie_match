@@ -4,7 +4,17 @@
 
 A live multiplayer movie guessing game, currently being rebuilt. Create a room, share the code, and race your friends to name the movie from a pixelated poster, a single still, or a plot summary with the names blanked out.
 
-> **Status:** mid-pivot. Milestone 1 (clean slate) is done: the app boots to a Create / Join room screen, and the game engine arrives in milestone 2. The full plan, scope and milestones are in [docs/PIVOT_PLAN.md](docs/PIVOT_PLAN.md).
+> **Status:** mid-pivot. Milestones 1 (clean slate) and 2 (game engine) are done: the server runs complete multiplayer games over Socket.io, and the game screens arrive in milestone 4. The full plan, scope and milestones are in [docs/PIVOT_PLAN.md](docs/PIVOT_PLAN.md).
+
+## How the game server works
+
+- **The server is the only source of truth.** Each room is driven by a pure reducer (`server/game/room.js`): every change is `reduce(state, event)` with the time passed in, so the whole game is unit-tested without sockets or timers.
+- **Timers live on the server.** Clients get `phaseEndsAt` and `serverNow` and draw the countdown locally, so a slow or tampered client can't buy extra time.
+- **No answers on the wire.** Clients receive a projection of the room that never includes the answer before the reveal, or any future round.
+- **Identity is server-assigned.** A socket's room and player come from create/join/resume, never from fields in a message.
+- **Reconnects keep your seat.** A dropped player keeps their seat and score for 30 seconds and can resume with a session token; opening a second tab moves the seat there.
+
+The event protocol is documented at the top of `server/game/socket.js`.
 
 ## Stack
 
@@ -32,6 +42,12 @@ Then run the server and the frontend in two terminals:
 ```bash
 cd server && node index.js     # http://localhost:5001
 npm run dev                    # http://localhost:5173
+```
+
+Run the tests (unit tests plus real-socket integration tests):
+
+```bash
+npm test
 ```
 
 ## Configuration
