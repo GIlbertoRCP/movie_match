@@ -8,8 +8,9 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const tmdbCache = new NodeCache({ stdTTL: 28800, checkperiod: 3600 });
 
 // Proxy helper for fetching from TMDB API with NodeCache support
-async function fetchFromTMDB(endpoint, params = {}, reqKey = null) {
-  const activeKey = reqKey || process.env.VITE_TMDB_API_KEY || 'b992337b97dc83be1869733cc4ecb839';
+async function fetchFromTMDB(endpoint, params = {}) {
+  // Credentials come only from server env, never from the client.
+  const activeKey = process.env.TMDB_API_KEY;
   const readToken = process.env.TMDB_READ_TOKEN;
 
   const searchParams = new URLSearchParams({
@@ -45,7 +46,6 @@ async function fetchFromTMDB(endpoint, params = {}, reqKey = null) {
 router.get('/search', async (req, res) => {
   try {
     const { query } = req.query;
-    const clientApiKey = req.headers['x-tmdb-key'];
 
     if (!query || !query.trim()) {
       return res.json({ results: [] });
@@ -55,7 +55,7 @@ router.get('/search', async (req, res) => {
       query: query.trim(),
       include_adult: 'false',
       page: '1'
-    }, clientApiKey);
+    });
 
     res.json(data);
   } catch (err) {
@@ -67,10 +67,9 @@ router.get('/search', async (req, res) => {
 // Movie Details Proxy by ID
 router.get('/movie/:id', async (req, res) => {
   try {
-    const clientApiKey = req.headers['x-tmdb-key'];
     const movieId = req.params.id;
 
-    const data = await fetchFromTMDB(`/movie/${movieId}`, {}, clientApiKey);
+    const data = await fetchFromTMDB(`/movie/${movieId}`, {});
     res.json(data);
   } catch (err) {
     console.error('TMDB Movie Details Proxy failed:', err.message);
@@ -81,10 +80,9 @@ router.get('/movie/:id', async (req, res) => {
 // Movie Videos (YouTube Trailers) Proxy
 router.get('/videos/:id', async (req, res) => {
   try {
-    const clientApiKey = req.headers['x-tmdb-key'];
     const movieId = req.params.id;
 
-    const data = await fetchFromTMDB(`/movie/${movieId}/videos`, {}, clientApiKey);
+    const data = await fetchFromTMDB(`/movie/${movieId}/videos`, {});
     res.json(data);
   } catch (err) {
     console.error('TMDB Videos Proxy failed:', err.message);
@@ -95,7 +93,6 @@ router.get('/videos/:id', async (req, res) => {
 // Discover Movies Proxy with Watch Provider Support
 router.get('/discover', async (req, res) => {
   try {
-    const clientApiKey = req.headers['x-tmdb-key'];
     const { genre, minScore, startYear, endYear, sortBy, provider, region, page } = req.query;
 
     const params = {
@@ -115,7 +112,7 @@ router.get('/discover', async (req, res) => {
       params['watch_region'] = region || 'US';
     }
 
-    const data = await fetchFromTMDB('/discover/movie', params, clientApiKey);
+    const data = await fetchFromTMDB('/discover/movie', params);
     res.json(data);
   } catch (err) {
     console.error('TMDB Discover Proxy failed:', err.message);
@@ -126,10 +123,9 @@ router.get('/discover', async (req, res) => {
 // Watch Providers Proxy
 router.get('/providers/:id', async (req, res) => {
   try {
-    const clientApiKey = req.headers['x-tmdb-key'];
     const movieId = req.params.id;
 
-    const data = await fetchFromTMDB(`/movie/${movieId}/watch/providers`, {}, clientApiKey);
+    const data = await fetchFromTMDB(`/movie/${movieId}/watch/providers`, {});
     res.json(data);
   } catch (err) {
     console.error('TMDB Watch Providers Proxy failed:', err.message);

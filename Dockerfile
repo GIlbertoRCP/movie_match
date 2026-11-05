@@ -11,14 +11,16 @@ FROM node:20-alpine
 RUN apk add --no-cache nginx supervisor
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci --only=production
+# Install the server's own production dependencies (not the frontend's)
+COPY server/package*.json ./server/
+RUN cd server && npm ci --omit=dev
 
 COPY server ./server
 COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/http.d/default.conf
 COPY supervisord.conf /etc/supervisord.conf
 
-EXPOSE 80 5001
+ENV NODE_ENV=production
+EXPOSE 80
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

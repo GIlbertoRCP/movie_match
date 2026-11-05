@@ -9,21 +9,15 @@ services:
     envVars:
       - key: PORT
         value: 10000
-      - key: JWT_SECRET
-        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: TMDB_READ_TOKEN
+        sync: false
       - key: FRONTEND_URL
         fromService:
           type: web
           name: movie-match-frontend
           property: host
-      - key: AUTHENTIK_CLIENT_ID
-        sync: false
-      - key: AUTHENTIK_CLIENT_SECRET
-        sync: false
-      - key: AUTHENTIK_ISSUER_URL
-        sync: false
-      - key: AUTHENTIK_REDIRECT_URI
-        sync: false
 
   # Vite React Frontend Static Site
   - type: web
