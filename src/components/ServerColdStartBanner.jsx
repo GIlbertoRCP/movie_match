@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BACKEND_API } from '../config';
-import { Server, Loader2, CheckCircle2, X } from 'lucide-react';
+import { Loader2, CheckCircle2, X } from 'lucide-react';
 
 export default function ServerColdStartBanner() {
   const [isWaking, setIsWaking] = useState(false);
@@ -40,7 +40,7 @@ export default function ServerColdStartBanner() {
         } else if (isSubscribed) {
           setIsWaking(false);
         }
-      } catch (err) {
+      } catch {
         clearTimeout(timeoutId);
         if (isSubscribed) {
           setIsWaking(false);
