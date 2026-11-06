@@ -36,3 +36,9 @@ dist-ssr
 # Cached TMDB movie pool (built from your own API credentials)
 server/data/
 
+# Impeccable working files (mockups, review captures, question state); PRODUCT.md, DESIGN.md,
+# .impeccable/config.json, design.json and surfaces/ are committed.
+.impeccable/mocks/
+.impeccable/review/
+.impeccable/questions/
+.impeccable/hook.cache.json

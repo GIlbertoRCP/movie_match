@@ -153,16 +153,20 @@ Each milestone ends in a working, deployable state.
 > M2 notes: written in plain JavaScript (see open decision 1). Rounds come from a small hand-written fixture source (`server/game/questions.js`) until M3 adds TMDB clues. Beyond the plan, the engine also handles a second tab taking over a seat, per-socket guess rate limiting, and sequel numbers in answers ("Toy Story" ≠ "Toy Story 2").
 
 **M3: Clues and content** (≈ 3–4 days)
-- [ ] Movie pool builder script + cached pool
-- [ ] Server-side pixelation for posters and stills
-- [ ] Redacted plot clues
-- [ ] Answer matching with fuzzy tolerance + tests
+- [x] Movie pool builder script + cached pool (`npm run build-pool`; 155 films at ≥3,000 votes, ~9 s)
+- [x] Server-side pixelation for posters and stills (`server/content/images.js`, using sharp)
+- [x] Redacted plot clues (`server/content/redact.js`)
+- [x] Answer matching with fuzzy tolerance + tests (done in M2)
+
+> M3 notes: each round gets one clue type from a shuffled poster/still/plot rotation. Image clues have 5 levels that unlock on a schedule *enforced by the server*: the browser gets an opaque per-round URL, and early requests get a 403. The unobscured image is served only after the reveal. The pool is cached in `server/data/` (git- and Docker-ignored, since it's TMDB data built with your credentials); without a cache the server builds it in the background at startup and uses the fixtures until it's ready. **Not done:** difficulty tiers (§6). The pool is a single tier for now.
 
 **M4: Game UI** (≈ 4–6 days)
-- [ ] Lobby (code, player list, host start button, share link)
-- [ ] Round screen (clue, countdown, guess input, live "X got it!" feed)
-- [ ] Reveal and final results (reuse confetti)
-- [ ] Mobile-first; one frozen visual direction
+- [x] Lobby (code, player list, host start button, share link)
+- [x] Round screen (clue, countdown, guess input, live "X got it!" feed)
+- [x] Reveal and final results
+- [x] Mobile-first; one frozen visual direction
+
+> M4 notes: the visual direction is the existing home screen's (warm stone, Newsreader, Plus Jakarta Sans), recorded in PRODUCT.md and the game screens' surface brief (`.impeccable/surfaces/`). The round screen is built around a five-arc countdown dial (one arc per clue level). Players' solves show as chips that flip to ink, plus screen-reader announcements, instead of a separate text feed. Confetti was dropped: the warm, cinephile tone wanted one authored moment (the clue sharpening), not celebrations. Every screen state can be previewed with fixed sample data at `?preview=<scene>` in dev.
 
 **M5: Solo mode** (≈ 1–2 days)
 - [ ] Quick play from the landing page, no room code needed

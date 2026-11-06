@@ -1,0 +1,494 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-06T20:54:25.115816+00:00",
+  "title": "Design System: Movie Match",
+  "extensions": {
+    "colorMeta": {
+      "ground-light": {
+        "role": "neutral",
+        "displayName": "Warm Paper Ground",
+        "canonical": "#FBF9F5",
+        "tonalRamp": [
+          "oklch(15% 0.004 70)",
+          "oklch(25% 0.006 70)",
+          "oklch(36% 0.008 70)",
+          "oklch(48% 0.01 75)",
+          "oklch(60% 0.012 75)",
+          "oklch(73% 0.012 78)",
+          "oklch(86% 0.01 80)",
+          "oklch(95% 0.008 80)"
+        ]
+      },
+      "ground-light-glow": {
+        "role": "neutral",
+        "displayName": "Morning Glow",
+        "canonical": "#F5F1E8",
+        "tonalRamp": [
+          "oklch(15% 0.004 70)",
+          "oklch(25% 0.006 70)",
+          "oklch(36% 0.008 70)",
+          "oklch(48% 0.01 75)",
+          "oklch(60% 0.012 75)",
+          "oklch(73% 0.012 78)",
+          "oklch(86% 0.01 80)",
+          "oklch(95% 0.008 80)"
+        ]
+      },
+      "ground-dark": {
+        "role": "neutral",
+        "displayName": "House-Lights-Down",
+        "canonical": "#121110",
+        "tonalRamp": [
+          "oklch(15% 0.004 70)",
+          "oklch(25% 0.006 70)",
+          "oklch(36% 0.008 70)",
+          "oklch(48% 0.01 75)",
+          "oklch(60% 0.012 75)",
+          "oklch(73% 0.012 78)",
+          "oklch(86% 0.01 80)",
+          "oklch(95% 0.008 80)"
+        ]
+      },
+      "ground-dark-glow": {
+        "role": "neutral",
+        "displayName": "Ember Glow",
+        "canonical": "#1c1a17",
+        "tonalRamp": [
+          "oklch(15% 0.004 70)",
+          "oklch(25% 0.006 70)",
+          "oklch(36% 0.008 70)",
+          "oklch(48% 0.01 75)",
+          "oklch(60% 0.012 75)",
+          "oklch(73% 0.012 78)",
+          "oklch(86% 0.01 80)",
+          "oklch(95% 0.008 80)"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Programme Ink",
+        "canonical": "oklch(21.6% 0.006 56.043)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "ink-pressed": {
+        "role": "primary",
+        "displayName": "Programme Ink, pressed",
+        "canonical": "oklch(37.4% 0.01 67.558)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "paper-ink": {
+        "role": "primary",
+        "displayName": "Paper Ink",
+        "canonical": "oklch(97% 0.001 106.424)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "paper-ink-bright": {
+        "role": "primary",
+        "displayName": "Bright Paper",
+        "canonical": "oklch(98.5% 0.001 106.423)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "paper-ink-pressed": {
+        "role": "primary",
+        "displayName": "Paper Ink, pressed",
+        "canonical": "oklch(86.9% 0.005 56.366)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-hairline": {
+        "role": "neutral",
+        "displayName": "Hairline Stone",
+        "canonical": "oklch(86.9% 0.005 56.366)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-hairline-dark": {
+        "role": "neutral",
+        "displayName": "Hairline Stone (dark)",
+        "canonical": "oklch(37.4% 0.01 67.558)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-divider": {
+        "role": "neutral",
+        "displayName": "Divider Stone",
+        "canonical": "oklch(92.3% 0.003 48.717)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-divider-dark": {
+        "role": "neutral",
+        "displayName": "Divider Stone (dark)",
+        "canonical": "oklch(26.8% 0.007 34.298)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-wash": {
+        "role": "neutral",
+        "displayName": "Stone Wash",
+        "canonical": "oklch(92.3% 0.003 48.717)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-wash-dark": {
+        "role": "neutral",
+        "displayName": "Stone Wash (dark)",
+        "canonical": "oklch(26.8% 0.007 34.298)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-muted": {
+        "role": "neutral",
+        "displayName": "Muted Stone",
+        "canonical": "oklch(44.4% 0.011 73.639)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-muted-dark": {
+        "role": "neutral",
+        "displayName": "Muted Stone (dark)",
+        "canonical": "oklch(70.9% 0.01 56.259)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      },
+      "stone-mid": {
+        "role": "neutral",
+        "displayName": "Mid Stone",
+        "canonical": "oklch(55.3% 0.013 58.071)",
+        "tonalRamp": [
+          "oklch(14.7% 0.004 49.25)",
+          "oklch(21.6% 0.006 56.043)",
+          "oklch(26.8% 0.007 34.298)",
+          "oklch(37.4% 0.01 67.558)",
+          "oklch(55.3% 0.013 58.071)",
+          "oklch(70.9% 0.01 56.259)",
+          "oklch(92.3% 0.003 48.717)",
+          "oklch(97% 0.001 106.424)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The one big line per screen: the home title and the results headline."
+      },
+      "display-code": {
+        "displayName": "Display Code",
+        "purpose": "The lobby room code, tabular and tracked."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Revealed film title; the clue-type name on the round intro."
+      },
+      "clue-quote": {
+        "displayName": "Clue Quote",
+        "purpose": "Plot synopses, max 34ch, stepping down for length and when the keyboard is open."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Round header and section headings."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "Dial seconds, scores and points; weight 500 for the last five seconds."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Prose, input text, button labels at 500."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, hints, chips, status lines."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Round meta line and TMDB attribution."
+      }
+    },
+    "shadows": [
+      {
+        "name": "clue-lift",
+        "value": "0 18px 40px -18px rgba(28,25,23,0.45)",
+        "purpose": "Image clue frames and the reveal poster only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "theme-shift",
+        "value": "background-color 0.4s ease, color 0.4s ease",
+        "purpose": "Body ground and ink when the theme toggles."
+      },
+      {
+        "name": "control-colour",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Button, picker and hover-wash colour transitions."
+      },
+      {
+        "name": "chip-flip",
+        "value": "300ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Player chip inverting to ink on solve."
+      },
+      {
+        "name": "clue-sharpen",
+        "value": "opacity 700ms cubic-bezier(0, 0, 0.2, 1)",
+        "purpose": "Each newly unlocked clue level and the reveal poster fading in over the last."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "Every transition and spinner becomes instant under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "keyboard-open",
+        "value": "visible height drop >= 120px while a text field is focused"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid ink action, one per screen.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg>Create a room</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:12px 20px;font-family:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;font-size:16px;font-weight:500;line-height:1.5;transition:background-color .15s cubic-bezier(.4,0,.2,1), color .15s cubic-bezier(.4,0,.2,1);cursor:pointer;border:none;background:#1c1917;color:#fafaf9;} .ds-btn-primary:hover{background:#44403b;} .ds-btn-primary:focus-visible{outline:none;box-shadow: 0 0 0 2px var(--ds-ground, #FBF9F5), 0 0 0 4px #79716b;} .ds-btn-primary:disabled{opacity:.4;cursor:not-allowed;}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Hairline-bordered companion action (Join, Share invite, Copy code).",
+      "html": "<button class=\"ds-btn-secondary\">Join<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:12px 20px;font-family:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;font-size:16px;font-weight:500;line-height:1.5;transition:background-color .15s cubic-bezier(.4,0,.2,1), color .15s cubic-bezier(.4,0,.2,1);cursor:pointer;border:1px solid #d6d3d1;background:transparent;color:#292524;} .ds-btn-secondary:hover{background:rgba(231,229,228,.6);} .ds-btn-secondary:focus-visible{outline:none;box-shadow: 0 0 0 2px var(--ds-ground, #FBF9F5), 0 0 0 4px #79716b;}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Pill header action (Leave); the theme toggle is its icon-only sibling.",
+      "html": "<button class=\"ds-btn-quiet\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/><path d=\"m16 17 5-5-5-5\"/><path d=\"M21 12H9\"/></svg>Leave</button>",
+      "css": ".ds-btn-quiet{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:9999px;padding:8px 12px;background:transparent;color:#57534d;font-family:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;font-size:14px;cursor:pointer;transition:background-color .15s;} .ds-btn-quiet:hover{background:rgba(231,229,228,.6);} .ds-btn-quiet:focus-visible{outline:none;box-shadow:0 0 0 2px #79716b;}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Shared field for name, room code and guess.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Name the movie\" />",
+      "css": ".ds-input{width:100%;border:1px solid #d6d3d1;border-radius:12px;background:rgba(255,255,255,.8);padding:12px 16px;font-family:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;font-size:16px;color:#1c1917;caret-color:#1c1917;} .ds-input::placeholder{color:#79716b;} .ds-input:focus{outline:none;} .ds-input:focus-visible{box-shadow:0 0 0 2px #79716b;} .ds-input:disabled{opacity:.6;}"
+    },
+    {
+      "name": "Player Chips",
+      "kind": "chip",
+      "refersTo": "chip-player",
+      "description": "Room progress row; a chip inverts to ink when that player solves, dashes when away.",
+      "html": "<ul class=\"ds-chips\"><li class=\"ds-chip\"><span class=\"ds-chip-disc\">S</span>You</li><li class=\"ds-chip ds-chip-solved\"><span class=\"ds-chip-disc\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span>Alex</li><li class=\"ds-chip ds-chip-away\"><span class=\"ds-chip-disc\">J</span>Jo</li></ul>",
+      "css": ".ds-chips{display:flex;gap:8px;list-style:none;margin:0;padding:0;} .ds-chip{display:flex;align-items:center;gap:6px;border:1px solid #d6d3d1;border-radius:9999px;padding:4px 12px 4px 4px;font-family:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;font-size:14px;color:#292524;transition:background-color .3s,color .3s,border-color .3s;} .ds-chip-disc{display:grid;place-items:center;width:24px;height:24px;border-radius:9999px;background:#e7e5e4;font-size:11px;font-weight:600;} .ds-chip-solved{background:#1c1917;border-color:#1c1917;color:#fafaf9;} .ds-chip-solved .ds-chip-disc{background:#44403b;color:#fafaf9;} .ds-chip-away{border-style:dashed;border-color:#a6a09b;color:#57534d;} @media (prefers-reduced-motion:reduce){.ds-chip{transition:none;}}"
+    },
+    {
+      "name": "Round Count Picker",
+      "kind": "custom",
+      "refersTo": "segmented-option-selected",
+      "description": "Segmented choice; the selected option is an ink fill.",
+      "html": "<div class=\"ds-seg\"><button class=\"ds-seg-opt\">5</button><button class=\"ds-seg-opt ds-seg-on\">10</button><button class=\"ds-seg-opt\">15</button></div>",
+      "css": ".ds-seg{display:inline-flex;border:1px solid #d6d3d1;border-radius:12px;padding:4px;} .ds-seg-opt{border:none;background:transparent;border-radius:8px;padding:6px 16px;font-family:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;font-size:14px;font-variant-numeric:tabular-nums;color:#44403b;cursor:pointer;transition:background-color .15s;} .ds-seg-opt:hover{background:rgba(231,229,228,.6);} .ds-seg-opt:focus-visible{outline:none;box-shadow:0 0 0 2px #79716b;} .ds-seg-on,.ds-seg-on:hover{background:#1c1917;color:#fafaf9;}"
+    },
+    {
+      "name": "Countdown Dial",
+      "kind": "custom",
+      "refersTo": "countdown-dial",
+      "description": "Round clock and clue sharpening in one object: one arc per level, seconds in serif at the centre.",
+      "html": "<div class=\"ds-dial\" role=\"timer\" aria-label=\"21 seconds left\"><svg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" style=\"transform:rotate(-90deg)\" aria-hidden=\"true\"><circle cx=\"30\" cy=\"30\" r=\"26.5\" fill=\"none\" stroke=\"#79716b\" stroke-width=\"2\" stroke-dasharray=\"27.30 166.50\" stroke-dashoffset=\"0.00\"/><circle cx=\"30\" cy=\"30\" r=\"26.5\" fill=\"none\" stroke=\"#1c1917\" stroke-width=\"5\" stroke-dasharray=\"27.30 166.50\" stroke-dashoffset=\"0.00\"/><circle cx=\"30\" cy=\"30\" r=\"26.5\" fill=\"none\" stroke=\"#79716b\" stroke-width=\"2\" stroke-dasharray=\"27.30 166.50\" stroke-dashoffset=\"-33.30\"/><circle cx=\"30\" cy=\"30\" r=\"26.5\" fill=\"none\" stroke=\"#1c1917\" stroke-width=\"5\" stroke-dasharray=\"27.30 166.50\" stroke-dashoffset=\"-33.30\"/><circle cx=\"30\" cy=\"30\" r=\"26.5\" fill=\"none\" stroke=\"#79716b\" stroke-width=\"2\" stroke-dasharray=\"27.30 166.50\" stroke-dashoffset=\"-66.60\"/><circle cx=\"30\" cy=\"30\" r=\"26.5\" fill=\"none\" stroke=\"#1c1917\" stroke-width=\"5\" stroke-dasharray=\"15.02 166.50\" stroke-dashoffset=\"-66.60\"/><circle cx=\"30\" cy=\"30\" r=\"26.5\" fill=\"none\" stroke=\"#79716b\" stroke-width=\"2\" stroke-dasharray=\"27.30 166.50\" stroke-dashoffset=\"-99.90\"/><circle cx=\"30\" cy=\"30\" r=\"26.5\" fill=\"none\" stroke=\"#79716b\" stroke-width=\"2\" stroke-dasharray=\"27.30 166.50\" stroke-dashoffset=\"-133.20\"/></svg><span class=\"ds-dial-num\">21</span></div>",
+      "css": ".ds-dial{position:relative;width:60px;height:60px;} .ds-dial-num{position:absolute;inset:0;display:grid;place-items:center;font-family:'Newsreader', Georgia, serif;font-size:22px;line-height:1;font-variant-numeric:tabular-nums;color:#1c1917;} .ds-dial:hover .ds-dial-num{font-weight:500;}"
+    },
+    {
+      "name": "Clue Frame",
+      "kind": "card",
+      "refersTo": "clue-frame",
+      "description": "The one lifted object: rounded frame that cross-fades each sharper level over the last. Contents are product content from TMDB.",
+      "html": "<div class=\"ds-clue\"><div class=\"ds-clue-layer ds-clue-a\"></div><div class=\"ds-clue-layer ds-clue-b\"></div></div>",
+      "css": ".ds-clue{position:relative;width:160px;aspect-ratio:2/3;overflow:hidden;border-radius:16px;background:#e7e5e4;box-shadow:0 18px 40px -18px rgba(28,25,23,.45);} .ds-clue-layer{position:absolute;inset:0;transition:opacity .7s cubic-bezier(0,0,.2,1);} .ds-clue-a{background:#d6d3d1;} .ds-clue-b{background:#a6a09b;opacity:0;} .ds-clue:hover .ds-clue-b{opacity:1;} @media (prefers-reduced-motion:reduce){.ds-clue-layer{transition:none;}}"
+    },
+    {
+      "name": "Plot Clue Blank",
+      "kind": "custom",
+      "refersTo": "clue-frame",
+      "description": "Synopsis set as a serif quotation with names replaced by inked bars.",
+      "html": "<blockquote class=\"ds-plot\"><span class=\"ds-blank\" role=\"img\" aria-label=\"blank\"></span>, a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets.</blockquote>",
+      "css": ".ds-plot{margin:0;max-width:34ch;font-family:'Newsreader', Georgia, serif;font-size:28px;line-height:1.375;color:#1c1917;text-wrap:balance;} .ds-blank{display:inline-block;margin:0 2px;width:2.6em;height:.82em;transform:translateY(.08em);border-radius:3px;background:#1c1917;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Late Screening Programme",
+    "overview": "Movie Match looks like a printed programme handed out at a small repertory cinema: warm paper, black ink, a serif for anything worth reading aloud (titles, room codes, scores, the seconds left) and a quiet sans for everything you operate. The interface is deliberately colourless so that the only colour on screen is the clue itself: a pixelated poster, a still crop, or a synopsis with its names inked out. Everything else steps back to let a player read the clue and answer fast.\n\nDensity is low and the layout is a single column. Screens are short, centred, and one decision deep: a name and two ways in on the home screen, a giant room code in the lobby, a clue with a clock and a guess field in a round, a ranked list at the end. State is carried by ink inversion rather than hue: a solved player, a selected option, a confirmed guess and the reconnect banner all flip to solid ink with paper-coloured text.\n\nLight and dark are equal citizens. Dark is the same programme read under the house lights down: a near-black warm ground with paper ink, never a blue-black or a neon scheme. The theme is applied before first paint and follows the OS until the player chooses.",
+    "keyCharacteristics": [
+      "Warm stone ground with a soft radial glow at the top of every screen.",
+      "Two inks only: stone-900 on light, stone-100 on dark; no accent hue anywhere.",
+      "Newsreader for headings and all numerals; Plus Jakarta Sans for controls and prose.",
+      "\"Done\" and \"selected\" are an inverted ink fill, never a colour.",
+      "Flat surfaces, hairline stone borders, one soft shadow reserved for the clue frame.",
+      "Keyboard-aware layout: the clue keeps the space when the phone keyboard opens."
+    ],
+    "rules": [
+      {
+        "name": "The Only Colour Is the Clue Rule",
+        "body": "No accent hue exists. Success, selection, urgency and connection state are expressed with ink inversion, weight, or a dashed border. If a new screen needs to say \"good\" or \"chosen\", it inverts the ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Inks Rule",
+        "body": "Each theme has exactly one ink (stone-900 light, stone-100 dark) plus the stone neutrals. Do not introduce black, pure white text, or a second dark.",
+        "section": "colors"
+      },
+      {
+        "name": "The Serif Numerals Rule",
+        "body": "Every number a player reads at a glance (seconds, scores, room code, round number) is set in Newsreader with tabular figures. Rank positions and counts in running text stay in the sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight Is the Alarm Rule",
+        "body": "Urgency is a weight step (400 to 500) on the dial's seconds, never a colour change.",
+        "section": "typography"
+      },
+      {
+        "name": "The Clue Keeps the Space Rule",
+        "body": "On any game screen, the clue gets the flexible region; chrome takes only what it needs and folds first when space runs out.",
+        "section": "layout"
+      },
+      {
+        "name": "The One Lifted Object Rule",
+        "body": "Only the clue is elevated. Buttons, inputs, chips, lists and banners stay flat.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do paint every screen on the warm ground with its radial glow (`ground-light` to `ground-light-glow`, `ground-dark` to `ground-dark-glow`).",
+      "Do express solved, selected and confirmed states as an inverted ink fill with paper text.",
+      "Do set every glanceable number in Newsreader with tabular figures.",
+      "Do reuse the shared control styles (12px corners, 12px by 20px buttons, 2px mid-stone focus ring offset on the ground) for any new control.",
+      "Do give the clue the flexible region and fold chrome first when the keyboard opens.",
+      "Do make every transition instant under `prefers-reduced-motion`.",
+      "Do carry the TMDB attribution in the footer of any screen that shows TMDB data, at caption size in muted stone."
+    ],
+    "donts": [
+      "Don't introduce an accent hue, including green for correct or red for wrong; the user confirmed a world with no accent, and the only colour is the clue.",
+      "Don't signal urgency with colour; step the weight instead.",
+      "Don't shadow anything other than the clue frame and the reveal poster.",
+      "Don't treat clue images or the dev preview's synthetic canvas mosaics as design assets or decoration."
+    ]
+  }
+}

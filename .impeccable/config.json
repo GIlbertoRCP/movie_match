@@ -1,0 +1,32 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "plus jakarta sans",
+        "createdAt": "2026-11-05T23:45:25.735Z",
+        "reason": "user confirmed: keep the existing home screen look (M4 home-screen question, 'Keep it, just wire it'); Plus Jakarta Sans is the incumbent body face"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/frame.html"
+        ],
+        "createdAt": "2026-11-05T23:45:25.759Z",
+        "reason": "user confirmed: keep the existing warm stone palette (M4 home-screen question); sketches reuse the incumbent ground"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/split.html"
+        ],
+        "createdAt": "2026-11-05T23:45:25.783Z",
+        "reason": "user confirmed: keep the existing warm stone palette (M4 home-screen question); sketches reuse the incumbent ground"
+      }
+    ]
+  }
+}
