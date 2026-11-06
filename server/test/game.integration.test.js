@@ -96,7 +96,7 @@ describe('a full game over sockets', () => {
 
     // Everyone solved it, so the reveal comes early, then the results.
     const reveal = await waitForState(host, (s) => s.phase === 'reveal');
-    expect(reveal.round.answer).toEqual({ title: 'Jaws', year: 1975 });
+    expect(reveal.round.answer).toEqual({ title: 'Jaws', year: 1975, posterUrl: null });
 
     const results = await waitForState(guest, (s) => s.phase === 'results');
     expect(player(results, created.playerId).score).toBe(hostGuess.points);

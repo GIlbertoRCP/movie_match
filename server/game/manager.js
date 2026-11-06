@@ -3,8 +3,8 @@
 // periods, and calls `onRoomChange(code)` whenever a room's state changes.
 
 import crypto from 'crypto';
-import { createRoom, reduce, toPublicState } from './room.js';
-import { DEFAULT_TIMINGS, ERRORS, LIMITS, ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH } from './constants.js';
+import { createRoom, reduce, toPublicState, clueImageAccess } from './room.js';
+import { DEFAULT_TIMINGS, ERRORS, LIMITS, PHASES, ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH } from './constants.js';
 
 export class GameError extends Error {
   constructor(code) {
@@ -23,6 +23,8 @@ export function createRoomManager({
   clock = () => Date.now(),
   random = Math.random,
   onRoomChange = () => {},
+  // Called with the question when a round's intro starts (used to pre-render clues).
+  onRoundStart = () => {},
 } = {}) {
   if (!questionSource) throw new Error('createRoomManager needs a questionSource');
   const t = { ...DEFAULT_TIMINGS, ...timings };
@@ -31,6 +33,14 @@ export function createRoomManager({
   const rooms = new Map();
   // token -> { code, playerId }. Tokens are secrets; player ids are public.
   const sessions = new Map();
+  // clue token -> room code. Tokens are per round and unguessable.
+  const clueTokens = new Map();
+
+  function forgetClueTokens(code) {
+    for (const [token, owner] of clueTokens) {
+      if (owner === code) clueTokens.delete(token);
+    }
+  }
 
   function generateCode() {
     for (let attempt = 0; attempt < 1_000; attempt++) {
@@ -58,6 +68,7 @@ export function createRoomManager({
     for (const [token, session] of sessions) {
       if (session.code === code) sessions.delete(token);
     }
+    forgetClueTokens(code);
   }
 
   function schedulePhaseTimer(code, room) {
@@ -82,13 +93,21 @@ export function createRoomManager({
     if (error) throw new GameError(error);
     if (state === room.state) return result;
 
-    const previousDeadline = room.state.phaseEndsAt;
+    const previous = room.state;
+    const previousDeadline = previous.phaseEndsAt;
     room.state = state;
     if (state.playerOrder.length === 0) {
       destroyRoom(code);
       return result;
     }
     if (state.phaseEndsAt !== previousDeadline) schedulePhaseTimer(code, room);
+    if (state.phase === PHASES.ROUND_INTRO && (previous.phase !== PHASES.ROUND_INTRO || previous.roundIndex !== state.roundIndex)) {
+      try {
+        onRoundStart(state.rounds[state.roundIndex]);
+      } catch {
+        // Pre-rendering is best effort.
+      }
+    }
     onRoomChange(code);
     return result;
   }
@@ -157,8 +176,12 @@ export function createRoomManager({
       // Fail fast before fetching questions; the reducer re-checks after.
       if (room.state.hostId !== playerId) throw new GameError(ERRORS.NOT_HOST);
       const count = Math.min(Math.max(1, Math.floor(Number(roundCount)) || LIMITS.defaultRoundCount), LIMITS.maxRoundCount);
-      const rounds = await questionSource.pick(count);
-      dispatch(room.state.code, { type: 'start', playerId, rounds, now: clock() });
+      const questions = await questionSource.pick(count);
+      const rounds = questions.map((q) => ({ ...q, clueToken: crypto.randomBytes(16).toString('base64url') }));
+      const roomCode = room.state.code;
+      dispatch(roomCode, { type: 'start', playerId, rounds, now: clock() });
+      forgetClueTokens(roomCode);
+      rounds.forEach((r) => clueTokens.set(r.clueToken, roomCode));
     },
 
     guess(code, playerId, text) {
@@ -186,6 +209,14 @@ export function createRoomManager({
     getPublicState(code, playerId) {
       const room = rooms.get(code);
       return room ? toPublicState(room.state, playerId, clock()) : null;
+    },
+
+    // For the clue image endpoint: { status: 'ok' | 'locked' | 'not_found', clue }.
+    authorizeClue(token, level) {
+      const room = rooms.get(clueTokens.get(token));
+      if (!room) return { status: 'not_found', clue: null };
+      const status = clueImageAccess(room.state, token, level, clock());
+      return { status, clue: status === 'ok' ? room.state.rounds[room.state.roundIndex].clue : null };
     },
 
     hasRoom: (code) => rooms.has(normalizeRoomCode(code)),

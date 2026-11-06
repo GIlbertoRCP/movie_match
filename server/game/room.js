@@ -233,6 +233,48 @@ export function reduce(state, event) {
 const CLUE_VISIBLE = new Set([PHASES.GUESSING, PHASES.REVEAL]);
 const ANSWER_VISIBLE = new Set([PHASES.REVEAL, PHASES.RESULTS]);
 
+// --- Image clues ------------------------------------------------------------
+//
+// Image clues (poster, still) have `levels` progressively clearer renders.
+// Level k unlocks k * (guessMs / levels) into the guessing phase; level
+// `levels` (the unobscured image) only after the reveal. Clients get an
+// opaque per-round URL and the unlock times; the image endpoint enforces them.
+
+export const IMAGE_CLUE_TYPES = new Set(['poster', 'still']);
+export const CLUE_UNLOCK_TOLERANCE_MS = 250; // client clocks are estimates
+
+function unlockTimes(state, levels) {
+  const interval = state.timings.guessMs / levels;
+  return Array.from({ length: levels }, (_, k) => Math.round(state.phaseStartedAt + k * interval));
+}
+
+function publicClue(state, question) {
+  const { clue } = question;
+  if (!IMAGE_CLUE_TYPES.has(clue.type)) return { type: clue.type, text: clue.text };
+  const revealed = state.phase !== PHASES.GUESSING;
+  return {
+    type: clue.type,
+    levels: clue.levels,
+    url: `/api/clues/${question.clueToken}`, // + `/<level>`
+    unlockAt: revealed ? null : unlockTimes(state, clue.levels),
+    revealed,
+  };
+}
+
+// Whether the clue image at `level` for the round with `clueToken` may be
+// served right now: 'ok', 'locked' (not yet), or 'not_found'.
+export function clueImageAccess(state, clueToken, level, now) {
+  const question = state.rounds[state.roundIndex];
+  if (!question || !clueToken || question.clueToken !== clueToken) return 'not_found';
+  const { clue } = question;
+  if (!IMAGE_CLUE_TYPES.has(clue.type) || !Number.isInteger(level) || level < 0 || level > clue.levels) {
+    return 'not_found';
+  }
+  if (state.phase === PHASES.REVEAL || state.phase === PHASES.RESULTS) return 'ok';
+  if (state.phase !== PHASES.GUESSING || level === clue.levels) return 'locked';
+  return now + CLUE_UNLOCK_TOLERANCE_MS >= unlockTimes(state, clue.levels)[level] ? 'ok' : 'locked';
+}
+
 export function toPublicState(state, viewerId, now) {
   const question = state.rounds[state.roundIndex];
   return {
@@ -241,6 +283,7 @@ export function toPublicState(state, viewerId, now) {
     hostId: state.hostId,
     you: viewerId,
     serverNow: now,
+    phaseStartedAt: state.phaseStartedAt,
     phaseEndsAt: state.phaseEndsAt,
     players: state.playerOrder.map((id) => {
       const p = state.players[id];
@@ -258,8 +301,14 @@ export function toPublicState(state, viewerId, now) {
           number: state.roundIndex + 1,
           total: state.rounds.length,
           clueType: question.clue.type,
-          clue: CLUE_VISIBLE.has(state.phase) ? question.clue : null,
-          answer: ANSWER_VISIBLE.has(state.phase) ? { title: question.title, year: question.year } : null,
+          clue: CLUE_VISIBLE.has(state.phase) ? publicClue(state, question) : null,
+          answer: ANSWER_VISIBLE.has(state.phase)
+            ? {
+                title: question.title,
+                year: question.year,
+                posterUrl: question.posterPath ? `https://image.tmdb.org/t/p/w342${question.posterPath}` : null,
+              }
+            : null,
           yourPoints: state.solvedBy[viewerId]?.points ?? null,
         }
       : null,

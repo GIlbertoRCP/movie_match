@@ -26,7 +26,7 @@ const FIXTURE_QUESTIONS = [
   clue: { type: 'plot', text },
 }));
 
-function shuffled(items, random) {
+export function shuffled(items, random = Math.random) {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));

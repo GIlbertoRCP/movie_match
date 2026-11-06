@@ -245,7 +245,7 @@ describe('toPublicState (anti-cheat)', () => {
   it('reveals the answer after the round', () => {
     let state = guessingWith('Sam');
     state = run(state, { type: 'timer', now: state.phaseEndsAt });
-    expect(toPublicState(state, 'p1', state.phaseStartedAt).round.answer).toEqual({ title: 'Jaws', year: 1975 });
+    expect(toPublicState(state, 'p1', state.phaseStartedAt).round.answer).toEqual({ title: 'Jaws', year: 1975, posterUrl: null });
   });
 
   it("includes the viewer's points and everyone's solved flags", () => {
