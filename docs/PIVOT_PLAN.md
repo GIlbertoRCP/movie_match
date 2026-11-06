@@ -144,23 +144,29 @@ Each milestone ends in a working, deployable state.
 - [x] App still builds and boots to an empty "Create / Join room" screen
 
 **M2: Game engine** (≈ 3–5 days)
-- [ ] Pure room reducer + unit tests
-- [ ] Socket layer: create/join room, start game, guess, server timers
-- [ ] Reconnection with grace window + test
-- [ ] Integration test of a full round
-- [ ] CI green
+- [x] Pure room reducer + unit tests (`server/game/room.js`)
+- [x] Socket layer: create/join room, start game, guess, server timers (`server/game/manager.js`, `socket.js`; the event protocol is documented at the top of `socket.js`)
+- [x] Reconnection with grace window + test
+- [x] Integration test of a full round
+- [ ] CI green (server tests are wired into CI; passes locally, awaiting the first GitHub run)
+
+> M2 notes: written in plain JavaScript (see open decision 1). Rounds come from a small hand-written fixture source (`server/game/questions.js`) until M3 adds TMDB clues. Beyond the plan, the engine also handles a second tab taking over a seat, per-socket guess rate limiting, and sequel numbers in answers ("Toy Story" ≠ "Toy Story 2").
 
 **M3: Clues and content** (≈ 3–4 days)
-- [ ] Movie pool builder script + cached pool
-- [ ] Server-side pixelation for posters and stills
-- [ ] Redacted plot clues
-- [ ] Answer matching with fuzzy tolerance + tests
+- [x] Movie pool builder script + cached pool (`npm run build-pool`; 155 films at ≥3,000 votes, ~9 s)
+- [x] Server-side pixelation for posters and stills (`server/content/images.js`, using sharp)
+- [x] Redacted plot clues (`server/content/redact.js`)
+- [x] Answer matching with fuzzy tolerance + tests (done in M2)
+
+> M3 notes: each round gets one clue type from a shuffled poster/still/plot rotation. Image clues have 5 levels that unlock on a schedule *enforced by the server*: the browser gets an opaque per-round URL, and early requests get a 403. The unobscured image is served only after the reveal. The pool is cached in `server/data/` (git- and Docker-ignored, since it's TMDB data built with your credentials); without a cache the server builds it in the background at startup and uses the fixtures until it's ready. **Not done:** difficulty tiers (§6). The pool is a single tier for now.
 
 **M4: Game UI** (≈ 4–6 days)
-- [ ] Lobby (code, player list, host start button, share link)
-- [ ] Round screen (clue, countdown, guess input, live "X got it!" feed)
-- [ ] Reveal and final results (reuse confetti)
-- [ ] Mobile-first; one frozen visual direction
+- [x] Lobby (code, player list, host start button, share link)
+- [x] Round screen (clue, countdown, guess input, live "X got it!" feed)
+- [x] Reveal and final results
+- [x] Mobile-first; one frozen visual direction
+
+> M4 notes: the visual direction is the existing home screen's (warm stone, Newsreader, Plus Jakarta Sans), recorded in PRODUCT.md and the game screens' surface brief (`.impeccable/surfaces/`). The round screen is built around a five-arc countdown dial (one arc per clue level). Players' solves show as chips that flip to ink, plus screen-reader announcements, instead of a separate text feed. Confetti was dropped: the warm, cinephile tone wanted one authored moment (the clue sharpening), not celebrations. Every screen state can be previewed with fixed sample data at `?preview=<scene>` in dev.
 
 **M5: Solo mode** (≈ 1–2 days)
 - [ ] Quick play from the landing page, no room code needed
@@ -175,7 +181,7 @@ Rough total: **3–4 weeks of part-time work.**
 
 ## 12. Open decisions
 
-1. **TypeScript or not?** Recommended, but it adds friction to M1. Could be limited to the server and shared types.
+1. **TypeScript or not?** Recommended, but it adds friction to M1. Could be limited to the server and shared types. *(M2 stayed in JavaScript; the engine is pure functions, so converting later is mechanical.)*
 2. **Hosting budget:** paid always-on instance vs. free tier + keep-alive ping.
 3. **Name:** needed before the README and domain.
 4. **Keep the current visual style or start fresh?** Whichever you pick, freeze it after M4.

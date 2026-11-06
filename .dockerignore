@@ -8,3 +8,4 @@ dist
 server/.env
 *.sqlite
 *.log
+server/data
